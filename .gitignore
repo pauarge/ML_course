@@ -90,4 +90,6 @@ ENV/
 
 .idea
 
+=======
+# Mac folder attributes
 .DS_Store
