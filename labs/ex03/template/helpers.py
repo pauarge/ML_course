@@ -34,7 +34,7 @@ def load_data_from_ex02(sub_sample=True, add_outlier=False):
     if add_outlier:
         # outlier experiment
         height = np.concatenate([height, [1.1, 1.2]])
-        weight = np.concatenate([weight, [51.5/0.454, 55.3/0.454]])
+        weight = np.concatenate([weight, [51.5 / 0.454, 55.3 / 0.454]])
 
     return height, weight, gender
 
@@ -55,3 +55,40 @@ def build_model_data(height, weight):
     num_samples = len(y)
     tx = np.c_[np.ones(num_samples), x]
     return y, tx
+
+
+# From ex2
+
+def compute_gradient(y, tx, w):
+    """Compute the gradient."""
+    k = -1 / y.shape[0]
+    e = y - tx.dot(w)
+    return k * np.transpose(tx).dot(e)
+
+
+def gradient_descent(y, tx, initial_w, max_iters, gamma):
+    """Gradient descent algorithm."""
+    # Define parameters to store w and loss
+    ws = [initial_w]
+    losses = []
+    w = initial_w
+    for n_iter in range(max_iters):
+        gradient = compute_gradient(y, tx, w)
+        loss = compute_loss(y, tx, w)
+        w = w - gamma * gradient
+        # store w and loss
+        ws.append(w)
+        losses.append(loss)
+        # print("Gradient Descent({bi}/{ti}): loss={l}, w0={w0}, w1={w1}, gradient={g}".format(
+        #    bi=n_iter, ti=max_iters - 1, l=loss, w0=w[0], w1=w[1], g=compute_gradient(y, tx, w)))
+    return losses, ws
+
+
+def compute_loss(y, tx, w):
+    """Calculate the loss.
+
+    You can calculate the loss using mse or mae.
+    """
+    k = 1 / (2 * y.shape[0])
+    e = y - tx.dot(w)
+    return k * np.transpose(e).dot(e)
