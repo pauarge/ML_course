@@ -92,3 +92,7 @@ def compute_loss(y, tx, w):
     k = 1 / (2 * y.shape[0])
     e = y - tx.dot(w)
     return k * np.transpose(e).dot(e)
+
+
+def compute_mse(y, tx, w):
+    return compute_loss(y, tx, w)
