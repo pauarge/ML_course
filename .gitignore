@@ -90,6 +90,8 @@ ENV/
 
 .idea
 
+*.csv
+
 =======
 # Mac folder attributes
 .DS_Store
