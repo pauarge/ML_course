@@ -93,7 +93,8 @@ def least_squares_SGD(y, tx, initial_w, batch_size, max_iters, gamma):
 def least_squares(y, tx):
     """calculate the least squares solution.
         returns mse, and optimal weights"""
-    w = np.linalg.inv(np.transpose(tx).dot(tx)).dot(np.transpose(tx)).dot(y)
+    w = np.linalg.solve(np.transpose(tx).dot(tx), np.transpose(tx).dot(y))
+    # w = np.linalg.inv(np.transpose(tx).dot(tx)).dot(np.transpose(tx)).dot(y)
     mse = compute_loss(y, tx, w)
     return w, mse
 
