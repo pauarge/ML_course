@@ -6,7 +6,12 @@ Least Square
 
 import numpy as np
 
-from template.costs import compute_mse
+
+def compute_mse(y, tx, w):
+    """compute the loss by mse."""
+    e = y - tx.dot(w)
+    mse = e.dot(e) / (2 * len(e))
+    return mse
 
 
 def least_squares(y, tx):
