@@ -46,4 +46,4 @@ def visualization(y, x, mean_x, std_x, w, save_name):
     ax2.set_xlim([min(x[:, 0]), max(x[:, 0])])
     ax2.set_ylim([min(x[:, 1]), max(x[:, 1])])
     plt.tight_layout()
-    plt.savefig(save_name)
+    # plt.savefig(save_name)
