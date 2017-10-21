@@ -3,6 +3,18 @@ import numpy as np
 from helpers import compute_mse, build_poly, build_k_indices
 from plots import cross_validation_visualization
 
+"""
+_, b_le = benchmark_lambda(lambda y, x, _: least_squares(y, x), ys_train, x_train, degree=7, plot_name="least_squares")
+print(b_le[0])
+
+_, b_r = benchmark_lambda(ridge_regression, ys_train, x_train, degree=7, plot_name="ridge_regression")
+print(b_r)
+
+_, b_le = benchmark_degrees(lambda y, x, _: least_squares(y, x), ys_train, x_train, plot_name="least_squares_degree")
+
+_, b_le = benchmark_degrees(ridge_regression, ys_train, x_train, plot_name="ridge_regression_degree")
+"""
+
 
 def cross_validation(y, x, k_indices, k, f, lambda_, degree):
     """return the loss of ridge regression."""
