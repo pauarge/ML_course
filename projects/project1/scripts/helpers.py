@@ -64,26 +64,26 @@ def batch_iter(y, tx, batch_size, num_batches=1, shuffle=True):
 
 def sigmoid(t):
     """apply sigmoid function on t."""
+    print("CALCULATING SIGMOID")
     etox = np.exp(t)
     return etox / (etox + 1)
 
 
-def calculate_loss(y, tx, w):
+def calculate_loss(y, s):
     """compute the cost by negative log likelihood."""
+    print("CALCULATING LOSS")
     n = len(y)
-    s = sigmoid(tx.dot(w))
     a = y * np.log(s)
     b = (np.ones(n) - y) * np.log(np.ones(n) - s)
     return -np.sum(a + b)
 
 
-def calculate_gradient(y, tx, w):
-    """compute the gradient of loss."""
-    return np.transpose(tx).dot(sigmoid(tx.dot(w)) - y)
-
-
-def calculate_hessian(y, tx, w):
+def calculate_hessian(tx, s):
     """return the hessian of the loss function."""
-    a = sigmoid(tx.dot(w)).flatten()
-    s = np.diag(a * (np.ones(y.shape[0]) - a))
-    return np.transpose(tx).dot(s).dot(tx)
+    a = s.flatten()
+    txt = np.transpose(tx)
+    h = np.zeros([tx.shape[1], tx.shape[1]])
+    for i in range(tx.shape[1]):
+        h[i, i] = txt[i, i] * a[i] * tx[i, i]
+    print("CALCULATING HESSIAN")
+    return h
