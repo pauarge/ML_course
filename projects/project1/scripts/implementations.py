@@ -48,6 +48,26 @@ def batch_iter(y, tx, batch_size, num_batches=1, shuffle=True):
             yield shuffled_y[start_index:end_index], shuffled_tx[start_index:end_index]
 
 
+def sigmoid(t):
+    """apply sigmoid function on t."""
+    etox = np.exp(t)
+    return etox / (etox + 1)
+
+
+def calculate_loss(y, tx, w):
+    """compute the cost by negative log likelihood."""
+    n = len(y)
+    s = sigmoid(tx.dot(w))
+    a = y * np.log(s)
+    b = (np.ones(n) - y) * np.log(np.ones(n) - s)
+    return -np.sum(a + b)
+
+
+def calculate_gradient(y, tx, w):
+    """compute the gradient of loss."""
+    return np.transpose(tx).dot(sigmoid(tx.dot(w)) - y)
+
+
 """
     Functions
 """
@@ -107,8 +127,9 @@ def ridge_regression(y, tx, lambda_):
     return w, mse
 
 
-def logistic_regression(y, tx, initial_w, max_iters, gamma):
-    raise NotImplemented
+def logistic_regression(y, tx, w):
+    """return the loss, gradient, and hessian."""
+    return calculate_loss(y, tx, w), calculate_gradient(y, tx, w), calculate_hessian(y, tx, w)
 
 
 def reg_logistic_regression(y, tx, lambda_, initial_w, max_iters, gamma):

@@ -1,5 +1,5 @@
-from scripts.proj1_helpers import load_csv_data, create_csv_submission, predict_labels
-from scripts.implementations import ridge_regression
+from proj1_helpers import load_csv_data, create_csv_submission, predict_labels
+from implementations import ridge_regression
 
 
 def main():
