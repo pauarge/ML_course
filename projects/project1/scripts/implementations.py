@@ -46,27 +46,30 @@ def ridge_regression(y, tx, lambda_):
 def logistic_regression(y, tx, w):
     """return the loss, gradient, and hessian."""
     s = sigmoid(tx.dot(w))
+    sn = s * (np.ones(len(s)) - s)
+    #S_matrix = np.diag(sn)
     print("CALCULATING GRADIENT")
     gradient = np.transpose(tx).dot(s - y)
-    loss, hessian = calculate_loss(y, s), calculate_hessian(tx, s)
+    loss, hessian = calculate_loss(y, tx, w), calculate_hessian(tx, s)
 
-    gamma = 1
+    gamma = 0.01
     a = np.linalg.solve(hessian, gradient)
     w = w - gamma * a
     return w, loss
 
 
-def logistic_regression_newton(y, tx):
+def logistic_regression_newton(y, tx,w):
     # init parameters
-    max_iter = 100
+    max_iter = 10
     threshold = 1e-8
     losses = []
 
-    w = np.zeros((tx.shape[1], 1))
+    #w = np.zeros(tx.shape[1])
 
     # start the logistic regression
     print("LOGISTIC REGRESSION NEWTON")
-    for _ in range(max_iter):
+    for i in range(max_iter):
+        print("iteracio{}.format(i)")
         # get loss and update w.
         w, loss = logistic_regression(y, tx, w)
         # converge criterion

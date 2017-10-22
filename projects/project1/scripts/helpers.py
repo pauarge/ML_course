@@ -6,16 +6,14 @@ def standarize(x1, x2):
     index_x2 = np.where(x2 == -999)
     x1[index_x1] = 0
     x2[index_x2] = 0
-    mean = np.mean(np.append(x1,x2))
+    mean = np.mean(np.append(x1, x2))
     x1 -= mean
     x2 -= mean
-    x1[index_x1] = mean
-    x2[index_x2] = mean
-    std = np.std(np.append(x1,x2))
+    x1[index_x1] = 0
+    x2[index_x2] = 0
+    std = np.std(np.append(x1, x2))
     x1 = x1 / std
     x2 = x2 / std
-    x1[index_x1] = -999
-    x2[index_x2] = -999
     return x1, x2
 
 
@@ -40,7 +38,7 @@ def build_k_indices(y, k_fold, seed):
 
 def compute_gradient(y, tx, w):
     """Compute the gradient."""
-    k = -1 / y.shape[0]
+    k = -1.0 / y.shape[0]
     e = y - tx.dot(w)
     return k * np.transpose(tx).dot(e)
 
@@ -87,21 +85,50 @@ def sigmoid(t):
     return etox / (etox + 1)
 
 
+"""
 def calculate_loss(y, s):
-    """compute the cost by negative log likelihood."""
+   compute the cost by negative log likelihood.
     print("CALCULATING LOSS")
     n = len(y)
     a = y * np.log(s)
     b = (np.ones(n) - y) * np.log(np.ones(n) - s)
     return -np.sum(a + b)
+"""
+
+
+def calculate_loss(y, tx, w):
+    """compute the cost by negative log likelihood."""
+    print("CALCULATING LOSS")
+    y_pred = tx.dot(np.transpose(w))
+    a = np.exp(y_pred)
+    b = np.ones(len(y))
+    c = np.log(a + b)
+    d = y*(y_pred)
+    e  =c - d
+    return np.sum(e)
+
+
 
 
 def calculate_hessian(tx, s):
-    """return the hessian of the loss function."""
+    #"""return the hessian of the loss function."""
+    print("CALCULATING HESSIAN")
     a = s.flatten()
     txt = np.transpose(tx)
     h = np.zeros([tx.shape[1], tx.shape[1]])
     for i in range(tx.shape[1]):
         h[i, i] = txt[i, i] * a[i] * tx[i, i]
+    return h
+
+
+
+"""
+def calculate_hessian(tx, S_matrix):
+    return the hessian of the loss function.
+    # a = s.flatten()
+    txt = np.transpose(tx)
+    h = txt.dot(S_matrix).dot(tx)
     print("CALCULATING HESSIAN")
     return h
+
+"""
