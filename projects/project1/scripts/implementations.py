@@ -47,7 +47,7 @@ def logistic_regression(y, tx, w):
     """return the loss, gradient, and hessian."""
     s = sigmoid(tx.dot(w))
     sn = s * (np.ones(len(s)) - s)
-    #S_matrix = np.diag(sn)
+    # S_matrix = np.diag(sn)
     print("CALCULATING GRADIENT")
     gradient = np.transpose(tx).dot(s - y)
     loss, hessian = calculate_loss(y, tx, w), calculate_hessian(tx, s)
@@ -58,13 +58,13 @@ def logistic_regression(y, tx, w):
     return w, loss
 
 
-def logistic_regression_newton(y, tx,w):
+def logistic_regression_newton(y, tx, w):
     # init parameters
     max_iter = 10
     threshold = 1e-8
     losses = []
 
-    #w = np.zeros(tx.shape[1])
+    # w = np.zeros(tx.shape[1])
 
     # start the logistic regression
     print("LOGISTIC REGRESSION NEWTON")

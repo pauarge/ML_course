@@ -1,4 +1,6 @@
 import numpy as np
+import pickle
+import os
 
 
 def standarize(x1, x2):
@@ -103,15 +105,13 @@ def calculate_loss(y, tx, w):
     a = np.exp(y_pred)
     b = np.ones(len(y))
     c = np.log(a + b)
-    d = y*(y_pred)
-    e  =c - d
+    d = y * y_pred
+    e = c - d
     return np.sum(e)
 
 
-
-
 def calculate_hessian(tx, s):
-    #"""return the hessian of the loss function."""
+    # """return the hessian of the loss function."""
     print("CALCULATING HESSIAN")
     a = s.flatten()
     txt = np.transpose(tx)
@@ -119,7 +119,6 @@ def calculate_hessian(tx, s):
     for i in range(tx.shape[1]):
         h[i, i] = txt[i, i] * a[i] * tx[i, i]
     return h
-
 
 
 """
@@ -132,3 +131,21 @@ def calculate_hessian(tx, S_matrix):
     return h
 
 """
+
+
+# Pickle
+
+def load_data(filename):
+    path = "../tmp/{}.pckl".format(filename)
+    if os.path.exists(path):
+        f = open(path, 'rb')
+        obj = pickle.load(f)
+        f.close()
+        return obj
+
+
+def dump_data(obj, filename):
+    path = "../tmp/{}.pckl".format(filename)
+    f = open(path, 'wb')
+    pickle.dump(obj, f)
+    f.close()
