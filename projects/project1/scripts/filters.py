@@ -1,0 +1,33 @@
+import numpy as np
+
+
+def standarize(x_test, x_train):
+    for i in range(x_test.shape[1]):
+        x_test[:, i], x_train[:, i] = standarize_col(x_test[:, i], x_train[:, i])
+    return x_test, x_train
+
+
+def standarize_col(x1, x2):
+    index_x1 = np.where(x1 == -999)
+    index_x2 = np.where(x2 == -999)
+    x1[index_x1] = 0
+    x2[index_x2] = 0
+    mean = np.mean(np.append(x1, x2))
+    x1 -= mean
+    x2 -= mean
+    x1[index_x1] = 0
+    x2[index_x2] = 0
+    std = np.std(np.append(x1, x2))
+    x1 = x1 / std
+    x2 = x2 / std
+    return x1, x2
+
+
+def discard_outliers(x_train, ys_train, threshold):
+    index = []
+    for i in range(x_train.shape[0]):
+        if np.amax(np.abs(x_train[i, :])) > threshold:
+            index.append(i)
+    x_train = np.delete(x_train, index, 0)
+    ys_train = np.delete(ys_train, index, 0)
+    return x_train, ys_train

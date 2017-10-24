@@ -3,22 +3,6 @@ import pickle
 import os
 
 
-def standarize(x1, x2):
-    index_x1 = np.where(x1 == -999)
-    index_x2 = np.where(x2 == -999)
-    x1[index_x1] = 0
-    x2[index_x2] = 0
-    mean = np.mean(np.append(x1, x2))
-    x1 -= mean
-    x2 -= mean
-    x1[index_x1] = 0
-    x2[index_x2] = 0
-    std = np.std(np.append(x1, x2))
-    x1 = x1 / std
-    x2 = x2 / std
-    return x1, x2
-
-
 def build_poly(x, degree):
     """polynomial basis functions for input data x, for j=0 up to j=degree."""
     tx = np.ones(x.shape[0])

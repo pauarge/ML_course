@@ -2,3 +2,4 @@
 
 rm tmp/*.pckl
 rm out/*.csv
+rm out/*.png
