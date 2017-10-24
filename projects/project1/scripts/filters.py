@@ -1,13 +1,13 @@
 import numpy as np
 
 
-def standarize(x_test, x_train):
+def standardize(x_test, x_train):
     for i in range(x_test.shape[1]):
-        x_test[:, i], x_train[:, i] = standarize_col(x_test[:, i], x_train[:, i])
+        x_test[:, i], x_train[:, i] = standardize_col(x_test[:, i], x_train[:, i])
     return x_test, x_train
 
 
-def standarize_col(x1, x2):
+def standardize_col(x1, x2):
     index_x1 = np.where(x1 == -999)
     index_x2 = np.where(x2 == -999)
     x1[index_x1] = 0

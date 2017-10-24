@@ -1,32 +1,18 @@
 from datetime import datetime
 
-from filters import discard_outliers, standarize
+from filters import discard_outliers, standardize
+from helpers import predict_labels
 from implementations import least_squares, build_poly
-from proj1_helpers import load_csv_data, predict_labels, create_csv_submission
-from helpers import dump_data, load_data
+from parsers import load_data, create_csv_submission
 
-DATA_DIR = "../data"
 OUT_DIR = "../out"
 
 
 def main():
-    print("PARSING TRAIN")
-    ys_train, x_train, ids_train = load_data("ys_train"), load_data("x_train"), load_data("ids_train")
-    if ys_train is None or x_train is None or ids_train is None:
-        ys_train, x_train, ids_train = load_csv_data("{}/train.csv".format(DATA_DIR))
-        dump_data(ys_train, "ys_train")
-        dump_data(x_train, "x_train")
-        dump_data(ids_train, "ids_train")
-
-    print("PARSING TEST")
-    x_test, ids_test = load_data("x_test"), load_data("ids_test")
-    if x_test is None or ids_test is None:
-        _, x_test, ids_test = load_csv_data("{}/test.csv".format(DATA_DIR))
-        dump_data(x_test, "x_test")
-        dump_data(ids_test, "ids_test")
+    ys_train, x_train, ids_train, x_test, ids_test = load_data()
 
     print("FILTERING DATA")
-    x_test, x_train = standarize(x_test, x_train)
+    x_test, x_train = standardize(x_test, x_train)
     x_train, ys_train = discard_outliers(x_train, ys_train, 2)
 
     print("BUILDING POLYNOMIALS")

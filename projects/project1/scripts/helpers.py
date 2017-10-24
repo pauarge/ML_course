@@ -1,6 +1,4 @@
 import numpy as np
-import pickle
-import os
 
 
 def build_poly(x, degree):
@@ -107,19 +105,10 @@ def calculate_hessian(tx, S_matrix):
 """
 
 
-# Pickle
+def predict_labels(weights, data):
+    """Generates class predictions given weights, and a test data matrix"""
+    y_pred = np.dot(data, weights)
+    y_pred[np.where(y_pred <= 0)] = -1
+    y_pred[np.where(y_pred > 0)] = 1
 
-def load_data(filename):
-    path = "../tmp/{}.pckl".format(filename)
-    if os.path.exists(path):
-        f = open(path, 'rb')
-        obj = pickle.load(f)
-        f.close()
-        return obj
-
-
-def dump_data(obj, filename):
-    path = "../tmp/{}.pckl".format(filename)
-    f = open(path, 'wb')
-    pickle.dump(obj, f)
-    f.close()
+    return y_pred
