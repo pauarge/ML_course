@@ -83,31 +83,21 @@ def batch_iter(y, tx, batch_size, num_batches=1, shuffle=True):
 def sigmoid(t):
     """apply sigmoid function on t."""
     print("CALCULATING SIGMOID")
-    etox = np.exp(t)
-    return etox / (etox + 1)
-
-
-"""
-def calculate_loss(y, s):
-   compute the cost by negative log likelihood.
-    print("CALCULATING LOSS")
-    n = len(y)
-    a = y * np.log(s)
-    b = (np.ones(n) - y) * np.log(np.ones(n) - s)
-    return -np.sum(a + b)
-"""
+    return 1 / (1 + np.exp(-t))
 
 
 def calculate_loss(y, tx, w):
     """compute the cost by negative log likelihood."""
     print("CALCULATING LOSS")
     y_pred = tx.dot(np.transpose(w))
+    y_pred[np.where(y_pred <= 0)] = 0
+    y_pred[np.where(y_pred > 0)] = 1
     a = np.exp(y_pred)
     b = np.ones(len(y))
     c = np.log(a + b)
     d = y * y_pred
     e = c - d
-    return np.sum(e)
+    return -np.sum(e)
 
 
 def calculate_hessian(tx, s):

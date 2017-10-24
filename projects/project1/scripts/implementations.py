@@ -46,7 +46,6 @@ def ridge_regression(y, tx, lambda_):
 def logistic_regression(y, tx, w):
     """return the loss, gradient, and hessian."""
     s = sigmoid(tx.dot(w))
-    sn = s * (np.ones(len(s)) - s)
     # S_matrix = np.diag(sn)
     print("CALCULATING GRADIENT")
     gradient = np.transpose(tx).dot(s - y)
@@ -80,5 +79,53 @@ def logistic_regression_newton(y, tx, w):
     return w, calculate_loss(y, sigmoid(tx.dot(w)))
 
 
+def calculate_gradient(y, tx, w):
+    """compute the gradient of loss."""
+    return np.transpose(tx).dot(sigmoid(tx.dot(w)) - y)
+
+
+def penalized_logistic_regression(y, tx, w, lambda_):
+    """return the loss, gradient, and hessian."""
+    loss = calculate_loss(y, tx, w) + (lambda_ / 2) * np.power(np.linalg.norm(w), 2)
+    gradient = calculate_gradient(y, tx, w) + lambda_ * w
+    print("GRADIENT {}: ".format(gradient))
+
+    a = np.eye(w.shape[0], dtype=float) * lambda_
+    hessian = calculate_hessian(tx, sigmoid(tx)) + a
+    return loss, gradient, hessian
+
+
+def learning_by_penalized_gradient(y, tx, w, gamma, lambda_):
+    """
+    Do one step of gradient descent, using the penalized logistic regression.
+    Return the loss and updated w.
+    """
+    loss, gradient, hessian = penalized_logistic_regression(y, tx, w, lambda_)
+
+    a = np.linalg.solve(hessian, gradient)
+    w = w - gamma * a
+    return loss, w
+
+
 def reg_logistic_regression(y, tx, lambda_, initial_w, max_iters, gamma):
-    raise NotImplemented
+    # init parameters
+    threshold = 1e-12
+    losses = []
+
+    w = initial_w
+
+    # start the logistic regression
+    for i in range(max_iters):
+        # get loss and update w.
+        loss, w = learning_by_penalized_gradient(y, tx, w, gamma, lambda_)
+        # log info
+        if i % 1 == 0:
+            print("Current iteration={}, loss={}".format(i, loss))
+        # converge criterion
+        losses.append(loss)
+        if len(losses) > 1 and np.abs(losses[-1] - losses[-2]) < threshold:
+            break
+
+    print(losses)
+
+    return w, losses[-1]
