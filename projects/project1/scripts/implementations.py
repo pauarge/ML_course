@@ -57,6 +57,17 @@ def logistic_regression(y, tx, w):
     return w, loss
 
 
+def learning_by_gradient_descent(y, tx, w, gamma):
+    """
+    Do one step of gradient descen using logistic regression.
+    Return the loss and the updated w.
+    """
+    gradient = calculate_gradient(y, tx, w)
+    loss = calculate_loss(y, tx, w)
+    w = w - gamma * gradient
+    return w, loss
+
+
 def logistic_regression_newton(y, tx, w):
     # init parameters
     max_iter = 10
@@ -77,11 +88,6 @@ def logistic_regression_newton(y, tx, w):
             break
 
     return w, calculate_loss(y, sigmoid(tx.dot(w)))
-
-
-def calculate_gradient(y, tx, w):
-    """compute the gradient of loss."""
-    return np.transpose(tx).dot(sigmoid(tx.dot(w)) - y)
 
 
 def penalized_logistic_regression(y, tx, w, lambda_):

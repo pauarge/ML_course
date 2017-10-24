@@ -17,7 +17,7 @@ def standardize_col(x1, x2):
     x2 -= mean
     x1[index_x1] = 0
     x2[index_x2] = 0
-    std = np.std(np.append(x1, x2))
+    std = np.std(np.append(x1, x2), ddof=1)
     x1 = x1 / std
     x2 = x2 / std
     return x1, x2
@@ -31,3 +31,8 @@ def discard_outliers(x_train, ys_train, threshold):
     x_train = np.delete(x_train, index, 0)
     ys_train = np.delete(ys_train, index, 0)
     return x_train, ys_train
+
+def change_y(y):
+    index = np.where(y==-1)
+    y[index] = 0
+    return y
