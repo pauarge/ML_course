@@ -1,9 +1,10 @@
 from datetime import datetime
 import numpy as np
 
-from implementations import least_squares, build_poly, reg_logistic_regression
+from implementations import least_squares, build_poly, reg_logistic_regression, ridge_regression
 from proj1_helpers import load_csv_data, predict_labels, create_csv_submission
 from helpers import standarize, dump_data, load_data
+from validation import benchmark_lambda, benchmark_degrees
 
 
 def main():
@@ -27,28 +28,29 @@ def main():
 
     index = []
     for i in range(x_train.shape[0]):
-        if np.amax(np.abs(x_train[i,:])) > 10:
+        if np.amax(np.abs(x_train[i, :])) > 10:
             index.append(i)
-    x_train = np.delete(x_train,index,0)
-    ys_train = np.delete(ys_train, index,0)
+    x_train = np.delete(x_train, index, 0)
+    ys_train = np.delete(ys_train, index, 0)
 
     print("BUILDING POLY TRAIN")
-    tx_train = build_poly(x_train, 1)
+    #tx_train = build_poly(x_train, 2)
 
     print("BUILDING POLY TEST")
-    tx_test = build_poly(x_test, 1)
+    tx_test = build_poly(x_test, 2)
 
-    w, _ = least_squares(ys_train, tx_train)
+    #_, b_r = benchmark_lambda(ridge_regression, ys_train, x_train, degree=2, plot_name="ridge_regression")
+    #print(b_r)
 
-    lambda_ = 0.1
-    max_iters = 100
-    gamma = 0.1
+    for i in [0.0001, 0.001, 0.01, 0.1, 1]:
+        _, b_le = benchmark_degrees(ridge_regression, ys_train, x_train, lambda_=i, plot_name="ridge_regression_degree_lambda{}".format[i])
+        print(b_le)
 
-    w, loss = reg_logistic_regression(ys_train, tx_train, lambda_, w, max_iters, gamma)
-    print(len(w), loss)
+    # w, loss = ridge_regression(ys_train, tx_train, 0.01)
+    # print(len(w), loss)
     # y_pred = predict_labels(w, tx_test)
 
-    # create_csv_submission(ids_test, y_pred, "../out/submission-{}.csv".format(datetime.now()))
+    #create_csv_submission(ids_test, y_pred, "../out/submission-{}.csv".format(datetime.now()))
 
 
 if __name__ == '__main__':
