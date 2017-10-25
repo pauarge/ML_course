@@ -84,12 +84,15 @@ def logistic_regression(y, tx, w, max_iters, gamma):
     """
     losses = []
 
-    loss = None
     for i in range(max_iters):
         gradient = calculate_gradient(y, tx, w)
         loss = calculate_loss(y, tx, w)
         w = w - gamma * gradient
-    return w, loss
+        losses.append(loss)
+        if len(losses) > 1 and np.abs(losses[-1] - losses[-2]) < THRESHOLD:
+            break
+
+    return w, losses[-1]
 
 
 def reg_logistic_regression(y, tx, lambda_, w, max_iters, gamma):
