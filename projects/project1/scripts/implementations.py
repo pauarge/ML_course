@@ -39,9 +39,9 @@ def ridge_regression(y, tx, lambda_):
 
 def logistic_regression(y, tx, w):
     """return the loss, gradient, and hessian."""
+    print("CALCULATING GRADIENT")
     s = sigmoid(tx.dot(w))
     # S_matrix = np.diag(sn)
-    print("CALCULATING GRADIENT")
     gradient = np.transpose(tx).dot(s - y)
     loss, hessian = calculate_loss(y, tx, w), calculate_hessian(tx, s)
 
@@ -60,28 +60,6 @@ def learning_by_gradient_descent(y, tx, w, gamma):
     loss = calculate_loss(y, tx, w)
     w = w - gamma * gradient
     return w, loss
-
-
-def logistic_regression_newton(y, tx, w):
-    # init parameters
-    max_iter = 10
-    threshold = 1e-8
-    losses = []
-
-    # w = np.zeros(tx.shape[1])
-
-    # start the logistic regression
-    print("LOGISTIC REGRESSION NEWTON")
-    for i in range(max_iter):
-        print("iteracio{}.format(i)")
-        # get loss and update w.
-        w, loss = logistic_regression(y, tx, w)
-        # converge criterion
-        losses.append(loss)
-        if len(losses) > 1 and np.abs(losses[-1] - losses[-2]) < threshold:
-            break
-
-    return w, calculate_loss(y, sigmoid(tx.dot(w)))
 
 
 def penalized_logistic_regression(y, tx, w, lambda_):

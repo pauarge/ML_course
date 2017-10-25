@@ -64,10 +64,8 @@ def batch_iter(y, tx, batch_size, num_batches=1, shuffle=True):
 
 def sigmoid(t):
     """apply sigmoid function on t."""
-    #print("CALCULATING SIGMOID")
-    for i in range(t.shape[0]):
-        t[i] = 1.0 / (1.0 + np.exp(-t[i]))
-    return t
+    # print("CALCULATING SIGMOID")
+    return 1 / (1 + np.exp(-t))
 
 
 # def calculate_loss(y, tx, w):
@@ -85,7 +83,7 @@ def calculate_loss(y, tx, w):
     """compute the cost by negative log likelihood."""
 
     n = len(y)
-    y_pred = new_labels(w,tx)
+    y_pred = new_labels(w, tx)
     s = sigmoid(y_pred)
     aa = np.log(s)
     a = aa * y
@@ -94,14 +92,14 @@ def calculate_loss(y, tx, w):
     rlog = np.log(r)
     j = np.ones(n) - np.transpose(y)
     b = j * rlog
-    return (-np.sum(a + np.transpose(b)))/y.shape[0]
+    return (-np.sum(a + np.transpose(b))) / y.shape[0]
 
 
 def calculate_gradient(y, tx, w):
     """compute the gradient of loss."""
-    y_pred = new_labels(w,tx)
+    y_pred = new_labels(w, tx)
     s = sigmoid(y_pred)
-    k = 1.0/y.shape[0]
+    k = 1.0 / y.shape[0]
     return k * np.transpose(tx).dot(s - y)
 
 
@@ -137,7 +135,7 @@ def predict_labels(weights, data):
     return y_pred
 
 
-def new_labels(w,tx):
+def new_labels(w, tx):
     """Generates class predictions given weights, and a test data matrix"""
     y_pred = tx.dot(w)
     y_pred[np.where(y_pred <= 0.5)] = 0
