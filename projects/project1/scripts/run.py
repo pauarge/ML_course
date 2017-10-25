@@ -16,8 +16,8 @@ def main():
     x_train, ys_train = discard_outliers(x_train, ys_train, 2)
 
     print("BUILDING POLYNOMIALS")
-    tx_train = build_poly(x_train, 1)
-    tx_test = build_poly(x_test, 1)
+    tx_train = build_poly(x_train, 3)
+    tx_test = build_poly(x_test, 3)
 
     print("CHANGE Y")
     ys_train = change_y_to_0(ys_train)
@@ -31,13 +31,12 @@ def main():
     gamma = 0.0001
     w, losses = reg_logistic_regression(ys_train, tx_train, lambda_, initial_w, max_iters, gamma)
 
+
     print("PREDICTING VALUES")
-    # y_pred = predict_labels(w, tx_test)
-    print(losses)
-    print(compute_mse(ys_train, tx_train, w))
+    y_pred = predict_labels(w, tx_test)
 
     print("EXPORTING CSV")
-    # create_csv_submission(ids_test, y_pred, "{}/submission-{}.csv".format(OUT_DIR, datetime.now()))
+    create_csv_submission(ids_test, y_pred, "{}/submission-{}.csv".format(OUT_DIR, datetime.now()))
 
 
 if __name__ == '__main__':

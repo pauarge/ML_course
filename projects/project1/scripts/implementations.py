@@ -3,7 +3,7 @@ import numpy as np
 from helpers import compute_gradient, compute_mse, batch_iter, calculate_loss, calculate_gradient, \
     learning_by_penalized_gradient
 
-THRESHOLD = 1e-12
+THRESHOLD = 1e-20
 
 
 def least_squares_gd(y, tx, w, max_iters, gamma):
@@ -95,7 +95,7 @@ def logistic_regression(y, tx, w, max_iters, gamma):
     return w, losses[-1]
 
 
-def reg_logistic_regression(y, tx, lambda_, w, max_iters, gamma):
+def reg_logistic_regression(y, tx, lambda_,  max_iters, gamma):
     """
     Regularized logistic regression using gradient descent
 
@@ -108,7 +108,7 @@ def reg_logistic_regression(y, tx, lambda_, w, max_iters, gamma):
     :return:
     """
     losses = []
-
+    w = np.zeros(tx.shape[1])
     for i in range(max_iters):
         w, loss = learning_by_penalized_gradient(y, tx, w, gamma, lambda_)
         if i % 10 == 0:

@@ -3,7 +3,7 @@ import numpy as np
 from filters import discard_outliers, standardize, change_y_to_0
 from helpers import predict_labels, compute_mse, build_k_indices, build_poly
 from parsers import load_data
-from validation import cross_validation
+from validation import cross_validation, benchmark_degrees, benchmark_lambda
 
 OUT_DIR = "../out"
 
@@ -27,6 +27,14 @@ def main():
 
     # print("CHANGE Y")
     ys_train = change_y_to_0(ys_train)
+
+    rmse_tr, rmse_te = benchmark_degrees(ys_train, x_train, lambda_=0.01, plot_name="cross_validation")
+    #benchmark_lambda(ys_train, x_train, degree=2, plot_name="PATATA_g2")
+
+    print(rmse_tr)
+    print(rmse_te)
+
+
     """
     print("PREDICTING VALUES")
     w = np.zeros(tx_train.shape[1])
@@ -48,7 +56,7 @@ def main():
     
 
 
-    """
+   
     seed = 1
     k_fold = 4
     k_indices = build_k_indices(ys_train, k_fold, seed)
@@ -69,6 +77,7 @@ def main():
 
     print("TEST ERROR{}".format(rmse_te))
     print("TRAIN ERROR{}".format(rmse_tr))
+    """
 
 
 if __name__ == '__main__':
