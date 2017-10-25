@@ -2,7 +2,6 @@ import numpy as np
 
 from filters import discard_outliers, standardize, change_y_to_0
 from helpers import predict_labels, compute_mse, build_k_indices, build_poly
-from implementations import least_squares, learning_by_gradient_descent, logistic_regression
 from parsers import load_data
 from validation import cross_validation
 

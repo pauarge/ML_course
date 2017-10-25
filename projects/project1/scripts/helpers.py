@@ -142,3 +142,29 @@ def new_labels(w, tx):
     y_pred[np.where(y_pred > 0.5)] = 1
 
     return y_pred
+
+
+def penalized_logistic_regression(y, tx, w, lambda_):
+    """return the loss, gradient, and hessian."""
+    n = tx.shape[0]
+    loss = calculate_loss(y, tx, w) + (lambda_ / (2 * n)) * np.power(np.linalg.norm(w), 2)
+    gradient = calculate_gradient(y, tx, w) + (1 / n) * lambda_ * w
+    # print("GRADIENT {}: ".format(gradient))
+
+    # Quan volguem afegir hessian tb caldra dividir per N
+    # a = np.eye(w.shape[0], dtype=float) * lambda_
+    # hessian = calculate_hessian(tx, sigmoid(tx)) + a
+    return loss, gradient
+
+
+def learning_by_penalized_gradient(y, tx, w, gamma, lambda_):
+    """
+    Do one step of gradient descent, using the penalized logistic regression.
+    Return the loss and updated w.
+    """
+    loss, gradient = penalized_logistic_regression(y, tx, w, lambda_)
+
+    # a = np.linalg.solve(hessian, gradient)
+    # w = w - gamma * a
+    w = w - gamma * gradient
+    return loss, w
