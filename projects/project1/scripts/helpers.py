@@ -103,29 +103,6 @@ def calculate_gradient(y, tx, w):
     return k * np.transpose(tx).dot(s - y)
 
 
-def calculate_hessian(tx, s):
-    # """return the hessian of the loss function."""
-    print("CALCULATING HESSIAN")
-    a = s.flatten()
-    txt = np.transpose(tx)
-    h = np.zeros([tx.shape[1], tx.shape[1]])
-    for i in range(tx.shape[1]):
-        h[i, i] = txt[i, i] * a[i] * tx[i, i]
-    return h
-
-
-"""
-def calculate_hessian(tx, S_matrix):
-    return the hessian of the loss function.
-    # a = s.flatten()
-    txt = np.transpose(tx)
-    h = txt.dot(S_matrix).dot(tx)
-    print("CALCULATING HESSIAN")
-    return h
-
-"""
-
-
 def predict_labels(weights, data):
     """Generates class predictions given weights, and a test data matrix"""
     y_pred = np.dot(data, weights)
@@ -167,4 +144,4 @@ def learning_by_penalized_gradient(y, tx, w, gamma, lambda_):
     # a = np.linalg.solve(hessian, gradient)
     # w = w - gamma * a
     w = w - gamma * gradient
-    return loss, w
+    return w, loss

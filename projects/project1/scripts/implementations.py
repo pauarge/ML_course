@@ -107,7 +107,7 @@ def reg_logistic_regression(y, tx, lambda_, w, max_iters, gamma):
     losses = []
 
     for i in range(max_iters):
-        loss, w = learning_by_penalized_gradient(y, tx, w, gamma, lambda_)
+        w, loss = learning_by_penalized_gradient(y, tx, w, gamma, lambda_)
         if i % 10 == 0:
             print("Current iteration={}, loss={}".format(i, loss))
         losses.append(loss)
