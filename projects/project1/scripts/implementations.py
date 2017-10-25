@@ -51,7 +51,7 @@ def logistic_regression(y, tx, w):
     gradient = np.transpose(tx).dot(s - y)
     loss, hessian = calculate_loss(y, tx, w), calculate_hessian(tx, s)
 
-    gamma = 0.01
+    gamma = 0.0001
     a = np.linalg.solve(hessian, gradient)
     w = w - gamma * a
     return w, loss
