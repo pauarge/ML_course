@@ -1,41 +1,6 @@
 import numpy as np
 
 
-def build_poly(x, degree):
-    """polynomial basis functions for input data x, for j=0 up to j=degree."""
-    tx = np.ones(x.shape[0])
-    for i in range(1, degree + 1):
-        tx = np.column_stack((tx, np.power(x, i)))
-    return tx
-
-
-def build_k_indices(y, k_fold, seed):
-    """build k indices for k-fold."""
-    num_row = y.shape[0]
-    interval = int(num_row / k_fold)
-    np.random.seed(seed)
-    indices = np.random.permutation(num_row)
-    k_indices = [indices[k * interval: (k + 1) * interval]
-                 for k in range(k_fold)]
-    return np.array(k_indices)
-
-
-def compute_gradient(y, tx, w):
-    """Compute the gradient."""
-    k = -1.0 / y.shape[0]
-    e = y - tx.dot(w)
-    return k * np.transpose(tx).dot(e)
-
-
-def compute_mse(y, tx, w):
-    """Calculate the loss.
-        Using MSE
-    """
-    k = 1.0 / (2 * y.shape[0])
-    e = y - tx.dot(w)
-    return k * np.transpose(e).dot(e)
-
-
 def batch_iter(y, tx, batch_size, num_batches=1, shuffle=True):
     """
     Generate a minibatch iterator for a dataset.
@@ -62,26 +27,40 @@ def batch_iter(y, tx, batch_size, num_batches=1, shuffle=True):
             yield shuffled_y[start_index:end_index], shuffled_tx[start_index:end_index]
 
 
-def sigmoid(t):
-    """apply sigmoid function on t."""
-    # print("CALCULATING SIGMOID")
-    return 1 / (1 + np.exp(-t))
+def build_poly(x, degree):
+    """polynomial basis functions for input data x, for j=0 up to j=degree."""
+    tx = np.ones(x.shape[0])
+    for i in range(1, degree + 1):
+        tx = np.column_stack((tx, np.power(x, i)))
+    return tx
 
 
-# def calculate_loss(y, tx, w):
-#     """compute the cost by negative log likelihood."""
-#     print("CALCULATING LOSS")
-#     y_pred = tx.dot(w)
-#     a = np.exp(y_pred)
-#     b = np.ones(y.shape[0])
-#     c = np.log(a + b)
-#     d = y * y_pred
-#     e = c - d
-#     return np.sum(e)
+def build_k_indices(y, k_fold, seed):
+    """build k indices for k-fold."""
+    num_row = y.shape[0]
+    interval = int(num_row / k_fold)
+    np.random.seed(seed)
+    indices = np.random.permutation(num_row)
+    k_indices = [indices[k * interval: (k + 1) * interval] for k in range(k_fold)]
+    return np.array(k_indices)
+
+
+def compute_gradient(y, tx, w):
+    """Compute the gradient."""
+    k = -1.0 / y.shape[0]
+    e = y - tx.dot(w)
+    return k * np.transpose(tx).dot(e)
+
+
+def compute_mse(y, tx, w):
+    """Calculate the loss using MSE"""
+    k = 1.0 / (2 * y.shape[0])
+    e = y - tx.dot(w)
+    return k * np.transpose(e).dot(e)
+
 
 def calculate_loss(y, tx, w):
     """compute the cost by negative log likelihood."""
-
     n = len(y)
     y_pred = new_labels(w, tx)
     s = sigmoid(y_pred)
@@ -103,12 +82,16 @@ def calculate_gradient(y, tx, w):
     return k * np.transpose(tx).dot(s - y)
 
 
+def sigmoid(t):
+    """apply sigmoid function on t."""
+    return 1 / (1 + np.exp(-t))
+
+
 def predict_labels(weights, data):
     """Generates class predictions given weights, and a test data matrix"""
     y_pred = np.dot(data, weights)
     y_pred[np.where(y_pred <= 0.5)] = -1
     y_pred[np.where(y_pred > 0.5)] = 1
-
     return y_pred
 
 
@@ -117,7 +100,6 @@ def new_labels(w, tx):
     y_pred = tx.dot(w)
     y_pred[np.where(y_pred <= 0.5)] = 0
     y_pred[np.where(y_pred > 0.5)] = 1
-
     return y_pred
 
 
