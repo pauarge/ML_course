@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from filters import discard_outliers, standardize, change_y_to_0
-from helpers import predict_labels, build_poly
+from helpers import predict_labels, build_poly, compute_mse
 from implementations import least_squares, reg_logistic_regression
 from parsers import load_data, create_csv_submission
 
@@ -26,16 +26,18 @@ def main():
     initial_w, initial_mse = least_squares(ys_train, tx_train)
 
     print("LEARNING BY LOGISTIC REGRESSION")
-    lambda_ = 0.01
-    max_iters = 250
-    gamma = 0.001
+    lambda_ = 0.00001
+    max_iters = 1000
+    gamma = 0.0001
     w, losses = reg_logistic_regression(ys_train, tx_train, lambda_, initial_w, max_iters, gamma)
 
     print("PREDICTING VALUES")
-    y_pred = predict_labels(w, tx_test)
+    # y_pred = predict_labels(w, tx_test)
+    print(losses)
+    print(compute_mse(ys_train, tx_train, w))
 
     print("EXPORTING CSV")
-    create_csv_submission(ids_test, y_pred, "{}/submission-{}.csv".format(OUT_DIR, datetime.now()))
+    # create_csv_submission(ids_test, y_pred, "{}/submission-{}.csv".format(OUT_DIR, datetime.now()))
 
 
 if __name__ == '__main__':
