@@ -92,13 +92,15 @@ def logistic_regression_newton(y, tx, w):
 
 def penalized_logistic_regression(y, tx, w, lambda_):
     """return the loss, gradient, and hessian."""
-    loss = calculate_loss(y, tx, w) + (lambda_ / 2) * np.power(np.linalg.norm(w), 2)
-    gradient = calculate_gradient(y, tx, w) + lambda_ * w
-    print("GRADIENT {}: ".format(gradient))
+    N = tx.shape[0]
+    loss = calculate_loss(y, tx, w) + (lambda_ / (2*N)) * np.power(np.linalg.norm(w), 2)
+    gradient = calculate_gradient(y, tx, w) + (1/N) * lambda_ * w
+    #print("GRADIENT {}: ".format(gradient))
 
-    a = np.eye(w.shape[0], dtype=float) * lambda_
-    hessian = calculate_hessian(tx, sigmoid(tx)) + a
-    return loss, gradient, hessian
+    #Quan volguem afegir hessian tb caldra dividir per N
+    #a = np.eye(w.shape[0], dtype=float) * lambda_
+    #hessian = calculate_hessian(tx, sigmoid(tx)) + a
+    return loss, gradient
 
 
 def learning_by_penalized_gradient(y, tx, w, gamma, lambda_):
@@ -106,10 +108,11 @@ def learning_by_penalized_gradient(y, tx, w, gamma, lambda_):
     Do one step of gradient descent, using the penalized logistic regression.
     Return the loss and updated w.
     """
-    loss, gradient, hessian = penalized_logistic_regression(y, tx, w, lambda_)
+    loss, gradient = penalized_logistic_regression(y, tx, w, lambda_)
 
-    a = np.linalg.solve(hessian, gradient)
-    w = w - gamma * a
+    #a = np.linalg.solve(hessian, gradient)
+    #w = w - gamma * a
+    w = w - gamma * gradient
     return loss, w
 
 
@@ -125,7 +128,7 @@ def reg_logistic_regression(y, tx, lambda_, initial_w, max_iters, gamma):
         # get loss and update w.
         loss, w = learning_by_penalized_gradient(y, tx, w, gamma, lambda_)
         # log info
-        if i % 1 == 0:
+        if i % 10 == 0:
             print("Current iteration={}, loss={}".format(i, loss))
         # converge criterion
         losses.append(loss)
