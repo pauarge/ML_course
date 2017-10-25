@@ -1,7 +1,7 @@
 import numpy as np
 
 from helpers import compute_mse, build_poly, build_k_indices
-from implementations import least_squares
+from implementations import least_squares, learning_by_gradient_descent
 from plots import cross_validation_visualization
 
 
@@ -16,12 +16,12 @@ def cross_validation(y, x, k_indices, k, degree):
     y_train = np.take(y, k_flattened_new)
     x_train = np.take(x, k_flattened_new)
 
-    tx_test = build_poly(x_test, degree)
     tx_train = build_poly(x_train, degree)
+    tx_test = build_poly(x_test, degree)
 
-    w, mse = least_squares(y_train, tx_train)
+    w, loss = learning_by_log_reg(y_train, tx_train, 100)
 
-    mse_te=compute_mse(y_test, tx_test, w)
+    mse_te = compute_mse(y_test, tx_test, w)
     rmse_tr = np.sqrt(2 * compute_mse(y_train, tx_train, w))
     rmse_te = np.sqrt(2 * mse_te)
     return rmse_tr, rmse_te, mse_te
@@ -73,9 +73,19 @@ def benchmark_degrees(ys_train, x_train, lambda_=0.01, plot_name="cross_validati
             mse += mse_te
         rmse_tr.append(tr / k_fold)
         rmse_te.append(te / k_fold)
-        mse_test.append(mse/ k_fold)
+        mse_test.append(mse / k_fold)
 
     cross_validation_visualization(degrees, rmse_tr, rmse_te, lambda_, plot_name)
-    #degree_min_te = min(enumerate(rmse_te), key=itemgetter(1))[0] + 1
+    # degree_min_te = min(enumerate(rmse_te), key=itemgetter(1))[0] + 1
 
     return rmse_tr, rmse_te, mse_test
+
+
+def learning_by_log_reg(ys_train, tx_train, num_iter):
+    w = np.zeros(tx_train.shape[1])
+    # print("Weight least squares:{}".format(w))
+    gamma = 0.01
+    loss = None
+    for i in range(num_iter):
+        w, loss = learning_by_gradient_descent(ys_train, tx_train, w, gamma)
+    return w, loss

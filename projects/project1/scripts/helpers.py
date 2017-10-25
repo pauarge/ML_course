@@ -85,7 +85,7 @@ def calculate_loss(y, tx, w):
     """compute the cost by negative log likelihood."""
 
     n = len(y)
-    y_pred = predict_labels(w,tx)
+    y_pred = new_labels(w,tx)
     s = sigmoid(y_pred)
     aa = np.log(s)
     a = aa * y
@@ -99,7 +99,7 @@ def calculate_loss(y, tx, w):
 
 def calculate_gradient(y, tx, w):
     """compute the gradient of loss."""
-    y_pred = predict_labels(w,tx)
+    y_pred = new_labels(w,tx)
     s = sigmoid(y_pred)
     k = 1.0/y.shape[0]
     return k * np.transpose(tx).dot(s - y)
@@ -137,10 +137,10 @@ def predict_labels(weights, data):
     return y_pred
 
 
-def new_labels(data):
+def new_labels(w,tx):
     """Generates class predictions given weights, and a test data matrix"""
-    new_data = data
-    new_data[np.where(data <= 0.5)] = 0
-    new_data[np.where(data > 0.5)] = 1
+    y_pred = tx.dot(w)
+    y_pred[np.where(y_pred <= 0.5)] = 0
+    y_pred[np.where(y_pred > 0.5)] = 1
 
-    return new_data
+    return y_pred
