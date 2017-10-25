@@ -26,6 +26,22 @@ def load_data():
     return ys_train, x_train, ids_train, x_test, ids_test
 
 
+def load_pickle_data(filename):
+    path = "../tmp/{}.pckl".format(filename)
+    if os.path.exists(path):
+        f = open(path, 'rb')
+        obj = pickle.load(f)
+        f.close()
+        return obj
+
+
+def dump_pickle_data(obj, filename):
+    path = "../tmp/{}.pckl".format(filename)
+    f = open(path, 'wb')
+    pickle.dump(obj, f)
+    f.close()
+
+
 def load_csv_data(data_path, sub_sample=False):
     """Loads data and returns y (class labels), tX (features) and ids (event ids)"""
     y = np.genfromtxt(data_path, delimiter=",", skip_header=1, dtype=str, usecols=[1])
@@ -44,22 +60,6 @@ def load_csv_data(data_path, sub_sample=False):
         ids = ids[::50]
 
     return yb, input_data, ids
-
-
-def load_pickle_data(filename):
-    path = "../tmp/{}.pckl".format(filename)
-    if os.path.exists(path):
-        f = open(path, 'rb')
-        obj = pickle.load(f)
-        f.close()
-        return obj
-
-
-def dump_pickle_data(obj, filename):
-    path = "../tmp/{}.pckl".format(filename)
-    f = open(path, 'wb')
-    pickle.dump(obj, f)
-    f.close()
 
 
 def create_csv_submission(ids, y_pred, name):
