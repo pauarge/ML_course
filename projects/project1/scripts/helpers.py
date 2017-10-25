@@ -68,18 +68,36 @@ def sigmoid(t):
     return 1 / (1 + np.exp(-t))
 
 
+# def calculate_loss(y, tx, w):
+#     """compute the cost by negative log likelihood."""
+#     print("CALCULATING LOSS")
+#     y_pred = tx.dot(w)
+#     a = np.exp(y_pred)
+#     b = np.ones(y.shape[0])
+#     c = np.log(a + b)
+#     d = y * y_pred
+#     e = c - d
+#     return np.sum(e)
+
 def calculate_loss(y, tx, w):
     """compute the cost by negative log likelihood."""
-    print("CALCULATING LOSS")
-    y_pred = tx.dot(np.transpose(w))
-    y_pred[np.where(y_pred <= 0)] = 0
-    y_pred[np.where(y_pred > 0)] = 1
-    a = np.exp(y_pred)
-    b = np.ones(len(y))
-    c = np.log(a + b)
-    d = y * y_pred
-    e = c - d
-    return -np.sum(e)
+
+    n = len(y)
+    s = sigmoid(tx.dot(w))
+    aa = np.log(s)
+    a = aa * y
+    os = np.ones(n)
+    r = os - np.transpose(s)
+    rlog = np.log(r)
+    j = np.ones(n) - np.transpose(y)
+    b = j* rlog
+    return -np.sum(a + np.transpose(b))
+
+
+def calculate_gradient(y, tx, w):
+    """compute the gradient of loss."""
+    s = sigmoid(tx.dot(w))
+    return np.transpose(tx).dot(s - y)
 
 
 def calculate_hessian(tx, s):
@@ -108,7 +126,7 @@ def calculate_hessian(tx, S_matrix):
 def predict_labels(weights, data):
     """Generates class predictions given weights, and a test data matrix"""
     y_pred = np.dot(data, weights)
-    y_pred[np.where(y_pred <= 0)] = -1
-    y_pred[np.where(y_pred > 0)] = 1
+    y_pred[np.where(y_pred <= 0.5)] = -1
+    y_pred[np.where(y_pred > 0.5)] = 1
 
     return y_pred

@@ -55,7 +55,7 @@ def benchmark_lambda(f, ys_train, x_train, degree=1, plot_name="cross_validation
 def benchmark_degrees(ys_train, x_train, lambda_=0.01, plot_name="cross_validation"):
     seed = 1
     k_fold = 4
-    degrees = range(1, 8)
+    degrees = range(1, 5)
     # split data in k fold
     k_indices = build_k_indices(ys_train, k_fold, seed)
 
