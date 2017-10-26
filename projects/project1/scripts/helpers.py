@@ -71,7 +71,7 @@ def calculate_loss(y, tx, w):
     rlog = np.log(r)
     j = np.ones(n) - np.transpose(y)
     b = j * rlog
-    return (-np.sum(a + np.transpose(b))) / y.shape[0]
+    return (-np.sum(a + np.transpose(b))) / tx.shape[0]
 
 
 def calculate_gradient(y, tx, w):
@@ -112,4 +112,4 @@ def learning_by_penalized_gradient(y, tx, w, gamma, lambda_):
     loss = calculate_loss(y, tx, w) + (lambda_ / (2 * n)) * np.power(np.linalg.norm(w), 2)
     gradient = calculate_gradient(y, tx, w) + (1 / n) * lambda_ * w
     w = w - gamma * gradient
-    return w, loss
+    return w, loss, np.linalg.norm(w)

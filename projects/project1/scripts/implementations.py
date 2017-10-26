@@ -108,13 +108,19 @@ def reg_logistic_regression(y, tx, lambda_,  max_iters, gamma):
     :return:
     """
     losses = []
-    w = np.zeros(tx.shape[1])
+    w, _= least_squares(y,tx)
+    loss_ls = calculate_loss(y,tx,w)
+    print("LEAST SQ LOSS{}".format(loss_ls))
     for i in range(max_iters):
-        w, loss = learning_by_penalized_gradient(y, tx, w, gamma, lambda_)
-        if i % 10 == 0:
+        w, loss, w_norm = learning_by_penalized_gradient(y, tx, w, gamma, lambda_)
+        if i % 100 == 0:
             print("Current iteration={}, loss={}".format(i, loss))
+            print(w_norm)
         losses.append(loss)
         if len(losses) > 1 and np.abs(losses[-1] - losses[-2]) < THRESHOLD:
             break
+
+        if len(losses)> 10 and losses[-1] > losses[-10]:
+            gamma = gamma/10
 
     return w, losses[-1]

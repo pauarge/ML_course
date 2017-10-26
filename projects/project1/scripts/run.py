@@ -16,8 +16,8 @@ def main():
     x_train, ys_train = discard_outliers(x_train, ys_train, 2)
 
     print("BUILDING POLYNOMIALS")
-    tx_train = build_poly(x_train, 3)
-    tx_test = build_poly(x_test, 3)
+    tx_train = build_poly(x_train, 5)
+    tx_test = build_poly(x_test, 5)
 
     print("CHANGE Y")
     ys_train = change_y_to_0(ys_train)
@@ -26,10 +26,11 @@ def main():
     initial_w, initial_mse = least_squares(ys_train, tx_train)
 
     print("LEARNING BY LOGISTIC REGRESSION")
-    lambda_ = 0.00001
-    max_iters = 1000
-    gamma = 0.0001
-    w, losses = reg_logistic_regression(ys_train, tx_train, lambda_, initial_w, max_iters, gamma)
+    lambda_ = 0
+    max_iters = 5000
+    gamma = 0.001
+    w, losses = reg_logistic_regression(ys_train, tx_train, lambda_, max_iters, gamma)
+    print(losses)
 
 
     print("PREDICTING VALUES")
