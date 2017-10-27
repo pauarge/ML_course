@@ -19,20 +19,25 @@ def cross_validation(y, x, k_indices, k, degree, lambda_=0.00001):
     tx_train = build_poly(x_train, degree)
     tx_test = build_poly(x_test, degree)
 
+    w, mse = least_squares(y_train,tx_train)
+
+    mse_te = compute_mse(y_test, tx_test, w)
+    loss_tr = np.sqrt(2 * compute_mse(y_train, tx_train, w))
+    loss_te = np.sqrt(2 * mse_te)
+
+    """
     #lambda_ = 0.00001
     max_iters = 5000
     gamma = 0.001
     #w, loss = learning_by_penalized_gradient(y_train, tx_train, lambda_, max_iters, gamma)
     w,loss = reg_logistic_regression(y_train, tx_train, lambda_, max_iters, gamma)
 
-    """
-    mse_te = compute_mse(y_test, tx_test, w)
-    rmse_tr = np.sqrt(2 * compute_mse(y_train, tx_train, w))
-    rmse_te = np.sqrt(2 * mse_te)
-    """
+   
+    
+   
     loss_tr = calculate_loss(y_train, tx_train, w)
     loss_te = calculate_loss(y_test, tx_test, w)
-
+    """
     return loss_tr, loss_te
 
 
@@ -67,7 +72,7 @@ def benchmark_lambda(ys_train, x_train, degree=1, plot_name="PATATA"):
 def benchmark_degrees(ys_train, x_train, lambda_=0.01, plot_name="cross_validation"):
     seed = 1
     k_fold = 4
-    degrees = range(4, 6)
+    degrees = range(1, 2)
     # split data in k fold
     k_indices = build_k_indices(ys_train, k_fold, seed)
     # define lists to store the loss of training data and test data
