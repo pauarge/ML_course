@@ -25,10 +25,13 @@ def standardize_col(x1, x2):
 
 
 def remove_bad_data(x, y):
+    #tmp = x[np.where(x != -999)]
     index = np.where(x == -999)
-    x = np.delete(x, index[0], 0)
-    y = np.delete(y, index[0], 0)
+    index = np.unique(index[0])
+    x = np.delete(x, index, 0)
+    y = np.delete(y, index)
     return x, y
+
 
 def remove_good_data(x, y):
     index = np.where(x != -999)

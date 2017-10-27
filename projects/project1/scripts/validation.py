@@ -22,8 +22,8 @@ def cross_validation(y, x, k_indices, k, degree, lambda_=0.00001):
     w, mse = least_squares(y_train,tx_train)
 
     mse_te = compute_mse(y_test, tx_test, w)
-    loss_tr = np.sqrt(2 * compute_mse(y_train, tx_train, w))
-    loss_te = np.sqrt(2 * mse_te)
+    loss_tr = compute_mse(y_train, tx_train, w)
+    loss_te = mse_te
 
     """
     #lambda_ = 0.00001
@@ -72,7 +72,7 @@ def benchmark_lambda(ys_train, x_train, degree=1, plot_name="PATATA"):
 def benchmark_degrees(ys_train, x_train, lambda_=0.01, plot_name="cross_validation"):
     seed = 1
     k_fold = 4
-    degrees = range(1, 2)
+    degrees = range(1, 10)
     # split data in k fold
     k_indices = build_k_indices(ys_train, k_fold, seed)
     # define lists to store the loss of training data and test data
@@ -84,8 +84,8 @@ def benchmark_degrees(ys_train, x_train, lambda_=0.01, plot_name="cross_validati
         for j in range(k_fold):
             tmp_tr, tmp_te = \
                 cross_validation(ys_train, x_train, k_indices, j, i)
-            print(tmp_tr, j)
-            print(tmp_te, j)
+            #print(tmp_tr, j)
+            #print(tmp_te, j)
             tr += tmp_tr
             te += tmp_te
 
