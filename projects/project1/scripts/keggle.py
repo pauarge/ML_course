@@ -1,14 +1,20 @@
 import numpy as np
 import sys
 
+from parsers import load_pickle_data, dump_pickle_data
+
 
 def main(argv):
     print("LOADING SOLUTIONS")
-    sol = np.genfromtxt("../data/solutions.csv", delimiter=",", skip_header=1, dtype=str, usecols=[0, 32])
-    sol = sol[250000:]
-    sol[np.where(sol == 'b')] = -1
-    sol[np.where(sol == 's')] = 1
-    sol = sol.astype(int)
+    sol = load_pickle_data("solutions")
+    if sol is None:
+        sol = np.genfromtxt("../data/solutions.csv", delimiter=",", skip_header=1, dtype=str, usecols=[0, 32])
+        sol = sol[250000:]
+        sol[np.where(sol == 'b')] = -1
+        sol[np.where(sol == 's')] = 1
+        sol = sol.astype(int)
+        dump_pickle_data(sol, "solutions")
+
 
     print("LOADING INPUT")
     inp = np.genfromtxt("../out/{}.csv".format(argv[0]), delimiter=",", skip_header=1, dtype=int)
