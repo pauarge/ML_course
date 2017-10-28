@@ -42,7 +42,7 @@ def standardize_col(x1, x2):
     x_clean = np.append(x1_clean, x2_clean)
 
     mean = np.mean(x_clean)
-    std = np.std(x_clean, ddof=1)
+    #std = np.std(x_clean, ddof=1)
 
     x1 -= mean
     x2 -= mean
@@ -50,8 +50,11 @@ def standardize_col(x1, x2):
     x1[index_x1] = 0
     x2[index_x2] = 0
 
+    std = np.std(np.append(x1,x2), ddof=1)
+
     x1 = x1 / std
     x2 = x2 / std
+
     return x1, x2
 
 

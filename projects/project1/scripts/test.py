@@ -87,21 +87,21 @@ def main():
     # create_csv_submission(ids_test, y_pred, "{}/submission-{}.csv".format(OUT_DIR, datetime.now()))
 
 
-    rmse_tr, rmse_te = benchmark_outliers(ys_train, x_train, lambda_=0, plot_name="cross_validation LS")
+    rmse_tr, rmse_te = benchmark_degrees(ys_train, x_train, lambda_=0, plot_name="cross_validation LS degrees")
     print("TRAIN {}".format(rmse_tr))
     print("TRAIN {}".format(rmse_te))
     # benchmark_lambda(ys_train, x_train, degree=2, plot_name="PATATA_g2")
     # print(rmse_tr)
     # print(rmse_te)
 
-    # seed = 1
+    # seed = 3
     # k_fold = 4
     # # split data in k fold
     # k_indices = build_k_indices(ys_train, k_fold, seed)
     # loss_tr_l = []
     # loss_te_l = []
     # for k in range(k_fold):
-    #     loss_tr, loss_te = cross_validation(ys_train, x_train, k_indices, k, 3, lambda_=0)
+    #     loss_tr, loss_te = cross_validation(ys_train, x_train, k_indices, k, 1, 11, lambda_=0)
     #     loss_te_l.append(loss_te)
     #     loss_tr_l.append(loss_tr)
     #
