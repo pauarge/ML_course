@@ -1,12 +1,12 @@
 import numpy as np
 
-from clean_data import standardize, discard_outliers
+from clean_data import standardize, discard_outliers, change_y_to_0
 from helpers import compute_mse, build_poly, build_k_indices, learning_by_penalized_gradient, calculate_loss
 from implementations import least_squares, reg_logistic_regression
 from plots import cross_validation_visualization
 
 
-def cross_validation(y, x, k_indices, k, degree, outliers, lambda_=0.00001):
+def cross_validation(y, x, k_indices, k, degree, outliers = 10, lambda_=0.00001):
     """return the loss of ridge regression."""
     y_test = np.take(y, k_indices[k])
     x_test = np.take(x, k_indices[k], 0)
@@ -17,17 +17,24 @@ def cross_validation(y, x, k_indices, k, degree, outliers, lambda_=0.00001):
     y_train = np.take(y, k_flattened_new)
     x_train = np.take(x, k_flattened_new, 0)
 
-    x_test, x_train = standardize(x_test, x_train)
-    x_train, y_train = discard_outliers(x_train, y_train, outliers)
+    #x_test, x_train = standardize(x_test, x_train)
+    #x_train, y_train = discard_outliers(x_train, y_train, outliers)
+
+    y_train = change_y_to_0(y_train)
+    y_test = change_y_to_0(y_test)
 
     tx_train = build_poly(x_train, degree)
     tx_test = build_poly(x_test, degree)
 
-    w, mse = least_squares(y_train, tx_train)
 
-    mse_te = compute_mse(y_test, tx_test, w)
-    loss_tr = mse
-    loss_te = mse_te
+    #max_iters = 1000
+    #gamma = 1
+    w, mse_tr = least_squares(y_train, tx_train)
+    #w, _ = reg_logistic_regression(y_train, tx_train, lambda_, w_ini, max_iters, gamma)
+
+
+    loss_tr = mse_tr
+    loss_te = compute_mse(y_test, tx_test, w)
 
     """
     #lambda_ = 0.00001
@@ -56,11 +63,13 @@ def benchmark_lambda(ys_train, x_train, degree=1, plot_name="PATATA"):
     rmse_tr = []
     rmse_te = []
 
+    outliers = None
+
     for i in lambdas:
         tr, te = 0, 0
         for j in range(k_fold):
             tmp_tr, tmp_te = \
-                cross_validation(ys_train, x_train, k_indices, j, degree, lambda_=i)
+                cross_validation(ys_train, x_train, k_indices, j, degree, outliers, lambda_=i)
             tr += tmp_tr
             te += tmp_te
 
@@ -75,7 +84,7 @@ def benchmark_lambda(ys_train, x_train, degree=1, plot_name="PATATA"):
 def benchmark_degrees(ys_train, x_train, lambda_=0.01, plot_name="cross_validation"):
     seed = 1
     k_fold = 4
-    degrees = range(1, 6)
+    degrees = range(1, 15)
     # split data in k fold
     k_indices = build_k_indices(ys_train, k_fold, seed)
     # define lists to store the loss of training data and test data
@@ -102,17 +111,17 @@ def benchmark_degrees(ys_train, x_train, lambda_=0.01, plot_name="cross_validati
 
 
 def benchmark_outliers(ys_train, x_train, lambda_=0.01, plot_name="cross_validation"):
-    seed = 1
+    seed = 3
     k_fold = 4
-    degrees = 3
+    degrees = 1
     # split data in k fold
     k_indices = build_k_indices(ys_train, k_fold, seed)
     # define lists to store the loss of training data and test data
     rmse_tr = []
     rmse_te = []
 
-    #outliers = np.linspace(3, 15, 24)
-    outliers = [2]
+    outliers = np.linspace(2, 15, 24)
+    #outliers = [2]
 
     for i in outliers:
         print(i)
