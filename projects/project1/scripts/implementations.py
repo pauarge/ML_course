@@ -3,8 +3,6 @@ import numpy as np
 from helpers import compute_gradient, compute_mse, batch_iter, calculate_loss, calculate_gradient, \
     learning_by_penalized_gradient
 
-THRESHOLD = 1e-12
-
 
 def least_squares_gd(y, tx, w, max_iters, gamma):
     """
@@ -84,6 +82,10 @@ def ridge_regression(y, tx, lambda_):
     txt = np.transpose(tx)
     w = np.linalg.solve((txt.dot(tx) + lambda_ * 2 * y.shape[0] * np.identity(tx.shape[1])), txt.dot(y))
     return w, compute_mse(y, tx, w)
+
+
+# Threshold condition for stopping the iterations on logistic regression and regularized logistic regression
+THRESHOLD = 1e-12
 
 
 def logistic_regression(y, tx, w, max_iters, gamma):
