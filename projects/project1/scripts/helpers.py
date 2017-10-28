@@ -112,4 +112,4 @@ def learning_by_penalized_gradient(y, tx, w, gamma, lambda_):
     loss = calculate_loss(y, tx, w) + (lambda_ / (2 * n)) * np.power(np.linalg.norm(w), 2)
     gradient = calculate_gradient(y, tx, w) + (1 / n) * lambda_ * w
     w = w - gamma * gradient
-    return w, loss, np.linalg.norm(w)
+    return w, loss, np.linalg.norm(gradient)
