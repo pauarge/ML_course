@@ -52,10 +52,10 @@ def main():
     #         x_train[row,col] = w[0] + w[1] * x_train[row,corr]
 
 
-    #x_test, x_train = standardize(x_test, x_train)
+    x_test, x_train = standardize(x_test, x_train)
     #x_train = standardize_train(x_train)
 
-    #x_train, ys_train = discard_outliers(x_train, ys_train, 5)
+    x_train, ys_train = discard_outliers(x_train, ys_train, 2)
 
     #tx_train = build_poly(x_train,3)
 
