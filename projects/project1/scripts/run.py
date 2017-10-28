@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from filters import discard_outliers, standardize, change_y_to_0
+from clean_data import standardize, discard_outliers, change_y_to_0
 from helpers import predict_labels, build_poly, compute_mse
 from implementations import least_squares, reg_logistic_regression
 from parsers import load_data, create_csv_submission
@@ -13,24 +13,25 @@ def main():
 
     print("FILTERING DATA")
     x_test, x_train = standardize(x_test, x_train)
-    x_train, ys_train = discard_outliers(x_train, ys_train, 2)
+    x_train, ys_train = discard_outliers(x_train, ys_train, 11)
 
     print("BUILDING POLYNOMIALS")
-    tx_train = build_poly(x_train, 5)
-    tx_test = build_poly(x_test, 5)
+    tx_train = build_poly(x_train, 1)
+    tx_test = build_poly(x_test, 1)
 
-    print("CHANGE Y")
-    ys_train = change_y_to_0(ys_train)
+    #print("CHANGE Y")
+    #ys_train = change_y_to_0(ys_train)
 
     print("LEARNING MODEL BY LEAST SQUARES")
-    initial_w, initial_mse = least_squares(ys_train, tx_train)
+    w, mse = least_squares(ys_train, tx_train)
+    print(mse)
 
-    print("LEARNING BY LOGISTIC REGRESSION")
-    lambda_ = 0
-    max_iters = 5000
-    gamma = 0.001
-    w, losses = reg_logistic_regression(ys_train, tx_train, lambda_, max_iters, gamma)
-    print(losses)
+    # print("LEARNING BY LOGISTIC REGRESSION")
+    # lambda_ = 0
+    # max_iters = 5000
+    # gamma = 0.001
+    # w, losses = reg_logistic_regression(ys_train, tx_train, lambda_, max_iters, gamma)
+    # print(losses)
 
 
     print("PREDICTING VALUES")
