@@ -1,13 +1,12 @@
-
 import numpy as np
-from datetime import  datetime
+from datetime import datetime
 
-from clean_data import look_for_999
-from filters import discard_outliers, standardize, change_y_to_0, remove_bad_data, remove_good_data
+from clean_data import look_for_999, standardize, standardize_train, remove_bad_data, remove_good_data, \
+    discard_outliers, change_y_to_0
 from helpers import predict_labels, compute_mse, build_k_indices, build_poly
-from implementations import least_squares
+from implementations import least_squares, least_squares_gd
 from parsers import load_data, create_csv_submission
-from validation import cross_validation, benchmark_degrees, benchmark_lambda
+from validation import cross_validation, benchmark_degrees, benchmark_lambda, benchmark_outliers
 
 OUT_DIR = "../out"
 
@@ -15,14 +14,17 @@ OUT_DIR = "../out"
 def main():
     ys_train, x_train, ids_train, x_test, ids_test = load_data()
 
-    bad_columns = look_for_999(x_train)
-    x_train = np.delete(x_train,bad_columns,1)
-    x_test = np.delete(x_test, bad_columns, 1)
+
+    #x_train = remove_bad_data(x_train, ys_train)
+    #x_test = remove_bad_data(x_test, _)
+    #bad_columns = look_for_999(x_train)
+    #x_train = np.delete(x_train,bad_columns,1)
+    #x_test = np.delete(x_test, bad_columns, 1)
 
 
     print("FILTERING DATA")
     # proves per least_squares sense rows amb -999
-    #x_train, ys_train = remove_bad_data(x_train, ys_train)
+    # x_train, ys_train = remove_bad_data(x_train, ys_train)
 
 
     # correlations = np.corrcoef(x_train1, rowvar=False)
@@ -50,37 +52,49 @@ def main():
     #         x_train[row,col] = w[0] + w[1] * x_train[row,corr]
 
 
-    x_test, x_train = standardize(x_test, x_train)
+    #x_test, x_train = standardize(x_test, x_train)
+    #x_train = standardize_train(x_train)
 
-    x_train, ys_train = discard_outliers(x_train, ys_train, 5)
+    #x_train, ys_train = discard_outliers(x_train, ys_train, 5)
 
-    rmse_te, rmse_tr = benchmark_degrees(ys_train, x_train, lambda_=0.01, plot_name="cross_validation")
-    print(rmse_te, rmse_tr)
+    #tx_train = build_poly(x_train,3)
+
+    #w, mse = least_squares(ys_train,tx_train)
+    #print(mse)
+
+    #w, mse = least_squares_gd(ys_train, tx_train, w, 1000, 0.0001)
+    #print(mse)
+
+    #rmse_te, rmse_tr = benchmark_degrees(ys_train, x_train,lambda_=0.01, plot_name="cross_validation")
+    #print(rmse_te, rmse_tr)
 
     print("BUILDING POLYNOMIALS")
-    #tx_train = build_poly(x_train, 3)
-    #tx_test = build_poly(x_test, 3)
+    # tx_train = build_poly(x_train, 3)
+    # tx_test = build_poly(x_test, 3)
 
 
     # print("CHANGE Y")
     # ys_train = change_y_to_0(ys_train)
 
-    #proves per least_squares sense rows amb -999
-    #w, mse = least_squares(ys_train, tx_train)
-    #print(mse)
+    # proves per least_squares sense rows amb -999
+    # w, mse = least_squares(ys_train, tx_train)
+    # print(mse)
 
     print("PREDICTING VALUES")
-    #y_pred = predict_labels(w, tx_test)
+    # y_pred = predict_labels(w, tx_test)
 
     print("EXPORTING CSV")
-    #create_csv_submission(ids_test, y_pred, "{}/submission-{}.csv".format(OUT_DIR, datetime.now()))
+    # create_csv_submission(ids_test, y_pred, "{}/submission-{}.csv".format(OUT_DIR, datetime.now()))
 
-    # rmse_tr, rmse_te = benchmark_degrees(ys_train, x_train, lambda_=0, plot_name="cross_validation")
+
+    rmse_tr, rmse_te = benchmark_outliers(ys_train, x_train, lambda_=0, plot_name="cross_validation LS")
+    print("TRAIN {}".format(rmse_tr))
+    print("TRAIN {}".format(rmse_te))
     # benchmark_lambda(ys_train, x_train, degree=2, plot_name="PATATA_g2")
     # print(rmse_tr)
     # print(rmse_te)
 
-    # seed = 56
+    # seed = 1
     # k_fold = 4
     # # split data in k fold
     # k_indices = build_k_indices(ys_train, k_fold, seed)
@@ -142,7 +156,6 @@ def main():
     print("TRAIN ERROR{}".format(rmse_tr))
     
     """
-
 
 
 if __name__ == '__main__':
