@@ -11,7 +11,7 @@ def main(argv):
     sol = sol.astype(int)
 
     print("LOADING INPUT")
-    inp = np.genfromtxt("../data/{}.csv".format(argv[0]), delimiter=",", skip_header=1, dtype=int)
+    inp = np.genfromtxt("../out/{}.csv".format(argv[0]), delimiter=",", skip_header=1, dtype=int)
 
     print("CALCULATING SCORE")
     res = sol[:, 1] * inp[:, 1]
