@@ -15,15 +15,14 @@ def main(argv):
         sol = sol.astype(int)
         dump_pickle_data(sol, "solutions")
 
-
     print("LOADING INPUT")
     inp = np.genfromtxt("../out/{}.csv".format(argv[0]), delimiter=",", skip_header=1, dtype=int)
 
     print("CALCULATING SCORE")
     res = sol[:, 1] * inp[:, 1]
-    score = round((len(np.where(res > 0)[0]) * 100.0) / float(inp.shape[0]), 5)
+    score = round((len(np.where(res > 0)[0])) / float(inp.shape[0]), 10)
 
-    print("\nScore: {}%".format(score))
+    print("\nScore: {}".format(score))
 
 
 if __name__ == '__main__':
