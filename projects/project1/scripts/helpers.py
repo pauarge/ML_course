@@ -48,7 +48,7 @@ def build_k_indices(y, k_fold, seed):
 def compute_gradient(y, tx, w):
     """Compute the gradient."""
     k = -1.0 / y.shape[0]
-    y_pred = predict_labels(w,tx)
+    y_pred = predict_labels(w, tx)
     e = y - y_pred
     return k * np.transpose(tx).dot(e)
 
@@ -57,7 +57,7 @@ def compute_mse(y, tx, w):
     """Calculate the loss using MSE"""
     k = 1.0 / (2 * y.shape[0])
     y_pred = predict_labels(w, tx)
-    #y_pred = tx.dot(w)
+    # y_pred = tx.dot(w)
     e = y - y_pred
     return k * np.transpose(e).dot(e)
 
@@ -71,6 +71,10 @@ def calculate_loss(y, tx, w):
     o = np.ones(n)
     b = (o - np.transpose(y)) * np.log(o - np.transpose(s))
     return (-np.sum(a + np.transpose(b))) / tx.shape[0]
+
+def calculate_loss_reg(y,tx,w, lambda_):
+    n = n = tx.shape[0]
+    return calculate_loss(y, tx, w) + (lambda_ / (2 * n)) * np.power(np.linalg.norm(w), 2)
 
 
 def calculate_gradient(y, tx, w):
@@ -93,6 +97,7 @@ def predict_labels(weights, data):
     y_pred[np.where(y_pred > 0)] = 1
     return y_pred
 
+
 def predict_labels_log(weights, data):
     """Generates class predictions given weights, and a test data matrix"""
     y_pred = np.dot(data, weights)
@@ -114,8 +119,8 @@ def learning_by_penalized_gradient(y, tx, w, gamma, lambda_):
     Do one step of gradient descent, using the penalized logistic regression.
     Return the loss and updated w.
     """
-    n = tx.shape[0]
-    loss = calculate_loss(y, tx, w) + (lambda_ / (2 * n)) * np.power(np.linalg.norm(w), 2)
-    gradient = calculate_gradient(y, tx, w) + (1 / n) * lambda_ * w
+
+    loss = calculate_loss_reg(y, tx, w, lambda_)
+    gradient = calculate_gradient(y, tx, w) + (1 / tx.shape[0]) * lambda_ * w
     w = w - gamma * gradient
     return w, loss, np.linalg.norm(gradient)

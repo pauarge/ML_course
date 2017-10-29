@@ -1,12 +1,12 @@
 import numpy as np
 
-from clean_data import standardize, discard_outliers, change_y_to_0, remove_bad_data
+from clean_data import standardize, discard_outliers, change_y_to_0, remove_bad_data, change_y_to_1
 from helpers import compute_mse, build_poly, build_k_indices, learning_by_penalized_gradient, calculate_loss
 from implementations import least_squares, reg_logistic_regression, least_squares_gd
 from plots import cross_validation_visualization
 
 
-def cross_validation(y, x, k_indices, k, degree, lambda_=0.00001):
+def cross_validation(y, x, k_indices, k, degree, lambda_):
     """return the loss of ridge regression."""
     y_test = np.take(y, k_indices[k])
     x_test = np.take(x, k_indices[k], 0)
@@ -50,7 +50,7 @@ def cross_validation(y, x, k_indices, k, degree, lambda_=0.00001):
 def benchmark_lambda(ys_train, x_train, degree=1, plot_name="PATATA"):
     seed = 3
     k_fold = 4
-    lambdas = np.logspace(-4, 0, 30)
+    lambdas = np.logspace(-4, 0, 15)
     # split data in k fold
     k_indices = build_k_indices(ys_train, k_fold, seed)
 
@@ -61,12 +61,14 @@ def benchmark_lambda(ys_train, x_train, degree=1, plot_name="PATATA"):
     outliers = None
 
     for i in lambdas:
+        print(i)
         tr, te = 0, 0
         for j in range(k_fold):
             tmp_tr, tmp_te = \
                 cross_validation(ys_train, x_train, k_indices, j, degree, lambda_=i)
             tr += tmp_tr
             te += tmp_te
+        print("Lambda {} Test Error {}".format(i, te / k_fold))
 
         rmse_tr.append(tr / k_fold)
         rmse_te.append(te / k_fold)
@@ -105,6 +107,7 @@ def benchmark_degrees(ys_train, x_train, lambda_=0.01, plot_name="cross_validati
 
 
     return rmse_tr, rmse_te
+
 
 # def benchmark_outliers(ys_train, x_train, lambda_=0.01, plot_name="cross_validation"):
 #     seed = 3
@@ -157,3 +160,13 @@ def benchmark_degrees(ys_train, x_train, lambda_=0.01, plot_name="cross_validati
 #     for i in range(num_iter):
 #         w, loss, grad_norm = learning_by_gradient_descent(ys_train, tx_train, w, gamma)
 #     return w, loss
+
+
+def ratio_of_acc(y_test, y_pred):
+    print("CALCULATING SCORE")
+    y_test = change_y_to_1(y_test)
+    y_pred = change_y_to_1(y_pred)
+    res = y_test * y_pred
+    score = round((len(np.where(res > 0)[0])) / float(y_test.shape[0]), 10)
+    print("Score: {}".format(score))
+    return score
