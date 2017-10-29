@@ -30,6 +30,8 @@ Besides that (and the built-in Python libraries), the following packages are use
 
 ## Running
 
+### Main program
+
 To run the main program, the `run.py` has to be executed from the scripts folder:
 
 ```
@@ -44,6 +46,17 @@ The program will output the following through the standard output:
 ```
 TODO TODO TODO
 ```
+
+### Plots
+
+The plots displayed in the report are generated programmatically using Matplotlib. To reproduce them, the `plots.py` file can be called:
+
+```
+cd scripts/
+python3 plots.py
+```
+
+This will output the plots on `out/` assuming the input data is located in the same places as when executing `run.py`.
 
 ### Data caching
 
