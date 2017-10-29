@@ -32,13 +32,13 @@ def process_file_le(x_train, x_test, ys_train, ids_test, o, d):
 
 def main():
     outliers = range(2, 13)
-    degrees = range(1, 13)
+    degrees = range(1, 8)
     lambdas = [1, 0.1, 0.01, 0.001, 0.0001, 0.00001, 0]
     ys_train, x_train, ids_train, x_test, ids_test = load_data()
 
     x_test, x_train = standardize(x_test, x_train)
 
-    executor = concurrent.futures.ThreadPoolExecutor(2)
+    executor = concurrent.futures.ThreadPoolExecutor(8)
     futures = []
 
     for o in outliers:
