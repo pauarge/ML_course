@@ -68,9 +68,8 @@ def calculate_loss(y, tx, w):
     y_pred = new_labels(w, tx)
     s = sigmoid(y_pred)
     a = np.log(s) * y
-    r = np.ones(n) - np.transpose(s)
-    j = np.ones(n) - np.transpose(y)
-    b = j * np.log(r)
+    o = np.ones(n)
+    b = (o - np.transpose(y)) * np.log(o - np.transpose(s))
     return (-np.sum(a + np.transpose(b))) / tx.shape[0]
 
 
