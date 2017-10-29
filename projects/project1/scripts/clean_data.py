@@ -109,7 +109,7 @@ def discard_outliers(x_train, ys_train, threshold):
             index.append(i)
     x_train = np.delete(x_train, index, 0)
     ys_train = np.delete(ys_train, index, 0)
-    print(len(index))
+    #print(len(index))
     return x_train, ys_train
 
 
