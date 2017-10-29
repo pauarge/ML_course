@@ -1,7 +1,7 @@
 import numpy as np
 
 
-def batch_iter(y, tx, batch_size, num_batches=1, shuffle=True):
+def batch_iter(y, tx, batch_size, num_batches=1):
     """
     Generate a minibatch iterator for a dataset.
     Takes as input two iterables (here the output desired values 'y' and the input data 'tx')
@@ -12,19 +12,12 @@ def batch_iter(y, tx, batch_size, num_batches=1, shuffle=True):
     :param tx: Matrix of input data of size Nx(1+(DG*D)) after adding a column of ones
     :param batch_size: # data points used included in the batch
     :param num_batches: Number of batches to be generated
-    :param shuffle: Boolean whether to randomly order the initial data
     :return: Iterator which gives mini-batches of `batch_size` matching elements from `y` and `tx`
-
     """
     data_size = len(y)
-
-    if shuffle:
-        shuffle_indices = np.random.permutation(np.arange(data_size))
-        shuffled_y = y[shuffle_indices]
-        shuffled_tx = tx[shuffle_indices]
-    else:
-        shuffled_y = y
-        shuffled_tx = tx
+    shuffle_indices = np.random.permutation(np.arange(data_size))
+    shuffled_y = y[shuffle_indices]
+    shuffled_tx = tx[shuffle_indices]
     for batch_num in range(num_batches):
         start_index = batch_num * batch_size
         end_index = min((batch_num + 1) * batch_size, data_size)

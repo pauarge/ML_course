@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from clean_data import standardize, discard_outliers, remove_bad_data
+from clean_data import standardize, discard_outliers
 from helpers import predict_labels, build_poly
 from implementations import least_squares
 from parsers import load_data, create_csv_submission

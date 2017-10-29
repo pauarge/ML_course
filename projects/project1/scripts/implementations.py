@@ -142,20 +142,13 @@ def reg_logistic_regression(y, tx, lambda_, w, max_iters, gamma):
              loss of the weights computed by negative log likelihood
     """
     losses = []
-    # print("LEAST SQ LOSS{}".format(loss_ls))
     for i in range(max_iters):
         w, loss, grad_norm = learning_by_penalized_gradient(y, tx, w, gamma, lambda_)
-        # if i % 50 == 0:
-        #    print("Current iteration={}, norm_grad={}, gamma={}".format(i, grad_norm, gamma))
-
         losses.append(loss)
         if len(losses) > 100 and np.abs(losses[-1] - losses[-100]) < THRESHOLD:
-            # print("out for threshold")
             gamma = gamma / 10
             if gamma < 1e-10:
                 break
-
         if len(losses) > 100 and losses[-1] > losses[-100]:
             gamma = gamma / 10
-            pass
     return w, losses[-1]

@@ -1,5 +1,26 @@
-from parsers import load_data
 import numpy as np
+
+
+def change_y_to_0(y):
+    index = np.where(y == -1)
+    y[index] = 0
+    return y
+
+
+def change_y_to_1(y):
+    index = np.where(y == 0)
+    y[index] = -1
+    return y
+
+
+def discard_outliers(x_train, ys_train, threshold):
+    index = []
+    for i in range(x_train.shape[0]):
+        if np.amax(np.abs(x_train[i, :])) > threshold:
+            index.append(i)
+    x_train = np.delete(x_train, index, 0)
+    ys_train = np.delete(ys_train, index, 0)
+    return x_train, ys_train
 
 
 def look_for_999(x):
@@ -8,6 +29,14 @@ def look_for_999(x):
         if np.min(x[:, i]) == -999:
             b_v.append(i)
     return b_v
+
+
+def remove_bad_data(x, y):
+    index = np.where(x == -999)
+    index = np.unique(index[0])
+    x = np.array(np.delete(x, index, 0))
+    y = np.array(np.delete(y, index))
+    return x, y
 
 
 def standardize(x_test, x_train):
@@ -35,34 +64,3 @@ def standardize_col(x1, x2):
     x1 /= std
     x2 /= std
     return x1, x2
-
-
-def remove_bad_data(x, y):
-    index = np.where(x == -999)
-    index = np.unique(index[0])
-    x = np.array(np.delete(x, index, 0))
-    y = np.array(np.delete(y, index))
-    return x, y
-
-
-def discard_outliers(x_train, ys_train, threshold):
-    index = []
-    for i in range(x_train.shape[0]):
-        if np.amax(np.abs(x_train[i, :])) > threshold:
-            index.append(i)
-    x_train = np.delete(x_train, index, 0)
-    ys_train = np.delete(ys_train, index, 0)
-    # print(len(index))
-    return x_train, ys_train
-
-
-def change_y_to_0(y):
-    index = np.where(y == -1)
-    y[index] = 0
-    return y
-
-
-def change_y_to_1(y):
-    index = np.where(y == 0)
-    y[index] = -1
-    return y
