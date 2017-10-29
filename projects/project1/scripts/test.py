@@ -52,10 +52,10 @@ def main():
     #         x_train[row,col] = w[0] + w[1] * x_train[row,corr]
 
 
-    #x_test, x_train = standardize(x_test, x_train)
+    x_test, x_train = standardize(x_test, x_train)
     #x_train = standardize_train(x_train)
 
-    #x_train, ys_train = discard_outliers(x_train, ys_train, 8)
+    x_train, ys_train = discard_outliers(x_train, ys_train, 8)
 
 
 
@@ -67,10 +67,10 @@ def main():
     #w, mse = least_squares_gd(ys_train, tx_train, w, 1000, 0.0001)
     #print(mse)
 
-    rmse_te, rmse_tr = benchmark_degrees(ys_train, x_train,lambda_=0.01, plot_name="cross_validation")
-    print(rmse_te, rmse_tr)
-
-    print("BUILDING POLYNOMIALS")
+    # rmse_te, rmse_tr = benchmark_degrees(ys_train, x_train,lambda_=0.01, plot_name="cross_validation")
+    # print(rmse_te, rmse_tr)
+    #
+    # print("BUILDING POLYNOMIALS")
     # tx_train = build_poly(x_train, 3)
     # tx_test = build_poly(x_test, 3)
 
@@ -82,19 +82,21 @@ def main():
     # w, mse = least_squares(ys_train, tx_train)
     # print(mse)
 
-    print("PREDICTING VALUES")
+    #print("PREDICTING VALUES")
     # y_pred = predict_labels(w, tx_test)
 
-    print("EXPORTING CSV")
+    #print("EXPORTING CSV")
     # create_csv_submission(ids_test, y_pred, "{}/submission-{}.csv".format(OUT_DIR, datetime.now()))
 
 
-    rmse_tr, rmse_te = benchmark_degrees(ys_train, x_train, lambda_=0, plot_name="cross_validation LS degrees, outliers 8")
+    #rmse_tr, rmse_te = benchmark_degrees(ys_train, x_train, lambda_=0, plot_name="cross_validation LR degrees, std")
 
     #rmse_tr, rmse_te = benchmark_outliers(ys_train, x_train, plot_name="cross_validation LS degree 11, outliers")
+
+    rmse_tr, rmse_te = benchmark_lambda(ys_train, x_train, degree=2, plot_name="CROSS VALIDATION LR LAMBDAS")
+
     print("TRAIN {}".format(rmse_tr))
-    print("TRAIN {}".format(rmse_te))
-    # benchmark_lambda(ys_train, x_train, degree=2, plot_name="PATATA_g2")
+    print("TEST {}".format(rmse_te))
     # print(rmse_tr)
     # print(rmse_te)
 
