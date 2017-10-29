@@ -43,7 +43,6 @@ def build_poly(x, degree):
     :param degree: Degree of the resulting polynomial
     :return: Matrix of the polynomial basis functions
     """
-
     tx = np.ones(x.shape[0])
     for i in range(1, degree + 1):
         tx = np.column_stack((tx, np.power(x, i)))
@@ -61,7 +60,6 @@ def build_k_indices(y, k_fold, seed):
     :param seed: Number used to initialize a pseudorandom number generator.
     :return: k_fold vectors of size (1xN/k_fold) in which indices of input data are saved
     """
-
     num_row = y.shape[0]
     interval = int(num_row / k_fold)
     np.random.seed(seed)
@@ -82,7 +80,6 @@ def compute_gradient(y, tx, w):
     :param w: Vector of weights of size 1x(1+(DG*D))
     :return: Gradient for loss function of Mean Squared Error evaluated in w
     """
-
     k = -1.0 / y.shape[0]
     y_pred = predict_labels(w, tx)
     e = y - y_pred
@@ -101,10 +98,8 @@ def compute_mse(y, tx, w):
     :param w: Vector of weights of size 1x(1+(DG*D))
     :return: Loss value for Mean Squared Error evaluated in w
     """
-
     k = 1.0 / (2 * y.shape[0])
     y_pred = predict_labels(w, tx)
-    # y_pred = tx.dot(w)
     e = y - y_pred
     return k * np.transpose(e).dot(e)
 
@@ -121,7 +116,6 @@ def calculate_loss(y, tx, w):
     :param w: Vector of weights of size 1x(1+(DG*D))
     :return: Loss value by negative log likelihood evaluated in w
     """
-
     n = len(y)
     y_pred = new_labels(w, tx)
     s = sigmoid(y_pred)
@@ -130,7 +124,8 @@ def calculate_loss(y, tx, w):
     b = (o - np.transpose(y)) * np.log(o - np.transpose(s))
     return (-np.sum(a + np.transpose(b))) / tx.shape[0]
 
-def calculate_loss_reg(y,tx,w, lambda_):
+
+def calculate_loss_reg(y, tx, w, lambda_):
     """
     Compute the cost by negative log likelihood for Regularized Logistic Regression
     N = #data points
@@ -143,7 +138,7 @@ def calculate_loss_reg(y,tx,w, lambda_):
     :param lambda_: Regularization parameter
     :return: Loss value by negative log likelihood for Regularized Logistic Regression evaluated in w
     """
-    n = n = tx.shape[0]
+    n = tx.shape[0]
     return calculate_loss(y, tx, w) + (lambda_ / (2 * n)) * np.power(np.linalg.norm(w), 2)
 
 
@@ -159,7 +154,6 @@ def calculate_gradient(y, tx, w):
     :param w: Vector of weights of size 1x(1+(DG*D))
     :return: Gradient of the negative log likelihood loss function in w
     """
-
     y_pred = new_labels(w, tx)
     s = sigmoid(y_pred)
     k = 1.0 / y.shape[0]
@@ -173,7 +167,6 @@ def sigmoid(t):
     :param t: Vector in which sigmoid is evaluated
     :return: Sigmoid function evaluated in t
     """
-
     return 1 / (1 + np.exp(-t))
 
 
@@ -188,7 +181,6 @@ def predict_labels(weights, data):
     :param data: Matrix containing the test data
     :return: Class predictions for given weights and a test data matrix for Least Squares
     """
-
     y_pred = np.dot(data, weights)
     y_pred[np.where(y_pred <= 0)] = -1
     y_pred[np.where(y_pred > 0)] = 1
@@ -206,7 +198,6 @@ def predict_labels_log(weights, data):
     :param data: Matrix containing the test data
     :return: Class predictions for given weights and test data matrix for Logistic Regression
     """
-
     y_pred = np.dot(data, weights)
     y_pred[np.where(y_pred <= 0.5)] = -1
     y_pred[np.where(y_pred > 0.5)] = 1
@@ -224,7 +215,6 @@ def new_labels(w, tx):
     :param tx: Matrix of input data of size Nx(1+(DG*D)) after adding a column of ones
     :return: Class predictions given weights, and a test data matrix
     """
-
     y_pred = tx.dot(w)
     y_pred[np.where(y_pred <= 0.5)] = 0
     y_pred[np.where(y_pred > 0.5)] = 1
@@ -247,7 +237,6 @@ def learning_by_penalized_gradient(y, tx, w, gamma, lambda_):
     :return: Loss and updated w after doing one step of gradient descent for penalized logistic regression
 
     """
-
     loss = calculate_loss_reg(y, tx, w, lambda_)
     gradient = calculate_gradient(y, tx, w) + (1 / tx.shape[0]) * lambda_ * w
     w = w - gamma * gradient
