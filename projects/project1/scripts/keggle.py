@@ -28,6 +28,8 @@ def main(argv, silent=False, fullpath=False):
 
     print("Score {}: {}".format(argv[0], score))
 
+    return score
+
 
 if __name__ == '__main__':
     main(sys.argv[1:])
