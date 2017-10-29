@@ -19,11 +19,19 @@ def least_squares_gd(y, tx, w, max_iters, gamma):
     :return: Vector of weights of size 1x(1+(DG*D)) and
              Mean Squared Error of the obtained weights
     """
+    error = []
     for i in range(max_iters):
         gradient = compute_gradient(y, tx, w)
-        w -= gamma * gradient
-    return w, compute_mse(y, tx, w)
+        w = w - gamma * gradient
+        mse = compute_mse(y, tx, w)
+        error.append(mse)
+        if len(error) > 10 and np.abs(error[-1] - error[-10]) < THRESHOLD:
+            gamma = gamma/10
+            if gamma < 1e-10:
+                print(i)
+                break
 
+    return w, error[-1]
 
 def least_squares_sgd(y, tx, w, batch_size, max_iters, gamma):
     """

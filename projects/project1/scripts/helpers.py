@@ -48,14 +48,17 @@ def build_k_indices(y, k_fold, seed):
 def compute_gradient(y, tx, w):
     """Compute the gradient."""
     k = -1.0 / y.shape[0]
-    e = y - tx.dot(w)
+    y_pred = predict_labels(w,tx)
+    e = y - y_pred
     return k * np.transpose(tx).dot(e)
 
 
 def compute_mse(y, tx, w):
     """Calculate the loss using MSE"""
     k = 1.0 / (2 * y.shape[0])
-    e = y - tx.dot(w)
+    y_pred = predict_labels(w, tx)
+    #y_pred = tx.dot(w)
+    e = y - y_pred
     return k * np.transpose(e).dot(e)
 
 

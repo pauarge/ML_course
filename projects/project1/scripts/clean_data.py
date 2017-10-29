@@ -55,6 +55,7 @@ def standardize_col(x1, x2):
     x1 = x1 / std
     x2 = x2 / std
 
+
     return x1, x2
 
 
@@ -81,8 +82,8 @@ def remove_bad_data(x, y):
     # tmp = x[np.where(x != -999)]
     index = np.where(x == -999)
     index = np.unique(index[0])
-    x = np.delete(x, index, 0)
-    y = np.delete(y, index)
+    x = np.array(np.delete(x, index, 0))
+    y = np.array(np.delete(y, index))
     return x, y
 
 
