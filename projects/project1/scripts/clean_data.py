@@ -37,46 +37,11 @@ def standardize_col(x1, x2):
     return x1, x2
 
 
-def standardize_train(x_train):
-    for i in range(x_train.shape[1]):
-        x_train[:, i] = standardize_col_train(x_train[:, i])
-    return x_train
-
-
-def standardize_col_train(x1):
-    index_x1 = np.where(x1 == -999)
-    x1[index_x1] = 0
-    mean = np.mean(x1)
-    x1 -= mean
-    x1[index_x1] = 0
-    std = np.std(x1, ddof=1)
-    # std = np.std(x1)
-    x1 = x1 / std
-
-    return x1
-
-
 def remove_bad_data(x, y):
-    # tmp = x[np.where(x != -999)]
     index = np.where(x == -999)
     index = np.unique(index[0])
     x = np.array(np.delete(x, index, 0))
     y = np.array(np.delete(y, index))
-    return x, y
-
-
-def remove_bad_data_test(x, y):
-    index = np.where(x == -999)
-    index = np.unique(index[0])
-    x = np.delete(x, index, 0)
-    y = np.delete(y, index)
-    return x, y
-
-
-def remove_good_data(x, y):
-    index = np.where(x != -999)
-    x = np.delete(x, index[0], 0)
-    y = np.delete(y, index[0], 0)
     return x, y
 
 

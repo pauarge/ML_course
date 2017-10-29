@@ -1,8 +1,7 @@
 import numpy as np
 from datetime import datetime
 
-from clean_data import look_for_999, standardize, standardize_train, remove_bad_data, remove_good_data, \
-    discard_outliers, change_y_to_0
+from clean_data import look_for_999, standardize, remove_bad_data, discard_outliers, change_y_to_0
 from helpers import predict_labels, compute_mse, build_k_indices, build_poly
 from implementations import least_squares, least_squares_gd
 from parsers import load_data, create_csv_submission
@@ -53,7 +52,6 @@ def main():
 
 
     x_test, x_train = standardize(x_test, x_train)
-    #x_train = standardize_train(x_train)
 
     x_train, ys_train = discard_outliers(x_train, ys_train, 9.2)
 
