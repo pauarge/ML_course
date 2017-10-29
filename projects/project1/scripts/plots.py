@@ -51,11 +51,3 @@ def plot_what_I_want():
     plt.savefig("../out/LEAST_SQUARES_DEGREES_SUPERNICE", dpi=512)
 
     plt.close()
-
-
-def main():
-    plot_what_I_want()
-
-
-if __name__ == "__main__":
-    main()

@@ -53,16 +53,8 @@ PREDICTING VALUES
 EXPORTING CSV
 ```
 
-### Plots
+### Test
 
-The plots displayed in the report are generated programmatically using Matplotlib. To reproduce them, the `plots.py` file can be called:
-
-```
-cd scripts/
-python3 plots.py
-```
-
-This will output the plots on `out/` assuming the input data is located in the same places as when executing `run.py`.
 
 ### Data caching
 
