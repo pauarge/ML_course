@@ -55,7 +55,7 @@ def main():
     x_test, x_train = standardize(x_test, x_train)
     #x_train = standardize_train(x_train)
 
-    x_train, ys_train = discard_outliers(x_train, ys_train, 2)
+    #x_train, ys_train = discard_outliers(x_train, ys_train, 8)
 
     #tx_train = build_poly(x_train,3)
 
@@ -87,7 +87,8 @@ def main():
     # create_csv_submission(ids_test, y_pred, "{}/submission-{}.csv".format(OUT_DIR, datetime.now()))
 
 
-    rmse_tr, rmse_te = benchmark_degrees(ys_train, x_train, lambda_=0, plot_name="cross_validation LS degrees")
+    #rmse_tr, rmse_te = benchmark_degrees(ys_train, x_train, lambda_=0, plot_name="cross_validation LS degrees, outliers 8")
+    rmse_tr, rmse_te = benchmark_outliers(ys_train, x_train, plot_name="cross_validation LS degree 11, outliers")
     print("TRAIN {}".format(rmse_tr))
     print("TRAIN {}".format(rmse_te))
     # benchmark_lambda(ys_train, x_train, degree=2, plot_name="PATATA_g2")

@@ -18,10 +18,10 @@ def cross_validation(y, x, k_indices, k, degree, outliers = 10, lambda_=0.00001)
     x_train = np.take(x, k_flattened_new, 0)
 
     #x_test, x_train = standardize(x_test, x_train)
-    #x_train, y_train = discard_outliers(x_train, y_train, outliers)
+    x_train, y_train = discard_outliers(x_train, y_train, outliers)
 
-    y_train = change_y_to_0(y_train)
-    y_test = change_y_to_0(y_test)
+    #y_train = change_y_to_0(y_train)
+    #y_test = change_y_to_0(y_test)
 
     tx_train = build_poly(x_train, degree)
     tx_test = build_poly(x_test, degree)
@@ -84,7 +84,7 @@ def benchmark_lambda(ys_train, x_train, degree=1, plot_name="PATATA"):
 def benchmark_degrees(ys_train, x_train, lambda_=0.01, plot_name="cross_validation"):
     seed = 1
     k_fold = 4
-    degrees = range(6, 18)
+    degrees = range(5, 16)
     # split data in k fold
     k_indices = build_k_indices(ys_train, k_fold, seed)
     # define lists to store the loss of training data and test data
@@ -113,21 +113,22 @@ def benchmark_degrees(ys_train, x_train, lambda_=0.01, plot_name="cross_validati
 def benchmark_outliers(ys_train, x_train, lambda_=0.01, plot_name="cross_validation"):
     seed = 3
     k_fold = 4
-    degrees = 1
+    degrees = 11
     # split data in k fold
     k_indices = build_k_indices(ys_train, k_fold, seed)
     # define lists to store the loss of training data and test data
     rmse_tr = []
     rmse_te = []
 
-    outliers = np.linspace(2, 15, 24)
+    outliers = np.linspace(2, 13, 23)
     #outliers = [2]
 
     for i in outliers:
+
         print(i)
         tr, te = 0, 0
         for j in range(k_fold):
-            tmp_tr, tmp_te = cross_validation(ys_train, x_train, k_indices, j, degrees, i)
+            tmp_tr, tmp_te = cross_validation(ys_train, x_train, k_indices, j, degrees, outliers = i)
             # print(tmp_tr, j)
             # print(tmp_te, j)
             tr += tmp_tr

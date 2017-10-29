@@ -85,7 +85,7 @@ def ridge_regression(y, tx, lambda_):
 
 
 # Threshold condition for stopping the iterations on logistic regression and regularized logistic regression
-THRESHOLD = 1e-5
+THRESHOLD = 1e-10
 
 
 def logistic_regression(y, tx, w, max_iters, gamma):
@@ -142,8 +142,10 @@ def reg_logistic_regression(y, tx, lambda_, w, max_iters, gamma):
 
         losses.append(loss)
         if len(losses) > 100 and np.abs(losses[-1] - losses[-100]) < THRESHOLD:
-            print("out for threshold")
+            #print("out for threshold")
             gamma = gamma / 10
+            if gamma < 1e-10:
+                break
 
         if len(losses) > 100 and losses[-1] > losses[-100]:
             gamma = gamma / 10
