@@ -41,10 +41,16 @@ python3 run.py
 
 There are no command line arguments. It will look for a `train.csv` file located on `../data/` for training data and the same for `test.csv` and testing. Outputs will be generated in the `../out/` folder.
 
-The program will output the following through the standard output:
+The program will output the following progress updates through the standard output:
 
 ```
-TODO TODO TODO
+PARSING TRAIN
+PARSING TEST
+FILTERING DATA
+BUILDING POLYNOMIALS
+LEARNING MODEL BY LEAST SQUARES
+PREDICTING VALUES
+EXPORTING CSV
 ```
 
 ### Plots

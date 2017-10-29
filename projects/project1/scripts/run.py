@@ -1,12 +1,13 @@
 from datetime import datetime
 
-from clean_data import standardize, discard_outliers, change_y_to_0, remove_bad_data, look_for_999
-from helpers import predict_labels, build_poly, predict_labels_log
-from implementations import least_squares, reg_logistic_regression
+from clean_data import standardize, discard_outliers, remove_bad_data
+from helpers import predict_labels, build_poly
+from implementations import least_squares
 from parsers import load_data, create_csv_submission
-import numpy as np
 
 OUT_DIR = "../out"
+OUTLIERS_THRESHOLD = 9.2
+DEGREE = 13
 
 
 def main():
@@ -16,28 +17,16 @@ def main():
 
     print("FILTERING DATA")
     x_test, x_train = standardize(x_test, x_train)
-    x_train, ys_train = discard_outliers(x_train, ys_train, 10)
-
-    # Just on logistic regression
-    # ys_train = change_y_to_0(ys_train)
+    x_train, ys_train = discard_outliers(x_train, ys_train, OUTLIERS_THRESHOLD)
 
     print("BUILDING POLYNOMIALS")
-    tx_train = build_poly(x_train, 11)
-    tx_test = build_poly(x_test, 11)
+    tx_train = build_poly(x_train, DEGREE)
+    tx_test = build_poly(x_test, DEGREE)
 
-    #print("LEARNING MODEL BY LEAST SQUARES")
+    print("LEARNING MODEL BY LEAST SQUARES")
     w, mse = least_squares(ys_train, tx_train)
 
-    # print("LEARNING BY LOGISTIC REGRESSION")
-    # lambda_ = 0
-    # max_iters = 1000
-    # gamma = 0.1
-    # w, losses = reg_logistic_regression(ys_train, tx_train, lambda_, w_ini, max_iters, gamma)
-    #
-    # print("PREDICTING VALUES WITH LOG REGRESSION")
-    # y_pred = predict_labels_log(w, tx_test)
-
-    print("PREDICTING VALUES WITH LEAST SQ")
+    print("PREDICTING VALUES")
     y_pred = predict_labels(w, tx_test)
 
     print("EXPORTING CSV")
