@@ -106,62 +106,7 @@ def benchmark_degrees(ys_train, x_train, lambda_=0.01, plot_name="cross_validati
     cross_validation_visualization_degree(degrees, rmse_tr, rmse_te, lambda_, plot_name)
     # degree_min_te = min(enumerate(rmse_te), key=itemgetter(1))[0] + 1
 
-
-
     return rmse_tr, rmse_te
-
-
-# def benchmark_outliers(ys_train, x_train, lambda_=0.01, plot_name="cross_validation"):
-#     seed = 3
-#     k_fold = 4
-#     degrees = 11
-#     # split data in k fold
-#     k_indices = build_k_indices(ys_train, k_fold, seed)
-#     # define lists to store the loss of training data and test data
-#     rmse_tr = []
-#     rmse_te = []
-#
-#     outliers = np.linspace(2, 13, 23)
-#     #outliers = [2]
-#
-#     for i in outliers:
-#
-#         print(i)
-#         tr, te = 0, 0
-#         for j in range(k_fold):
-#             tmp_tr, tmp_te = cross_validation(ys_train, x_train, k_indices, j, degrees, outliers = i)
-#             # print(tmp_tr, j)
-#             # print(tmp_te, j)
-#             tr += tmp_tr
-#             te += tmp_te
-#
-#         rmse_tr.append(tr / k_fold)
-#         rmse_te.append(te / k_fold)
-#         print("OUT {}, TEST {}".format(i, rmse_te[-1]))
-#
-#     cross_validation_visualization(degrees, rmse_tr, rmse_te, lambda_, plot_name)
-#     # degree_min_te = min(enumerate(rmse_te), key=itemgetter(1))[0] + 1
-#
-#     return rmse_tr, rmse_te
-#
-
-
-
-# AQUESTES FUNCIONS NO LES NECESSITEM ¿? --> ABANS D'ESBORRAR RES, AVERIGUAR-HO!
-
-#
-# def learning_by_gradient_descent(ys_train, tx_train, w, gamma):
-#     pass
-#
-#
-# def learning_by_log_reg(ys_train, tx_train, num_iter):
-#     w = np.zeros(tx_train.shape[1])
-#     # print("Weight least squares:{}".format(w))
-#     gamma = 0.01
-#     loss = None
-#     for i in range(num_iter):
-#         w, loss, grad_norm = learning_by_gradient_descent(ys_train, tx_train, w, gamma)
-#     return w, loss
 
 
 def ratio_of_acc(y_test, y_pred):
