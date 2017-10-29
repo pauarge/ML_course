@@ -38,7 +38,7 @@ def main():
 
     x_test, x_train = standardize(x_test, x_train)
 
-    executor = concurrent.futures.ThreadPoolExecutor(8)
+    executor = concurrent.futures.ThreadPoolExecutor(2)
     futures = []
 
     for o in outliers:
