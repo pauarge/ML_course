@@ -12,7 +12,7 @@ MAX_ITERS = 1000000
 
 
 def process_file_lr(x_train, x_test, ys_train, ids_test, o, d, l):
-    print("CALCULATING LE {} {}".format(o, d))
+    print("CALCULATING LR {} {} {}".format(o, d, l))
     tx_train = build_poly(x_train, d)
     tx_test = build_poly(x_test, d)
     w, _ = least_squares(ys_train, tx_train)
