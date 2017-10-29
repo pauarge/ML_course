@@ -6,10 +6,15 @@ def batch_iter(y, tx, batch_size, num_batches=1, shuffle=True):
     Generate a minibatch iterator for a dataset.
     Takes as input two iterables (here the output desired values 'y' and the input data 'tx')
     Outputs an iterator which gives mini-batches of `batch_size` matching elements from `y` and `tx`.
-    Data can be randomly shuffled to avoid ordering in the original data messing with the randomness of the minibatches.
-    Example of use :
-    for minibatch_y, minibatch_tx in batch_iter(y, tx, 32):
-        <DO-SOMETHING>
+    Data can be randomly shuffled to avoid ordering in the original data messing with the randomness of the minibatches
+
+    :param y: Vector of labels of size 1xN
+    :param tx: Matrix of input data of size Nx(1+(DG*D)) after adding a column of ones
+    :param batch_size: # data points used included in the batch
+    :param num_batches: Number of batches to be generated
+    :param shuffle: Boolean whether to randomly order the initial data
+    :return: Iterator which gives mini-batches of `batch_size` matching elements from `y` and `tx`
+
     """
     data_size = len(y)
 
@@ -28,7 +33,17 @@ def batch_iter(y, tx, batch_size, num_batches=1, shuffle=True):
 
 
 def build_poly(x, degree):
-    """polynomial basis functions for input data x, for j=0 up to j=degree."""
+    """
+    Polynomial basis functions for input data x, for j=0 up to j=degree
+    N = #data points
+    D = #number of variables in input data
+    DG = Degree of the polynomial
+
+    :param x: Matrix of input variables of size (NxD)
+    :param degree: Degree of the resulting polynomial
+    :return: Matrix of the polynomial basis functions
+    """
+
     tx = np.ones(x.shape[0])
     for i in range(1, degree + 1):
         tx = np.column_stack((tx, np.power(x, i)))
@@ -36,7 +51,17 @@ def build_poly(x, degree):
 
 
 def build_k_indices(y, k_fold, seed):
-    """build k indices for k-fold."""
+    """
+    Build k indices for k-fold
+    N = #data points
+    D = #number of variables in input data
+
+    :param y: Vector of labels of size 1xN
+    :param k_fold: Number of folds in which data is split
+    :param seed: Number used to initialize a pseudorandom number generator.
+    :return: k_fold vectors of size (1xN/k_fold) in which indices of input data are saved
+    """
+
     num_row = y.shape[0]
     interval = int(num_row / k_fold)
     np.random.seed(seed)
@@ -46,7 +71,18 @@ def build_k_indices(y, k_fold, seed):
 
 
 def compute_gradient(y, tx, w):
-    """Compute the gradient."""
+    """
+    Compute the gradient
+    N = #data points
+    D = #number of variables in input data
+    DG = Degree of the polynomial
+
+    :param y: Vector of labels of size 1xN
+    :param tx: Matrix of input data of size Nx(1+(DG*D)) after adding a column of ones
+    :param w: Vector of weights of size 1x(1+(DG*D))
+    :return: Gradient for loss function of Mean Squared Error evaluated in w
+    """
+
     k = -1.0 / y.shape[0]
     y_pred = predict_labels(w, tx)
     e = y - y_pred
@@ -54,7 +90,18 @@ def compute_gradient(y, tx, w):
 
 
 def compute_mse(y, tx, w):
-    """Calculate the loss using MSE"""
+    """
+    Calculate the loss using MSE
+    N = #data points
+    D = #number of variables in input data
+    DG = Degree of the polynomial
+
+    :param y: Vector of labels of size 1xN
+    :param tx: Matrix of input data of size Nx(1+(DG*D)) after adding a column of ones
+    :param w: Vector of weights of size 1x(1+(DG*D))
+    :return: Loss value for Mean Squared Error evaluated in w
+    """
+
     k = 1.0 / (2 * y.shape[0])
     y_pred = predict_labels(w, tx)
     # y_pred = tx.dot(w)
@@ -63,7 +110,18 @@ def compute_mse(y, tx, w):
 
 
 def calculate_loss(y, tx, w):
-    """compute the cost by negative log likelihood."""
+    """
+    Compute the cost by negative log likelihood
+    N = #data points
+    D = #number of variables in input data
+    DG = Degree of the polynomial
+
+    :param y: Vector of labels of size 1xN
+    :param tx: Matrix of input data of size Nx(1+(DG*D)) after adding a column of ones
+    :param w: Vector of weights of size 1x(1+(DG*D))
+    :return: Loss value by negative log likelihood evaluated in w
+    """
+
     n = len(y)
     y_pred = new_labels(w, tx)
     s = sigmoid(y_pred)
@@ -73,12 +131,35 @@ def calculate_loss(y, tx, w):
     return (-np.sum(a + np.transpose(b))) / tx.shape[0]
 
 def calculate_loss_reg(y,tx,w, lambda_):
+    """
+    Compute the cost by negative log likelihood for Regularized Logistic Regression
+    N = #data points
+    D = #number of variables in input data
+    DG = Degree of the polynomial
+
+    :param y: Vector of labels of size 1xN
+    :param tx: Matrix of input data of size Nx(1+(DG*D)) after adding a column of ones
+    :param w: Vector of weights of size 1x(1+(DG*D))
+    :param lambda_: Regularization parameter
+    :return: Loss value by negative log likelihood for Regularized Logistic Regression evaluated in w
+    """
     n = n = tx.shape[0]
     return calculate_loss(y, tx, w) + (lambda_ / (2 * n)) * np.power(np.linalg.norm(w), 2)
 
 
 def calculate_gradient(y, tx, w):
-    """compute the gradient of loss."""
+    """
+    Compute the gradient of the negative log likelihood loss function
+    N = #data points
+    D = #number of variables in input data
+    DG = Degree of the polynomial
+
+    :param y: Vector of labels of size 1xN
+    :param tx: Matrix of input data of size Nx(1+(DG*D)) after adding a column of ones
+    :param w: Vector of weights of size 1x(1+(DG*D))
+    :return: Gradient of the negative log likelihood loss function in w
+    """
+
     y_pred = new_labels(w, tx)
     s = sigmoid(y_pred)
     k = 1.0 / y.shape[0]
@@ -86,12 +167,28 @@ def calculate_gradient(y, tx, w):
 
 
 def sigmoid(t):
-    """apply sigmoid function on t."""
+    """
+    Apply sigmoid function on t
+
+    :param t: Vector in which sigmoid is evaluated
+    :return: Sigmoid function evaluated in t
+    """
+
     return 1 / (1 + np.exp(-t))
 
 
 def predict_labels(weights, data):
-    """Generates class predictions given weights, and a test data matrix"""
+    """
+    Generates class predictions given weights, and a test data matrix for Least Squares
+    N = #data points
+    D = #number of variables in input data
+    DG = Degree of the polynomial
+
+    :param weights: Vector of weights of size 1x(1+(DG*D))
+    :param data: Matrix containing the test data
+    :return: Class predictions for given weights and a test data matrix for Least Squares
+    """
+
     y_pred = np.dot(data, weights)
     y_pred[np.where(y_pred <= 0)] = -1
     y_pred[np.where(y_pred > 0)] = 1
@@ -99,7 +196,17 @@ def predict_labels(weights, data):
 
 
 def predict_labels_log(weights, data):
-    """Generates class predictions given weights, and a test data matrix"""
+    """
+    Generates class predictions given weights, and a test data matrix for Logistic Regression
+    N = #data points
+    D = #number of variables in input data
+    DG = Degree of the polynomial
+
+    :param weights: Vector of weights of size 1x(1+(DG*D))
+    :param data: Matrix containing the test data
+    :return: Class predictions for given weights and test data matrix for Logistic Regression
+    """
+
     y_pred = np.dot(data, weights)
     y_pred[np.where(y_pred <= 0.5)] = -1
     y_pred[np.where(y_pred > 0.5)] = 1
@@ -107,7 +214,17 @@ def predict_labels_log(weights, data):
 
 
 def new_labels(w, tx):
-    """Generates class predictions given weights, and a test data matrix"""
+    """
+    Generates class predictions given weights, and a test data matrix
+    N = #data points
+    D = #number of variables in input data
+    DG = Degree of the polynomial
+
+    :param w: Vector of weights of size 1x(1+(DG*D))
+    :param tx: Matrix of input data of size Nx(1+(DG*D)) after adding a column of ones
+    :return: Class predictions given weights, and a test data matrix
+    """
+
     y_pred = tx.dot(w)
     y_pred[np.where(y_pred <= 0.5)] = 0
     y_pred[np.where(y_pred > 0.5)] = 1
@@ -117,7 +234,18 @@ def new_labels(w, tx):
 def learning_by_penalized_gradient(y, tx, w, gamma, lambda_):
     """
     Do one step of gradient descent, using the penalized logistic regression.
-    Return the loss and updated w.
+    Return the loss and updated w
+    N = #data points
+    D = #number of variables in input data
+    DG = Degree of the polynomial
+
+    :param y: Vector of labels of size 1xN
+    :param tx: Matrix of input data of size Nx(1+(DG*D)) after adding a column of ones
+    :param w: Vector of initial weights of size 1x(1+(DG*D))
+    :param gamma: Step size of the iterative method
+    :param lambda_: Regularization parameter
+    :return: Loss and updated w after doing one step of gradient descent for penalized logistic regression
+
     """
 
     loss = calculate_loss_reg(y, tx, w, lambda_)
