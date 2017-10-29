@@ -18,8 +18,8 @@ def cross_validation(y, x, k_indices, k, degree, lambda_):
     y_train = np.take(y, k_flattened_new)
     x_train = np.take(x, k_flattened_new, 0)
 
-    y_train = change_y_to_0(y_train)
-    y_test = change_y_to_0(y_test)
+    #y_train = change_y_to_0(y_train)
+    #y_test = change_y_to_0(y_test)
 
     tx_train = build_poly(x_train, degree)
     tx_test = build_poly(x_test, degree)
@@ -27,8 +27,11 @@ def cross_validation(y, x, k_indices, k, degree, lambda_):
     # max_iters = 5000
     # gamma = 0.1
     # w_ini = np.ones(tx_train.shape[1])
+
     # w, mse_tr = least_squares_gd(y_train, tx_train, w_ini, max_iters, gamma)
+
     w, mse_tr = least_squares(y_train, tx_train)
+
     # w, loss_tr = reg_logistic_regression(y_train, tx_train, lambda_, w_ini, max_iters, gamma)
 
     loss_te = compute_mse(y_test, tx_test, w)
@@ -81,7 +84,7 @@ def benchmark_lambda(ys_train, x_train, degree=1, plot_name="PATATA"):
 
 
 def benchmark_degrees(ys_train, x_train, lambda_=0.01, plot_name="cross_validation"):
-    seed = 3
+    seed = 1
     k_fold = 4
     degrees = range(1, 16)
     # split data in k fold

@@ -53,7 +53,7 @@ def main():
 
     x_test, x_train = standardize(x_test, x_train)
 
-    x_train, ys_train = discard_outliers(x_train, ys_train, 9.2)
+    x_train, ys_train = discard_outliers(x_train, ys_train, 9.5)
 
 
 

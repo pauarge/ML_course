@@ -99,7 +99,7 @@ def compute_mse(y, tx, w):
     :return: Loss value for Mean Squared Error evaluated in w
     """
     k = 1.0 / (2 * y.shape[0])
-    y_pred = predict_labels(w, tx)
+    y_pred = tx.dot(w)
     e = y - y_pred
     return k * np.transpose(e).dot(e)
 
