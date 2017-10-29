@@ -10,23 +10,6 @@ def look_for_999(x):
     return b_v
 
 
-def clean():
-    ys_train, x_train, ids_train, x_test, ids_test = load_data()
-
-    print("FILTERING DATA")
-    # proves per least_squares sense rows amb -999
-    x_train1, ys_train1 = remove_bad_data(x_train, ys_train)
-    x_train2, ys_train2 = remove_good_data(x_train, ys_train)
-
-    cm = np.corrcoef(x_train1, rowvar=False)
-    bad_rows = look_for_999(x_train)
-    # x_test, x_train1 = standardize(x_test, x_train1)
-    # x_test2, x_train2 = standardize(x_test, x_train)
-
-
-    x_train, ys_train = discard_outliers(x_train, ys_train, 1.95)
-
-
 def standardize(x_test, x_train):
     for i in range(x_test.shape[1]):
         x_test[:, i], x_train[:, i] = standardize_col(x_test[:, i], x_train[:, i])
