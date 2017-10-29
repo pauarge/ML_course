@@ -25,20 +25,15 @@ def standardize_col(x1, x2):
     x_clean = np.append(x1_clean, x2_clean)
 
     mean = np.mean(x_clean)
-    #std = np.std(x_clean, ddof=1)
-
     x1 -= mean
     x2 -= mean
-
     x1[index_x1] = 0
     x2[index_x2] = 0
 
-    std = np.std(np.append(x1,x2), ddof=1)
+    std = np.std(np.append(x1, x2), ddof=1)
 
-    x1 = x1 / std
-    x2 = x2 / std
-
-
+    x1 /= std
+    x2 /= std
     return x1, x2
 
 
@@ -71,7 +66,6 @@ def remove_bad_data(x, y):
 
 
 def remove_bad_data_test(x, y):
-    # tmp = x[np.where(x != -999)]
     index = np.where(x == -999)
     index = np.unique(index[0])
     x = np.delete(x, index, 0)
@@ -93,7 +87,7 @@ def discard_outliers(x_train, ys_train, threshold):
             index.append(i)
     x_train = np.delete(x_train, index, 0)
     ys_train = np.delete(ys_train, index, 0)
-    #print(len(index))
+    # print(len(index))
     return x_train, ys_train
 
 
