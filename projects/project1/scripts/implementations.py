@@ -11,8 +11,8 @@ def least_squares_gd(y, tx, w, max_iters, gamma):
     D = #number of variables in input data
     DG = Degree of the polynomial
 
-    :param y: Vector of output variables of size 1xN
-    :param tx: Vector of input variables of size Nx(1+(DG*D))
+    :param y: Vector of labels of size 1xN
+    :param tx: Matrix of input data of size Nx(1+(DG*D)) after adding a column of ones
     :param w: Vector of initial weights of size 1x(1+(DG*D))
     :param max_iters: Number of maximum iterations on the loop
     :param gamma: Step size of the iterative method
@@ -40,8 +40,8 @@ def least_squares_sgd(y, tx, w, batch_size, max_iters, gamma):
     D = #number of variables in input data
     DG = Degree of the polynomial
 
-    :param y: Vector of output variables of size 1xN
-    :param tx: Vector of input variables of size Nx(1+(DG*D))
+    :param y: Vector of labels of size 1xN
+    :param tx: Matrix of input data of size Nx(1+(DG*D)) after adding a column of ones
     :param w: Vector of initial weights of size 1x(1+(DG*D))
     :param batch_size: Amount of data points taken on each batch of the iteration
     :param max_iters: Number of maximum iterations on the loop
@@ -64,8 +64,8 @@ def least_squares(y, tx):
     D = #number of variables in input data
     DG = Degree of the polynomial
 
-    :param y: Vector of output variables of size 1xN
-    :param tx: Vector of input variables of size Nx(1+(DG*D))
+    :param y: Vector of labels of the input data of size 1xN
+    :param tx: Matrix of input variables of size Nx(1+(DG*D)) after adding a column of ones
     :return: Vector of weights of size 1x(1+(DG*D)) and
              Mean Squared Error of the obtained weights
     """
@@ -81,8 +81,8 @@ def ridge_regression(y, tx, lambda_):
     D = #number of variables in input data
     DG = Degree of the polynomial
 
-    :param y: Vector of output variables of size 1xN
-    :param tx: Vector of input variables of size Nx(1+(DG*D))
+    :param y: Vector of labels of size 1xN
+    :param tx: Matrix of input variables of size Nx(1+(DG*D)) after adding a column of ones
     :param lambda_: Regularization parameter
     :return: Vector of weights of size 1x(1+(DG*D)) and
              Mean Squared Error of the obtained weights
@@ -103,8 +103,8 @@ def logistic_regression(y, tx, w, max_iters, gamma):
     D = #number of variables in input data
     DG = Degree of the polynomial
 
-    :param y: Vector of output variables of size 1xN
-    :param tx: Vector of input variables of size Nx(1+(DG*D))
+    :param y: Vector of labels of size 1xN
+    :param tx: Matrix of input variables of size Nx(1+(DG*D)) after adding a column of ones
     :param w: Vector of initial weights of size 1x(1+(DG*D))
     :param max_iters: Number of maximum iterations on the loop
     :param gamma: Step size of the iterative method
@@ -131,8 +131,8 @@ def reg_logistic_regression(y, tx, lambda_, w, max_iters, gamma):
     D = #number of variables in input data
     DG = Degree of the polynomial
 
-    :param y: Vector of output variables of size 1xN
-    :param tx: Vector of input variables of size Nx(1+(DG*D))
+    :param y: Vector of labels of size 1xN
+    :param tx: Matrix of input variables of size Nx(1+(DG*D)) after adding a column of ones
     :param lambda_: Regularization parameter
     :param w: Vector of initial weights of size 1x(1+(DG*D))
     :param max_iters: Number of maximum iterations on the loop
