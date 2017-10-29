@@ -55,7 +55,7 @@ def main():
     x_test, x_train = standardize(x_test, x_train)
     #x_train = standardize_train(x_train)
 
-    x_train, ys_train = discard_outliers(x_train, ys_train, 8)
+    x_train, ys_train = discard_outliers(x_train, ys_train, 9.2)
 
 
 
@@ -89,17 +89,20 @@ def main():
     # create_csv_submission(ids_test, y_pred, "{}/submission-{}.csv".format(OUT_DIR, datetime.now()))
 
 
-    #rmse_tr, rmse_te = benchmark_degrees(ys_train, x_train, lambda_=0, plot_name="cross_validation LR degrees, std")
+    rmse_tr, rmse_te = benchmark_degrees(ys_train, x_train, lambda_=0.0, plot_name="cross_validation LR degrees, std")
+    print("TRAIN: {}".format(rmse_tr))
+    print("TEST {}".format(rmse_te))
 
     #rmse_tr, rmse_te = benchmark_outliers(ys_train, x_train, plot_name="cross_validation LS degree 11, outliers")
 
-    rmse_tr, rmse_te = benchmark_lambda(ys_train, x_train, degree=2, plot_name="CROSS VALIDATION LR LAMBDAS")
+    # for i in range(2,6):
+    #     print("DEGREE: ".format(i))
+    #     rmse_tr, rmse_te = benchmark_lambda(ys_train, x_train, degree=i, plot_name="CROSS VALIDATION LR LAMBDAS")
+    #     print("TRAIN {}".format(rmse_tr))
+    #     print("TEST {}".format(rmse_te))
 
-    print("TRAIN {}".format(rmse_tr))
-    print("TEST {}".format(rmse_te))
-    # print(rmse_tr)
-    # print(rmse_te)
 
+    #
     # seed = 3
     # k_fold = 4
     # # split data in k fold
@@ -107,7 +110,7 @@ def main():
     # loss_tr_l = []
     # loss_te_l = []
     # for k in range(k_fold):
-    #     loss_tr, loss_te = cross_validation(ys_train, x_train, k_indices, k, 1, 11, lambda_=0)
+    #     loss_tr, loss_te = cross_validation(ys_train, x_train, k_indices, k, 4, lambda_=0.0001)
     #     loss_te_l.append(loss_te)
     #     loss_tr_l.append(loss_tr)
     #

@@ -158,5 +158,4 @@ def reg_logistic_regression(y, tx, lambda_, w, max_iters, gamma):
         if len(losses) > 100 and losses[-1] > losses[-100]:
             gamma = gamma / 10
             pass
-
     return w, losses[-1]

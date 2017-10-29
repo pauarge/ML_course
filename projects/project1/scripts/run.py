@@ -13,8 +13,6 @@ DEGREE = 13
 def main():
     ys_train, x_train, ids_train, x_test, ids_test = load_data()
 
-    x_train, ys_train = remove_bad_data(x_train, ys_train)
-
     print("FILTERING DATA")
     x_test, x_train = standardize(x_test, x_train)
     x_train, ys_train = discard_outliers(x_train, ys_train, OUTLIERS_THRESHOLD)
