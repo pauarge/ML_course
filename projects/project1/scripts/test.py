@@ -1,61 +1,63 @@
 import numpy as np
-from datetime import datetime
+import argparse
 
-from clean_data import look_for_999, standardize, remove_bad_data, discard_outliers, change_y_to_0
-from helpers import predict_labels, compute_mse, build_k_indices, build_poly
-from implementations import least_squares, least_squares_gd
-from parsers import load_data, create_csv_submission
+from clean_data import look_for_999, standardize, remove_bad_data, discard_outliers
+from helpers import build_k_indices
+from parsers import load_data
 from validation import cross_validation, benchmark_degrees, benchmark_lambda
 
 OUT_DIR = "../out"
 
 
-def main(argv, filter_data=False, benchmark=False, method=False):
-    # load data
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--filter', type=int, help='choose the pre-processing data way\n0: raw data\n1: standardize\n'
+                                                   '2: standardize + discard outliers\n'
+                                                   '3: remove features with -999 values\n'
+                                                   '4: remove data points with -999 values', default=2)
+    parser.add_argument('--method', type=str, help="choose between Least Squares ('LS') or Regularized Logistic "
+                                                   "Regression ('RLR')", default="LS")
+    parser.add_argument('--X', type=str, help="choose between X-validation among different degrees ('BD') or "
+                                              "lambdas ('BL'). For simple X-validation with the default hyperparameters"
+                                              "setting, choose 'XV'", default="BD")
+    args = parser.parse_args()
+
+
     ys_train, x_train, ids_train, x_test, ids_test = load_data()
 
-    # determine way of pre-processing the information
-    if filter_data:
-        filter = argv[0]
-    else:
-        filter = 0
-
-    # pre-process information
-    if filter == 1:
+    # pre-processing the information
+    if args.filter == 1:
         x_test, x_train = standardize(x_test, x_train)
 
-    elif filter == 2:
+    elif args.filter == 2:
         x_test, x_train = standardize(x_test, x_train)
         x_train, ys_train = discard_outliers(x_train, ys_train, 9)
 
-    elif filter == 3:
+    elif args.filter == 3:
         bad_columns = look_for_999(x_train)
         x_train = np.delete(x_train, bad_columns, 1)
         x_test = np.delete(x_test, bad_columns, 1)
         x_test, x_train = standardize(x_test, x_train)
         x_train, ys_train = discard_outliers(x_train, ys_train, 9)
 
-    elif filter == 4:
+    elif args.filter == 4:
         x_train, ys_train = remove_bad_data(x_train, ys_train)
         x_test = remove_bad_data(x_test, _)
         x_test, x_train = standardize(x_test, x_train)
         x_train, ys_train = discard_outliers(x_train, ys_train, 9)
 
-    if method:
-        method = arg[2]
-    else:
-        method = "LS"
+
+    method = args.method
 
     # 4-fold cross validation for different degrees
-    if benchmark and argv[1] == "BD":
+    if args.X == "BD":
         loss_tr, loss_te, min_d = benchmark_degrees(ys_train, x_train, method, lambda_=0.01)
         print("MIN TEST ERROR: {} FOR {} DEGREE".format(np.min(loss_te), min_d))
 
     # 4-fold cross validation for different lambdas
-    elif benchmark and arg[1] == "BL":
+    elif args.X == "BL":
         loss_tr, loss_te, min_lambda = benchmark_lambda(ys_train, x_train, method, degree=1)
         print("MIN TEST ERROR: {} FOR LAMBDA {}".format(np.min(loss_te), min_lambda))
-
 
     # perform 4-fold cross validation with the specified method
     else:
@@ -66,7 +68,7 @@ def main(argv, filter_data=False, benchmark=False, method=False):
         k_indices = build_k_indices(ys_train, k_fold, seed)
 
         # specify degree
-        degree = 4
+        degree = 11
 
         tr, te = 0, 0
 
