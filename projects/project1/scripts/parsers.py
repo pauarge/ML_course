@@ -39,8 +39,8 @@ def load_pickle_data(filename):
     :return: The object if the file existed, None otherwise
     """
     path = "../tmp/{}.pckl".format(filename)
-    print("LOADING PCKL FILE FROM {}".format(path))
     if os.path.exists(path):
+        print("LOADING PCKL FILE FROM {}".format(path))
         f = open(path, 'rb')
         obj = pickle.load(f)
         f.close()
