@@ -39,6 +39,7 @@ def load_pickle_data(filename):
     :return: The object if the file existed, None otherwise
     """
     path = "../tmp/{}.pckl".format(filename)
+    print("LOADING PCKL FILE FROM {}".format(path))
     if os.path.exists(path):
         f = open(path, 'rb')
         obj = pickle.load(f)
@@ -67,6 +68,7 @@ def load_csv_data(data_path):
     :param data_path: Data path of the .csv file
     :return: Ys, input_data and ids loaded from those files
     """
+    print("LOADING CSV FILE FROM {}".format(data_path))
     y = np.genfromtxt(data_path, delimiter=",", skip_header=1, dtype=str, usecols=[1])
     x = np.genfromtxt(data_path, delimiter=",", skip_header=1)
     ids = x[:, 0].astype(np.int)
