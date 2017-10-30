@@ -22,7 +22,7 @@ This project consists on applying ML techniques on real data from CERN, which ar
 
 \section{Introduction}
 
-The given data for this project consists in two files, \verb|train.csv| and \verb|test.csv|, which has some particularities, for instance, that there are features with values missing (\verb|-999|). That means that just inputting the imported data into an algorithm would give results far from optimal. This fact proves the importance of preprocessing and is independent of the algorithm (and its hyperparameters) chosen: better data will mean better results.
+The given data has some particularities: for instance, that there are features with values missing (\verb|-999|). That means that just inputting the imported data into an algorithm would give results far from optimal. This fact proves the importance of preprocessing and is independent of the algorithm (and its hyperparameters) chosen: better data will mean better results.
 
 The work of implementing the ML methods has been based on those already implemented on the labs, slightly modified mainly for increasing performance and adapting to required input and output. The main factor for deciding one method or another has been the results of the loss function, using cross validation.
 
@@ -37,7 +37,7 @@ They have been considered several transformations to preprocess the data:
 \item Deletion of the features that contain \verb|-999| values.
 \end{itemize}
 
-Applying all these transformations to the dataset and to the different methods, it can be seen, using 4-fold cross-validation, that the transformation which gives a smallest error is the standardization together with the deletion of outliers, those data points that have some component far from the mean of the corresponding feature. 
+Applying all these transformations to the data set and to the different methods, it can be seen, using 4-fold cross-validation, that the transformation which gives a smallest error is the standardization together with the deletion of outliers, those data points that have some component far from the mean of the corresponding feature. 
 
 The following figure shows the test errors obtained using 4-fold cross-validation for the different methods and transformations:
 
@@ -55,10 +55,9 @@ The following figure shows the test errors obtained using 4-fold cross-validatio
 \label{figure 2}
 \end{figure}
 
+The results shown in figures \ref{figure 1} and \ref{figure 2} have been obtained after hyperparameter tuning in order to obtain the best result for each method. The process for this tuning will be explained in the following section. 
 
-The results shown in figures \ref{figure 1} and \ref{figure 2} have been obtained after hyperparameter tunning in order to obtain the best result for each method. The process for this tunning will be explained in the following section. 
-
-Both figures show that the error is significantly higher when deleting values of \verb|-999| in rows than when deleting them in columns. This is because these values are concentrated in a few features while they are spread in all the dataset. That means that there are many data points that have to be deleted but there are not that many input variables. 
+Both figures show that the error is significantly higher when deleting values of \verb|-999| in rows than when deleting them in columns. This is because these values are concentrated in a few features while they are spread in all the data set. That means that there are many data points that have to be deleted but there are not that many input variables. 
 
 Even so, in both cases too much information is lost in the model. Values \verb|-999| represent unmeasured data so it is feasible to correct their value by the mean. Standardizing the data and changing \verb|-999| by the mean of that input variable gives better results than getting rid of the unmeasured data.
 
@@ -66,17 +65,15 @@ Even so, in both cases too much information is lost in the model. Values \verb|-
 
 For this project the following methods have been implemented: Linear Regression Gradient Descent, Linear Regression Stochastic Gradient Descent, Least Squares, Ridge Regression, Logistic Regression by GD and Regularized Logistic Regression by GD.
 
-
 Both Linear Regression by Gradient Descent and by Stochastic Gradient Descent are iterative methods and have been discarded among Least Squares as they will converge to the same optimal result as this last one but with higher computational cost. 
 
 Besides that, Ridge Regression has also been discarded due to the fact that it penalizes high values of the norm of w, and it is useful when the system of equations that has to be solved in Least Squares method does not give a solution. As in this case Least squares gives a solution, Ridge Regression can be ignored. 
 
-
 Finally, applying to Logistic Regression and Regularized Logistic Regression, both methods have been implemented and studied using the regularized version of them by taking into consideration the case of $\lambda=0$. 
 
-\section{Hyperparameter tunning}
+\section{Hyperparameter tuning}
 
-To proceed with the tunning of hyperparameters for each method, 4-fold cross validation has been implemented. Different range of values for each hyperparameter have been considered. 
+To proceed with the tuning of hyperparameters for each method, 4-fold cross validation has been implemented. Different range of values for each hyperparameter have been considered. 
 
 \subsection{Least Squares}
 For Least Squares method, the degree is the only free variable to be determined. To choose its best value, lowest test error criteria has been followed after performing 4-fold cross validation for degrees from 1 to 15. 
@@ -102,7 +99,7 @@ For Logistic Regression method, both degree and $\lambda$ have to be determined.
 
 \section{Final method and hyperparameters}
 
-In order to decide which method to use for the classification of the data, it is useful to compare the value from a given loss function. As the loss functions associated to Least Squares and Logistic Regression are different, it may be useful to have a new indicator of the accuracy of the method. One example could be the ratio of accurate values classified. Computing this value for the best tunned parameters, by 4-fold cross validation, the results are the following:
+In order to decide which method to use for the classification of the data, it is useful to compare the value from a given loss function. As the loss functions associated to Least Squares and Logistic Regression are different, it may be useful to have a new indicator of the accuracy of the method. One example could be the ratio of accurate values classified. Computing this value for the best tuned parameters, by 4-fold cross validation, the results are the following:
 
 \begin{itemize}
 \item{}Ratio of accurate predictions for Least Squares: 0.8213
@@ -111,7 +108,8 @@ In order to decide which method to use for the classification of the data, it is
 
 \section{Summary}
 
-Finally, the chosen model for this task has been the one given by Least Squares method with degree 11. This model has been validated by 4-fold cross validation and chosen by its low test error. 
-Moreover, it has been emphasized the importance of data pre-process as it has result in a great decrease of the error independently of the chosen method. 
+Finally, the chosen model for this task has been the one given by Least Squares method with degree 11 and outiler threshold 8.5. This model has been validated by 4-fold cross validation and chosen by its low test error and its high ratio of accurate prediction compared to Logistic Regression. 
+
+Moreover, it has been emphasized the importance of data pre-process as it has result in a great decrease of the error independently of the chosen method. Note that since the main goal has been precision of results, computation time hasn't been an issue, therefore, the focus has been on methods that may give better results although taking more time to compute.
 
 \end{document}
