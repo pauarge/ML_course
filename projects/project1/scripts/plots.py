@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 
 
-def cross_validation_visualization_degree(degree, mse_tr, mse_te, lambda_, plot_name):
+def cross_validation_visualization_degree(degree, mse_tr, mse_te, plot_name):
     """visualization the curves of mse_tr and mse_te."""
 
     plt.plot(degree, mse_tr, marker=".", label='train error ')
@@ -15,7 +15,7 @@ def cross_validation_visualization_degree(degree, mse_tr, mse_te, lambda_, plot_
     plt.close()
 
 
-def cross_validation_visualization(lambdas, mse_tr, mse_te, degree, plot_name):
+def cross_validation_visualization(lambdas, mse_tr, mse_te, plot_name):
     """visualization the curves of mse_tr and mse_te."""
 
     plt.semilogx(lambdas, mse_tr, marker=".", label='train error ')

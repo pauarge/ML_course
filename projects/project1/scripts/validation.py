@@ -8,7 +8,24 @@ from plots import cross_validation_visualization, cross_validation_visualization
 
 
 def cross_validation(y, x, k_indices, k, degree, method, lambda_):
-    """return the train and test loss calculated with the specified method."""
+    """
+    Cross validation using the specified method.
+    N = #data points
+    D = #number of variables in input data
+    DG = Degree of the polynomial
+
+    :param y: Vector of labels of size 1xN
+    :param x: Matrix of input variables of size NxD
+    :param k_indices: List of lists containing the indices of elements from x matrix that will be part of the test set
+    :param k: Number of fold we are using for test set
+    :param degree: Degree of the polynomial
+    :param method: Method used to calculate w and error. It can be selected from Least Squares (LS) or
+    Regularised Logistic Regression (RLR)
+    :param lambda_: Regularization parameter
+    :return: error of the weights computed by either mean square (LS) or negative log likelihood (RLR) for both train
+    and test sets
+
+    """
     # define x and y test data set
     y_test = np.take(y, k_indices[k])
     x_test = np.take(x, k_indices[k], 0)
@@ -25,7 +42,7 @@ def cross_validation(y, x, k_indices, k, degree, method, lambda_):
     tx_test = build_poly(x_test, degree)
 
     if method == "LS":
-        #calculate w and loss by least squares method
+        # calculate w and loss by least squares method
         w, loss_tr = least_squares(y_train, tx_train)
         loss_te = compute_mse(y_test, tx_test, w)
 
@@ -38,7 +55,7 @@ def cross_validation(y, x, k_indices, k, degree, method, lambda_):
         gamma = 0.1
         w_ini = np.ones(tx_train.shape[1])
 
-        #calculate w and loss by regularized logistic regression
+        # calculate w and loss by regularized logistic regression
         w, loss_tr = reg_logistic_regression(y_train, tx_train, lambda_, w_ini, max_iters, gamma)
         loss_te = calculate_loss_reg(y_test, tx_test, w, lambda_)
 
@@ -51,6 +68,22 @@ def cross_validation(y, x, k_indices, k, degree, method, lambda_):
 
 
 def benchmark_lambda(ys_train, x_train, method, degree=1):
+    """
+    Cross validation using the specified method for different values of lambda_ and a fixed degree.
+    N = #data points
+    D = #number of variables in input data
+    DG = Degree of the polynomial
+
+    :param ys_train: Vector of labels of size 1xN
+    :param x_train: Matrix of input variables of size NxD
+    :param degree: Degree of the polynomial
+    :param method: Method used to calculate w and error. It can be selected from Least Squares (LS) or
+    Regularised Logistic Regression (RLR)
+    :return: Returns two lists of errors, first one regarding train error and second one regarding test error, computed
+    by either mean square (LS) or negative log likelihood (RLR); and the value of lambda_ corresponding to minimum test
+    error value in the test.
+
+    """
     seed = 3
     k_fold = 4
     lambdas = np.logspace(-4, 0, 20)
@@ -73,8 +106,8 @@ def benchmark_lambda(ys_train, x_train, method, degree=1):
         rmse_tr.append(tr / k_fold)
         rmse_te.append(te / k_fold)
 
-    cross_validation_visualization(lambdas, rmse_tr, rmse_te, degree,
-                                   plot_name = "cross validation for lambdas with {}".format(method))
+    cross_validation_visualization(lambdas, rmse_tr, rmse_te,
+                                   plot_name="cross validation for lambdas with {}".format(method))
 
     min_lambda = lambdas[np.where(np.min(rmse_te))]
 
@@ -82,6 +115,22 @@ def benchmark_lambda(ys_train, x_train, method, degree=1):
 
 
 def benchmark_degrees(ys_train, x_train, method, lambda_=0.01):
+    """
+    Cross validation using the specified method for different values of lambda_ and a fixed degree.
+    N = #data points
+    D = #number of variables in input data
+    DG = Degree of the polynomial
+
+    :param ys_train: Vector of labels of size 1xN
+    :param x_train: Matrix of input variables of size NxD
+    :param method: Method used to calculate w and error. It can be selected from Least Squares (LS) or
+    Regularised Logistic Regression (RLR)
+    :param lambda_: Regularization parameter
+    :return: Returns two lists of errors, first one regarding train error and second one regarding test error,
+    computed by either mean square (LS) or negative log likelihood (RLR); and the value of the degree corresponding
+    to minimum test error value in the test.
+
+    """
     seed = 1
     k_fold = 4
     degrees = range(1, 16)
@@ -102,8 +151,8 @@ def benchmark_degrees(ys_train, x_train, method, lambda_=0.01):
         rmse_tr.append(tr / k_fold)
         rmse_te.append(te / k_fold)
 
-    cross_validation_visualization_degree(degrees, rmse_tr, rmse_te, lambda_,
-                                          plot_name = "cross validation for degrees with {}".format(method))
+    cross_validation_visualization_degree(degrees, rmse_tr, rmse_te,
+                                          plot_name="cross validation for degrees with {}".format(method))
     min_d = np.where(np.min(rmse_te)) + np.min(degrees)
 
     return rmse_tr, rmse_te, min_d
