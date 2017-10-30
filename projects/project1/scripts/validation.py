@@ -4,7 +4,7 @@ from clean_data import standardize, discard_outliers, change_y_to_0, remove_bad_
 from helpers import compute_mse, build_poly, build_k_indices, learning_by_penalized_gradient, calculate_loss, \
     calculate_loss_reg
 from implementations import least_squares, reg_logistic_regression, least_squares_gd
-from plots import cross_validation_visualization, cross_validation_visualization_degree
+from plots import cross_validation_visualization_degree, cross_validation_visualization_lambdas
 
 
 def cross_validation(y, x, k_indices, k, degree, method, lambda_):
@@ -106,7 +106,7 @@ def benchmark_lambda(ys_train, x_train, method, degree=1):
         rmse_tr.append(tr / k_fold)
         rmse_te.append(te / k_fold)
 
-    cross_validation_visualization(lambdas, rmse_tr, rmse_te,
+    cross_validation_visualization_lambdas(lambdas, rmse_tr, rmse_te,
                                    plot_name="cross validation for lambdas with {}".format(method))
 
     min_lambda = lambdas[np.where(np.min(rmse_te))]
