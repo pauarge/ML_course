@@ -159,10 +159,20 @@ def benchmark_degrees(ys_train, x_train, method, lambda_=0.01):
 
 
 def ratio_of_acc(y_test, y_pred):
+    """
+    Calculates the percentage of correct predictions by comparing the real value with the predicted one.
+    N = #data points
+
+    :param y_test: Vector of real labels of size 1xN
+    :param y_pred: Vector of predicted labels of size 1xN
+    :return: Percentage of correct predictions
+
+        """
+
     print("CALCULATING SCORE")
     y_test = change_y_to_1(y_test)
     y_pred = change_y_to_1(y_pred)
     res = y_test * y_pred
-    score = round((len(np.where(res > 0)[0])) / float(y_test.shape[0]), 10)
+    score = 100*round((len(np.where(res > 0)[0])) / float(y_test.shape[0]), 10)
     print("Score: {}".format(score))
     return score
