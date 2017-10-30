@@ -22,13 +22,12 @@ def least_squares_gd(y, tx, w, max_iters, gamma):
     error = []
     for i in range(max_iters):
         gradient = compute_gradient(y, tx, w)
-        w = w - gamma * gradient
+        w -= gamma * gradient
         mse = compute_mse(y, tx, w)
         error.append(mse)
-        if len(error) > 10 and np.abs(error[-1] - error[-10]) < THRESHOLD:
+        if len(error) > 100 and np.abs(error[-1] - error[-2]) < THRESHOLD:
             gamma = gamma / 10
             if gamma < 1e-10:
-                print(i)
                 break
 
     return w, error[-1]
@@ -51,10 +50,18 @@ def least_squares_sgd(y, tx, w, batch_size, max_iters, gamma):
              Mean Squared Error of the obtained weights
     """
     gradient = None
+    error = []
     for i in range(max_iters):
+
         for minibatch_y, minibatch_tx in batch_iter(y, tx, batch_size, num_batches=1):
             gradient = compute_gradient(minibatch_y, minibatch_tx, w)
         w -= gamma * gradient
+        mse = compute_mse(y, tx, w)
+        error.append(mse)
+        if len(error) > 100 and np.abs(error[-1] - error[-2]) < THRESHOLD:
+            gamma = gamma / 10
+            if gamma < 1e-10:
+                break
     return w, compute_mse(y, tx, w)
 
 
@@ -94,7 +101,7 @@ def ridge_regression(y, tx, lambda_):
 
 
 # Threshold condition for stopping the iterations on logistic regression and regularized logistic regression
-THRESHOLD = 1e-10
+THRESHOLD = 1e-6
 
 
 def logistic_regression(y, tx, w, max_iters, gamma):

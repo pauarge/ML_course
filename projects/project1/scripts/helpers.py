@@ -74,7 +74,7 @@ def compute_gradient(y, tx, w):
     :return: Gradient for loss function of Mean Squared Error evaluated in w
     """
     k = -1.0 / y.shape[0]
-    y_pred = predict_labels(w, tx)
+    y_pred = tx.dot(w)
     e = y - y_pred
     return k * np.transpose(tx).dot(e)
 

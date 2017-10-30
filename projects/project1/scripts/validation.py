@@ -131,9 +131,9 @@ def benchmark_degrees(ys_train, x_train, method, lambda_=0.01):
     to minimum test error value in the test.
 
     """
-    seed = 5
+    seed = 6
     k_fold = 4
-    degrees = range(1, 16)
+    degrees = range(1, 15)
     # split data in k fold
     k_indices = build_k_indices(ys_train, k_fold, seed)
     # define lists to store the loss of training data and test data
