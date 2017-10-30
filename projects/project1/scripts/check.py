@@ -36,9 +36,9 @@ def main():
     w_sgd, mse_sgd = least_squares_sgd(ys_train, tx_train, w_ini, batch_size, max_iters, gamma)
     print(mse_sgd)
 
-    print("LEAST SQUARES\n W: {} MSE:{}".format(w_ls, mse_ls))
-    print("GRAD DESCENT\n W: {} MSE:{}".format(w_gd, mse_gd))
-    print("STOC GRAD DESCENT\n W: {} MSE:{}".format(w_sgd, mse_sgd))
+    print("LEAST SQUARES\n W: {} \nMSE:{}".format(w_ls, mse_ls))
+    print("GRADIENT DESCENT\n W: {} \nMSE:{}".format(w_gd, mse_gd))
+    print("STOCHASTIC GRADIENT DESCENT\n W: {} \nMSE:{}".format(w_sgd, mse_sgd))
 
 
 if __name__ == '__main__':

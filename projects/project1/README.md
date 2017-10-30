@@ -92,6 +92,43 @@ LOSS_TEST X DEGREE N
 ...
 MIN TEST ERROR: Y FOR M DEGREE
 ```
+
+### Check
+
+To run the main program, the `check.py` has to be executed from the scripts folder:
+
+```
+cd scripts/
+python3 check.py
+```
+
+There are no command line arguments. It will look for a `train.csv` file located on `../data/` for training data. No file outputs will be generated.
+
+The program will output the following progress updates through the standard output:
+
+```
+PARSING TRAIN
+PARSING TEST
+FILTERING DATA
+BUILDING POLYNOMIALS
+LEARNING MODEL BY LEAST SQUARES
+X
+LEARNING MODEL BY GRADIENT DESCENT
+X
+LEARNING MODEL BY STOCHASTIC GRADIENT DESCENT
+X
+LEAST SQUARES
+W : [...]
+MSE: X
+GRADIENT DESCENT
+W : [...]
+MSE: X
+STOCHASTIC GRADIENT DESCENT
+W : [...]
+MSE: X
+
+```
+
 ### Data caching
 
 Loading big datasets from `.csv` files is a slow task (roughly 15-20 seconds in a modern laptop), especially when developing. To solve this problem, a caching mechanism has been implemented: instead of loading raw `.csv`, the program loads `pickle`-encoded Python objects.
