@@ -6,8 +6,8 @@ from implementations import least_squares
 from parsers import load_data, create_csv_submission
 
 OUT_DIR = "../out"
-OUTLIERS_THRESHOLD = 9.2
-DEGREE = 13
+OUTLIERS_THRESHOLD = 8.5
+DEGREE = 11
 
 
 def main():
