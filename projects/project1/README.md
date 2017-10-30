@@ -48,7 +48,12 @@ The program will output the following progress updates through the standard outp
 
 ```
 PARSING TRAIN
+LOADING PCKL FILE FROM ../tmp/ys_train.pckl
+LOADING PCKL FILE FROM ../tmp/x_train.pckl
+LOADING PCKL FILE FROM ../tmp/ids_train.pckl
 PARSING TEST
+LOADING PCKL FILE FROM ../tmp/x_test.pckl
+LOADING PCKL FILE FROM ../tmp/ids_test.pckl
 FILTERING DATA
 BUILDING POLYNOMIALS
 LEARNING MODEL BY LEAST SQUARES
