@@ -1,4 +1,4 @@
-import numpy as np
+import scipy.sparse as sp
 import pickle
 import os
 import csv
@@ -15,16 +15,9 @@ def load_data():
     print("PARSING TRAIN")
     matrix_train = load_pickle_data("matrix_train")
     if matrix_train is None:
-        matrix_train = load_matrix_from_csv("{}/data_train.csv".format(DATA_DIR))
+        matrix_train = load_csv_data("{}/data_train.csv".format(DATA_DIR))
         dump_pickle_data(matrix_train, "matrix_train")
-
-    print("PARSING LABELS")
-    requested_labels = load_pickle_data("requested_labels")
-    # if requested_labels is None:
-    #     requested_labels = load_labels_from_csv("{}/sample_submission.csv".format(DATA_DIR))
-    #     dump_pickle_data(requested_labels, "requested_data")
-
-    return matrix_train, requested_labels
+    return matrix_train
 
 
 def load_pickle_data(filename):
@@ -57,32 +50,6 @@ def dump_pickle_data(obj, filename):
     f.close()
 
 
-def load_matrix_from_csv(data_path):
-    print("LOADING CSV FILE FROM {}".format(data_path))
-    data = np.genfromtxt(data_path, delimiter=",", skip_header=1, dtype=str)
-    print("tmp")
-
-
-def load_csv_data(data_path):
-    """
-    Loads data and returns y (class labels), tX (features) and ids (event ids)
-
-    :param data_path: Data path of the .csv file
-    :return: Ys, input_data and ids loaded from those files
-    """
-    print("LOADING CSV FILE FROM {}".format(data_path))
-    y = np.genfromtxt(data_path, delimiter=",", skip_header=1, dtype=str, usecols=[1])
-    x = np.genfromtxt(data_path, delimiter=",", skip_header=1)
-    ids = x[:, 0].astype(np.int)
-    input_data = x[:, 2:]
-
-    # convert class labels from strings to binary (-1,1)
-    yb = np.ones(len(y))
-    yb[np.where(y == 'b')] = -1
-
-    return yb, input_data, ids
-
-
 def create_csv_submission(ids, y_pred, name):
     """
     Creates an output file in csv format for submission to kaggle
@@ -96,3 +63,44 @@ def create_csv_submission(ids, y_pred, name):
         writer.writeheader()
         for r1, r2 in zip(ids, y_pred):
             writer.writerow({'Id': int(r1), 'Prediction': int(r2)})
+
+
+def read_txt(path):
+    """read text file from path."""
+    with open(path, "r") as f:
+        return f.read().splitlines()
+
+
+def load_csv_data(path_dataset):
+    """Load data in text format, one rating per line, as in the kaggle competition."""
+    data = read_txt(path_dataset)[1:]
+    return preprocess_data(data)
+
+
+def preprocess_data(data):
+    """preprocessing the text data, conversion to numerical array format."""
+
+    def deal_line(line):
+        pos, rating = line.split(',')
+        row, col = pos.split("_")
+        row = row.replace("r", "")
+        col = col.replace("c", "")
+        return int(row), int(col), float(rating)
+
+    def statistics(data):
+        row = set([line[0] for line in data])
+        col = set([line[1] for line in data])
+        return min(row), max(row), min(col), max(col)
+
+    # parse each line
+    data = [deal_line(line) for line in data]
+
+    # do statistics on the dataset.
+    min_row, max_row, min_col, max_col = statistics(data)
+    print("number of items: {}, number of users: {}".format(max_row, max_col))
+
+    # build rating matrix.
+    ratings = sp.lil_matrix((max_row, max_col))
+    for row, col, rating in data:
+        ratings[row - 1, col - 1] = rating
+    return ratings
