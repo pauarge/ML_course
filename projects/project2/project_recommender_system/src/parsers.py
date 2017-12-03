@@ -1,9 +1,13 @@
 import scipy.sparse as sp
+import numpy as np
 import pickle
 import os
 import csv
 
+from helpers import plot_raw_data, split_data
+
 DATA_DIR = "../data"
+MIN_NUM_RATINGS = 1
 
 
 def load_data():
@@ -17,7 +21,15 @@ def load_data():
     if matrix_train is None:
         matrix_train = load_csv_data("{}/data_train.csv".format(DATA_DIR))
         dump_pickle_data(matrix_train, "matrix_train")
-    return matrix_train
+
+    train = load_pickle_data("train")
+    test = load_pickle_data("test")
+    if train is None or test is None:
+        num_items_per_user, num_users_per_item = plot_raw_data(matrix_train)
+        valid_data, train, test = split_data(matrix_train, num_items_per_user, num_users_per_item, MIN_NUM_RATINGS)
+        dump_pickle_data(train, "train")
+        dump_pickle_data(test, "test")
+    return train, test
 
 
 def load_pickle_data(filename):
@@ -104,3 +116,27 @@ def preprocess_data(data):
     for row, col, rating in data:
         ratings[row - 1, col - 1] = rating
     return ratings
+
+
+def create_submission(w, z):
+    def deal_line(line):
+        pos, _ = line.split(',')
+        row, col = pos.split("_")
+        row = row.replace("r", "")
+        col = col.replace("c", "")
+        return int(row) - 1, int(col) - 1
+
+    data = read_txt("{}/sample_submission.csv".format(DATA_DIR))[1:]
+    cells = [deal_line(line) for line in data]
+
+    x = np.transpose(w).dot(z)
+
+    ids = ["r{}_c{}".format(c[0] + 1, c[1] + 1) for c in cells]
+    preds = [round(x[c[0], c[1]]) for c in cells]
+
+    with open("{}/submission.csv".format(DATA_DIR), 'w') as csvfile:
+        fieldnames = ['Id', 'Prediction']
+        writer = csv.DictWriter(csvfile, delimiter=",", fieldnames=fieldnames)
+        writer.writeheader()
+        for r1, r2 in zip(ids, preds):
+            writer.writerow({'Id': r1, 'Prediction': int(r2)})

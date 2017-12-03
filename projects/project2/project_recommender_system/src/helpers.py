@@ -2,14 +2,14 @@ import numpy as np
 import scipy.sparse as sp
 
 
-def split_data(ratings, num_items_per_user, num_users_per_item, min_num_ratings, p_test=0.1):
+def split_data(ratings, num_items_per_user, num_users_per_item, min_num_ratings, p_test=0.50):
     """split the ratings to training data and test data.
     Args:
         min_num_ratings:
             all users and items we keep must have at least min_num_ratings per user and per item.
     """
     # set seed
-    np.random.seed(988)
+    np.random.seed(1)
 
     # select user and item based on the condition.
     valid_users = np.where(num_items_per_user >= min_num_ratings)[0]
