@@ -18,7 +18,7 @@ def split_data(ratings, num_items_per_user, num_users_per_item, min_num_ratings,
     valid_ratings = ratings[valid_items, :][:, valid_users]
 
     # init
-    num_rows, num_cols = ratings.shape
+    num_rows, num_cols = valid_ratings.shape
     train = sp.lil_matrix((num_rows, num_cols))
     test = sp.lil_matrix((num_rows, num_cols))
 

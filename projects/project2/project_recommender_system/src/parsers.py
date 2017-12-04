@@ -7,7 +7,7 @@ import csv
 from helpers import plot_raw_data, split_data
 
 DATA_DIR = "../data"
-MIN_NUM_RATINGS = 10
+MIN_NUM_RATINGS = 1
 
 
 def load_data():
