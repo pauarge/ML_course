@@ -32,13 +32,13 @@ def compute_error(data, user_features, item_features, nz):
     return np.sqrt(1.0 * mse / len(nz))
 
 
-def matrix_factorization_SGD(train, test):
+def matrix_factorization_SGD(train, test, lambda_user, lambda_item, num_features):
     """matrix factorization by SGD."""
     # define parameters
     gamma = 0.01
-    num_features = 30  # K in the lecture notes
-    lambda_user = 0.1
-    lambda_item = 0.01
+    #num_features = 30  # K in the lecture notes
+    #lambda_user = 0.1
+    #lambda_item = 0.01
     num_epochs = 30  # number of full passes through the train set
 
     # set seed
@@ -125,12 +125,12 @@ def update_item_feature(
     return updated_item_features
 
 
-def ALS(train, test):
+def ALS(train, test, lambda_user, lambda_item, num_features):
     """Alternating Least Squares (ALS) algorithm."""
     # define parameters
-    num_features = 20  # K in the lecture notes
-    lambda_user = 0.1
-    lambda_item = 0.7
+    #num_features = 20  # K in the lecture notes
+    #lambda_user = 0.1
+    #lambda_item = 0.7
     stop_criterion = 1e-4
     change = 1
     error_list = [0, 0]
@@ -168,4 +168,4 @@ def ALS(train, test):
     nnz_test = list(zip(nnz_row, nnz_col))
     rmse = compute_error(test, user_features, item_features, nnz_test)
     print("test RMSE after running ALS: {v}.".format(v=rmse))
-    return item_features, user_features
+    return item_features, user_features, rmse
