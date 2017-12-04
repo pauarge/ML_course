@@ -35,8 +35,8 @@ def matrix_factorization_SGD(train, test):
     # define parameters
     gamma = 0.01
     num_features = 30  # K in the lecture notes
-    lambda_user = 0.01
-    lambda_item = 0.001
+    lambda_user = 0.1
+    lambda_item = 0.01
     num_epochs = 30  # number of full passes through the train set
 
     # set seed
