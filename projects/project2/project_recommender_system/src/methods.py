@@ -15,7 +15,8 @@ def init_mf(train, num_features):
     item_sum = train.sum(axis=1)
 
     for ind in range(num_item):
-        item_features[0, ind] = item_sum[ind, 0] / item_nnz[ind]
+        if item_nnz[ind] != 0:
+            item_features[0, ind] = item_sum[ind, 0] / item_nnz[ind]
     print(user_features.shape, item_features.shape)
     return user_features, item_features
 
