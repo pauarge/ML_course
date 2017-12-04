@@ -3,7 +3,8 @@ import scipy.sparse as sp
 
 
 def split_data(ratings, num_items_per_user, num_users_per_item, min_num_ratings, p_test=0.50):
-    """split the ratings to training data and test data.
+    """
+    split the ratings to training data and test data.
     Args:
         min_num_ratings:
             all users and items we keep must have at least min_num_ratings per user and per item.
@@ -56,3 +57,18 @@ def calculate_mse(real_label, prediction):
     """calculate MSE."""
     t = real_label - prediction
     return 1.0 * t.dot(t.T)
+
+
+def build_index_groups(train):
+    """build groups for nnz rows and cols."""
+    nz_row, nz_col = train.nonzero()
+    nz_train = list(zip(nz_row, nz_col))
+
+    grouped_nz_train_byrow = group_by(nz_train, index=0)
+    nz_row_colindices = [(g, np.array([v[1] for v in value]))
+                         for g, value in grouped_nz_train_byrow]
+
+    grouped_nz_train_bycol = group_by(nz_train, index=1)
+    nz_col_rowindices = [(g, np.array([v[0] for v in value]))
+                         for g, value in grouped_nz_train_bycol]
+    return nz_train, nz_row_colindices, nz_col_rowindices

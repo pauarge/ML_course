@@ -1,7 +1,8 @@
 import numpy as np
+from helpers import build_index_groups
 
 
-def init_MF(train, num_features):
+def init_mf(train, num_features):
     """init the parameter for matrix factorization."""
 
     num_item, num_user = train.get_shape()
@@ -15,6 +16,7 @@ def init_MF(train, num_features):
 
     for ind in range(num_item):
         item_features[0, ind] = item_sum[ind, 0] / item_nnz[ind]
+    print(user_features.shape, item_features.shape)
     return user_features, item_features
 
 
@@ -33,15 +35,15 @@ def matrix_factorization_SGD(train, test):
     # define parameters
     gamma = 0.01
     num_features = 30  # K in the lecture notes
-    lambda_user = 0.1
-    lambda_item = 0.7
+    lambda_user = 0.01
+    lambda_item = 0.001
     num_epochs = 30  # number of full passes through the train set
 
     # set seed
     np.random.seed(988)
 
     # init matrix
-    user_features, item_features = init_MF(train, num_features)
+    user_features, item_features = init_mf(train, num_features)
 
     # find the non-zero ratings indices
     nz_row, nz_col = train.nonzero()
@@ -77,3 +79,90 @@ def matrix_factorization_SGD(train, test):
     rmse = compute_error(test, user_features, item_features, nz_test)
     print("RMSE on test data: {}.".format(rmse))
     return item_features, user_features
+
+
+# ALTERNATING LEAST SQUARES
+
+def update_user_feature(
+        train, item_features, lambda_user,
+        nnz_items_per_user, nz_user_itemindices):
+    """update user feature matrix."""
+    num_user = nnz_items_per_user.shape[0]
+    num_feature = item_features.shape[0]
+    lambda_I = lambda_user * sp.eye(num_feature)
+    updated_user_features = np.zeros((num_feature, num_user))
+
+    for user, items in nz_user_itemindices:
+        # extract the columns corresponding to the prediction for given item
+        M = item_features[:, items]
+
+        # update column row of user features
+        V = M @ train[items, user]
+        A = M @ M.T + nnz_items_per_user[user] * lambda_I
+        X = np.linalg.solve(A, V)
+        updated_user_features[:, user] = np.copy(X.T)
+    return updated_user_features
+
+
+def update_item_feature(
+        train, user_features, lambda_item,
+        nnz_users_per_item, nz_item_userindices):
+    """update item feature matrix."""
+    num_item = nnz_users_per_item.shape[0]
+    num_feature = user_features.shape[0]
+    lambda_I = lambda_item * sp.eye(num_feature)
+    updated_item_features = np.zeros((num_feature, num_item))
+
+    for item, users in nz_item_userindices:
+        # extract the columns corresponding to the prediction for given user
+        M = user_features[:, users]
+        V = M @ train[item, users].T
+        A = M @ M.T + nnz_users_per_item[item] * lambda_I
+        X = np.linalg.solve(A, V)
+        updated_item_features[:, item] = np.copy(X.T)
+    return updated_item_features
+
+
+def ALS(train, test):
+    """Alternating Least Squares (ALS) algorithm."""
+    # define parameters
+    num_features = 20  # K in the lecture notes
+    lambda_user = 0.1
+    lambda_item = 0.7
+    stop_criterion = 1e-4
+    change = 1
+    error_list = [0, 0]
+
+    # set seed
+    np.random.seed(988)
+
+    # init ALS
+    user_features, item_features = init_mf(train, num_features)
+
+    # get the number of non-zero ratings for each user and item
+    nnz_items_per_user, nnz_users_per_item = train.getnnz(axis=0), train.getnnz(axis=1)
+
+    # group the indices by row or column index
+    nz_train, nz_item_userindices, nz_user_itemindices = build_index_groups(train)
+
+    # run ALS
+    print("start the ALS algorithm...")
+    while change > stop_criterion:
+        # update user feature & item feature
+        user_features = update_user_feature(
+            train, item_features, lambda_user,
+            nnz_items_per_user, nz_user_itemindices)
+        item_features = update_item_feature(
+            train, user_features, lambda_item,
+            nnz_users_per_item, nz_item_userindices)
+
+        error = compute_error(train, user_features, item_features, nz_train)
+        print("RMSE on training set: {}.".format(error))
+        error_list.append(error)
+        change = np.fabs(error_list[-1] - error_list[-2])
+
+    # evaluate the test error
+    nnz_row, nnz_col = test.nonzero()
+    nnz_test = list(zip(nnz_row, nnz_col))
+    rmse = compute_error(test, user_features, item_features, nnz_test)
+    print("test RMSE after running ALS: {v}.".format(v=rmse))
