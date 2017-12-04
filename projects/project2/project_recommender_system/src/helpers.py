@@ -2,7 +2,7 @@ import numpy as np
 import scipy.sparse as sp
 
 
-def split_data(ratings, num_items_per_user, num_users_per_item, min_num_ratings, p_test=0.50):
+def split_data(ratings, num_items_per_user, num_users_per_item, min_num_ratings, p_test=0.2):
     """
     split the ratings to training data and test data.
     Args:
@@ -18,7 +18,7 @@ def split_data(ratings, num_items_per_user, num_users_per_item, min_num_ratings,
     valid_ratings = ratings[valid_items, :][:, valid_users]
 
     # init
-    num_rows, num_cols = valid_ratings.shape
+    num_rows, num_cols = ratings.shape
     train = sp.lil_matrix((num_rows, num_cols))
     test = sp.lil_matrix((num_rows, num_cols))
 
@@ -72,3 +72,12 @@ def build_index_groups(train):
     nz_col_rowindices = [(g, np.array([v[0] for v in value]))
                          for g, value in grouped_nz_train_bycol]
     return nz_train, nz_row_colindices, nz_col_rowindices
+
+
+def group_by(data, index):
+    """group list of list by a specific index."""
+    sorted_data = sorted(data, key=lambda x: x[index])
+    groupby_data = groupby(sorted_data, lambda x: x[index])
+    return groupby_data
+
+
