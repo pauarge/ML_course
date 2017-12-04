@@ -1,4 +1,5 @@
 import numpy as np
+import scipy as sp
 from helpers import build_index_groups
 
 
@@ -167,3 +168,4 @@ def ALS(train, test):
     nnz_test = list(zip(nnz_row, nnz_col))
     rmse = compute_error(test, user_features, item_features, nnz_test)
     print("test RMSE after running ALS: {v}.".format(v=rmse))
+    return item_features, user_features

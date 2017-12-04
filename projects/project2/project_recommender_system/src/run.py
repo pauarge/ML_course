@@ -1,10 +1,10 @@
-from methods import matrix_factorization_SGD
+from methods import matrix_factorization_SGD, ALS
 from parsers import load_data, create_submission
 
 
 def main():
     train, test = load_data()
-    item_features, user_features = matrix_factorization_SGD(train, test)
+    item_features, user_features = ALS(train, test)
     # model = NMF(n_components=10, init='random', random_state=0)
     # W = model.fit_transform(train)
     # Z = model.components_

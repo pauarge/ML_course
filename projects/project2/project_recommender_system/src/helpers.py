@@ -1,5 +1,6 @@
 import numpy as np
 import scipy.sparse as sp
+from itertools import groupby
 
 
 def split_data(ratings, num_items_per_user, num_users_per_item, min_num_ratings, p_test=0.2):
