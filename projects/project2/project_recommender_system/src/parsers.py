@@ -7,7 +7,7 @@ import csv
 from helpers import plot_raw_data, split_data
 
 DATA_DIR = "../data"
-MIN_NUM_RATINGS = 10
+MIN_NUM_RATINGS = 1
 
 
 def load_data():
@@ -132,6 +132,7 @@ def create_submission(w, z):
     x = np.transpose(w).dot(z)
 
     ids = ["r{}_c{}".format(c[0] + 1, c[1] + 1) for c in cells]
+    
     preds = [round(x[c[0], c[1]]) for c in cells]
 
     with open("{}/submission.csv".format(DATA_DIR), 'w') as csvfile:

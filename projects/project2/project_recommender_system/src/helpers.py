@@ -3,7 +3,7 @@ import scipy.sparse as sp
 from itertools import groupby
 
 
-def split_data(ratings, num_items_per_user, num_users_per_item, min_num_ratings, p_test=0.2):
+def split_data(ratings, num_items_per_user, num_users_per_item, min_num_ratings, p_test=0.5):
     """
     split the ratings to training data and test data.
     Args:
@@ -13,10 +13,7 @@ def split_data(ratings, num_items_per_user, num_users_per_item, min_num_ratings,
     # set seed
     np.random.seed(1)
 
-    # select user and item based on the condition.
-    valid_users = np.where(num_items_per_user >= min_num_ratings)[0]
-    valid_items = np.where(num_users_per_item >= min_num_ratings)[0]
-    valid_ratings = ratings[valid_items, :][:, valid_users]
+    valid_ratings, transformation_user, transformation_item = transformation(ratings, num_items_per_user, num_users_per_item, min_num_ratings)
 
     # init
     num_rows, num_cols = valid_ratings.shape
@@ -45,6 +42,39 @@ def split_data(ratings, num_items_per_user, num_users_per_item, min_num_ratings,
     print("Total number of nonzero elements in train data:{v}".format(v=train.nnz))
     print("Total number of nonzero elements in test data:{v}".format(v=test.nnz))
     return valid_ratings, train, test
+
+def transformation(ratings, num_items_per_user, num_users_per_item, min_num_ratings):
+    # select user and item based on the condition.
+    valid_users = np.where(num_items_per_user >= min_num_ratings)[0]
+    valid_items = np.where(num_users_per_item >= min_num_ratings)[0]
+    valid_ratings = ratings[valid_items, :][:, valid_users]
+
+    #generate transformation vectors
+
+    transformation_user = list(range(ratings.shape[1])
+    transformation_item = list(range(ratings.shape[0])
+
+    deleted_user = np.where(num_items_per_user < min_num_ratings)[0]
+    deleted_item = np.where(num_users_per_item < min_num_ratings)[0]
+
+    transformation_user[deleted_user] = -1
+    transformation_item[deleted_item] = -1
+
+    k = 0
+    for i in range(len(transformation_user)):
+        if transformation_user[i] == -1:
+            k += 1
+        else:
+            transformation_user[i] -= k
+
+    k_item = 0
+    for i in range(len(transformation_item)):
+        if transformation_item[i] == -1:
+           k_item += 1
+        else:
+            transformation_item[i] -= k_item
+
+    return valid_ratings, transformation_user, transformation_item
 
 
 def plot_raw_data(ratings):
