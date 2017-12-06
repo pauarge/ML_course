@@ -5,9 +5,10 @@ import os
 import csv
 
 from helpers import plot_raw_data, split_data
+from methods import global_mean, user_mean, item_mean
 
 DATA_DIR = "../data"
-MIN_NUM_RATINGS = 1
+MIN_NUM_RATINGS = 10
 
 
 def load_data():
@@ -26,10 +27,10 @@ def load_data():
     test = load_pickle_data("test")
     if train is None or test is None:
         num_items_per_user, num_users_per_item = plot_raw_data(matrix_train)
-        valid_data, train, test = split_data(matrix_train, num_items_per_user, num_users_per_item, MIN_NUM_RATINGS)
+        valid_data, train, test,t_u, t_i = split_data(matrix_train, num_items_per_user, num_users_per_item, MIN_NUM_RATINGS)
         dump_pickle_data(train, "train")
         dump_pickle_data(test, "test")
-    return train, test
+    return train, test, t_u, t_i
 
 
 def load_pickle_data(filename):
@@ -118,7 +119,7 @@ def preprocess_data(data):
     return ratings
 
 
-def create_submission(w, z):
+def create_submission(w, z, train, trans_user, trans_item):
     def deal_line(line):
         pos, _ = line.split(',')
         row, col = pos.split("_")
@@ -131,9 +132,23 @@ def create_submission(w, z):
 
     x = np.transpose(w).dot(z)
 
-    ids = ["r{}_c{}".format(c[0] + 1, c[1] + 1) for c in cells]
-    
-    preds = [round(x[c[0], c[1]]) for c in cells]
+    #ids = ["r{}_c{}".format(c[0] + 1, c[1] + 1) for c in cells]
+    # preds = [round(x[c[0], c[1]]) for c in cells]
+
+    g_mean = global_mean(train)
+    ids = []
+    preds = []
+    for c in cells:
+        ids.append("r{}_c{}".format(c[0] + 1, c[1] + 1))
+        if trans_item[c[0]] == -1 and trans_user[c[1]] == -1:
+            preds.append(g_mean)
+        elif trans_item[c[0]] == -1 and trans_user[c[1]] != -1:
+            preds.append(user_mean(train,c[1]))
+        elif trans_item[c[0]] != -1 and trans_user[c[1]] == -1:
+            preds.append(item_mean(train,c[0]))
+        else:
+            preds.append(round(x[trans_item[c[0]],trans_user[c[1]]]))
+
 
     with open("{}/submission.csv".format(DATA_DIR), 'w') as csvfile:
         fieldnames = ['Id', 'Prediction']

@@ -8,22 +8,22 @@ def init_mf(train, num_features):
 
     num_item, num_user = train.get_shape()
 
-    U, S, V  = np.linalg.svd(train)
+    # U, S, V  = np.linalg.svd(train)
 
-    user_features = U
-    item_features = S.dot(V.T)
-    #user_features = np.random.rand(num_features, num_user)
-    #item_features = np.random.rand(num_features, num_item)
+    # user_features = U
+    # item_features = S.dot(V.T)
+    user_features = np.random.rand(num_features, num_user)
+    item_features = np.random.rand(num_features, num_item)
 
     # start by item features.
-    # item_nnz = train.getnnz(axis=1)
-    # item_sum = train.sum(axis=1)
+    item_nnz = train.getnnz(axis=1)
+    item_sum = train.sum(axis=1)
     # user_sum = train.sum(axis=0)
     # user_nnz = train.getnnz(axis=0)
     #
-    # for ind in range(num_item):
-    #     if item_nnz[ind] != 0:
-    #         item_features[0, ind] = item_sum[ind, 0] / item_nnz[ind]
+    for ind in range(num_item):
+        if item_nnz[ind] != 0:
+            item_features[0, ind] = item_sum[ind, 0] / item_nnz[ind]
     # for ind in range(num_user):
     #     if user_nnz[ind] != 0:
     #         user_features[0, ind] = user_sum[0, ind] / user_nnz[ind]
@@ -45,9 +45,9 @@ def matrix_factorization_SGD(train, test, lambda_user, lambda_item, num_features
     """matrix factorization by SGD."""
     # define parameters
     gamma = 0.01
-    #num_features = 30  # K in the lecture notes
-    #lambda_user = 0.1
-    #lambda_item = 0.01
+    # num_features = 30  # K in the lecture notes
+    # lambda_user = 0.1
+    # lambda_item = 0.01
     num_epochs = 35  # number of full passes through the train set
 
     # set seed
@@ -137,9 +137,9 @@ def update_item_feature(
 def ALS(train, test, lambda_user, lambda_item, num_features):
     """Alternating Least Squares (ALS) algorithm."""
     # define parameters
-    #num_features = 20  # K in the lecture notes
-    #lambda_user = 0.1
-    #lambda_item = 0.7
+    # num_features = 20  # K in the lecture notes
+    # lambda_user = 0.1
+    # lambda_item = 0.7
     stop_criterion = 1e-4
     change = 1
     error_list = [0, 0]
@@ -178,3 +178,24 @@ def ALS(train, test, lambda_user, lambda_item, num_features):
     rmse = compute_error(test, user_features, item_features, nnz_test)
     print("test RMSE after running ALS: {v}.".format(v=rmse))
     return item_features, user_features, rmse
+
+
+def global_mean(train):
+    """baseline method: use the global mean."""
+    # find the non zero ratings in the train
+    nonzero_train = train[train.nonzero()]
+
+    # calculate the global mean
+    global_mean_train = nonzero_train.mean()
+
+    return global_mean_train
+
+
+def user_mean(train, user):
+    """compute user mean"""
+    return train[:, user].mean()
+
+
+def item_mean(train, item):
+    """compute item mean"""
+    return train[item, :].mean()

@@ -41,7 +41,7 @@ def split_data(ratings, num_items_per_user, num_users_per_item, min_num_ratings,
     print("Total number of nonzero elements in origial data:{v}".format(v=ratings.nnz))
     print("Total number of nonzero elements in train data:{v}".format(v=train.nnz))
     print("Total number of nonzero elements in test data:{v}".format(v=test.nnz))
-    return valid_ratings, train, test
+    return valid_ratings, train, test, transformation_user, transformation_item
 
 def transformation(ratings, num_items_per_user, num_users_per_item, min_num_ratings):
     # select user and item based on the condition.
@@ -51,8 +51,8 @@ def transformation(ratings, num_items_per_user, num_users_per_item, min_num_rati
 
     #generate transformation vectors
 
-    transformation_user = list(range(ratings.shape[1])
-    transformation_item = list(range(ratings.shape[0])
+    transformation_user = np.array(list(range(ratings.shape[1])))
+    transformation_item = np.array(list(range(ratings.shape[0])))
 
     deleted_user = np.where(num_items_per_user < min_num_ratings)[0]
     deleted_item = np.where(num_users_per_item < min_num_ratings)[0]
