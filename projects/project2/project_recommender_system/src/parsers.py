@@ -8,10 +8,10 @@ from helpers import plot_raw_data, split_data
 from methods import global_mean, user_mean, item_mean
 
 DATA_DIR = "../data"
-MIN_NUM_RATINGS = 10
 
 
-def load_data():
+
+def load_data(min_num_ratings):
     """
     Loads datasets into the program. If they exist, it loads the cached .pckl files, it loads the .csv otherwise
 
@@ -23,13 +23,18 @@ def load_data():
         matrix_train = load_csv_data("{}/data_train.csv".format(DATA_DIR))
         dump_pickle_data(matrix_train, "matrix_train")
 
-    train = load_pickle_data("train")
-    test = load_pickle_data("test")
-    if train is None or test is None:
-        num_items_per_user, num_users_per_item = plot_raw_data(matrix_train)
-        valid_data, train, test,t_u, t_i = split_data(matrix_train, num_items_per_user, num_users_per_item, MIN_NUM_RATINGS)
-        dump_pickle_data(train, "train")
-        dump_pickle_data(test, "test")
+    # train = load_pickle_data("train")
+    # test = load_pickle_data("test")
+    # if train is None or test is None:
+    #     num_items_per_user, num_users_per_item = plot_raw_data(matrix_train)
+    #     valid_data, train, test,t_u, t_i = split_data(matrix_train, num_items_per_user, num_users_per_item, MIN_NUM_RATINGS)
+    #     dump_pickle_data(train, "train")
+    #     dump_pickle_data(test, "test")
+
+    num_items_per_user, num_users_per_item = plot_raw_data(matrix_train)
+    valid_data, train, test, t_u, t_i = split_data(matrix_train, num_items_per_user, num_users_per_item,
+                                                   min_num_ratings)
+
     return train, test, t_u, t_i
 
 
