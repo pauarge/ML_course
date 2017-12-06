@@ -17,12 +17,15 @@ def init_mf(train, num_features):
 
     # start by item features.
     item_nnz = train.getnnz(axis=1)
-    item_sum = train.sum(axis=1)
+    item_sum = np.array(train.sum(axis=1))
     # user_sum = train.sum(axis=0)
     # user_nnz = train.getnnz(axis=0)
     #
+    print("GENERATING SPECIAL FEATURE")
     for ind in range(num_item):
         if item_nnz[ind] != 0:
+            #print("item sum{}".format(item_sum[ind,0]))
+            #print("item nnz{}".format(item_nnz[ind]))
             item_features[0, ind] = item_sum[ind, 0] / item_nnz[ind]
     # for ind in range(num_user):
     #     if user_nnz[ind] != 0:
@@ -48,7 +51,7 @@ def matrix_factorization_SGD(train, test, lambda_user, lambda_item, num_features
     # num_features = 30  # K in the lecture notes
     # lambda_user = 0.1
     # lambda_item = 0.01
-    num_epochs = 35  # number of full passes through the train set
+    num_epochs = 45  # number of full passes through the train set
 
     # set seed
     np.random.seed(988)
@@ -89,7 +92,7 @@ def matrix_factorization_SGD(train, test, lambda_user, lambda_item, num_features
     # evaluate the test error
     rmse = compute_error(test, user_features, item_features, nz_test)
     print("RMSE on test data: {}.".format(rmse))
-    return item_features, user_features
+    return item_features, user_features, rmse
 
 
 # ALTERNATING LEAST SQUARES
