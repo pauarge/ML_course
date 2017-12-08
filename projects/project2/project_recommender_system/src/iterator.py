@@ -2,16 +2,16 @@ from run import run
 
 def main():
 
-    L_user = [0.001,0.01, 0.1]
-    L_item = [0.001, 0.01, 0.1]
-    N_features = range(25,40,2)
-    min_num_data = [10,50,100,250]
+    L_user = [0.01]
+    L_item = [0.001]
+    N_features = range(15,25,5)
+    min_num_data = [10]
     error = {}
     minim = 9999
     for i in L_user:
         for j in L_item:
-            for k in N_features:
-                for p in min_num_data:
+            for p in min_num_data:
+                for k in N_features:
 
                     rmse = run(i,j,k,p,0.2)
                     if rmse < minim:
