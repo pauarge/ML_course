@@ -10,7 +10,6 @@ from methods import global_mean, user_mean, item_mean
 DATA_DIR = "../data"
 
 
-
 def load_data(min_num_ratings):
     """
     Loads datasets into the program. If they exist, it loads the cached .pckl files, it loads the .csv otherwise
@@ -23,17 +22,18 @@ def load_data(min_num_ratings):
         matrix_train = load_csv_data("{}/data_train.csv".format(DATA_DIR))
         dump_pickle_data(matrix_train, "matrix_train")
 
-    # train = load_pickle_data("train")
-    # test = load_pickle_data("test")
-    # if train is None or test is None:
-    #     num_items_per_user, num_users_per_item = plot_raw_data(matrix_train)
-    #     valid_data, train, test,t_u, t_i = split_data(matrix_train, num_items_per_user, num_users_per_item, MIN_NUM_RATINGS)
-    #     dump_pickle_data(train, "train")
-    #     dump_pickle_data(test, "test")
-
-    num_items_per_user, num_users_per_item = plot_raw_data(matrix_train)
-    valid_data, train, test, t_u, t_i = split_data(matrix_train, num_items_per_user, num_users_per_item,
-                                                   min_num_ratings)
+    train = load_pickle_data("train")
+    test = load_pickle_data("test")
+    t_u = load_pickle_data("t_u")
+    t_i = load_pickle_data("t_i")
+    if train is None or test is None:
+        num_items_per_user, num_users_per_item = plot_raw_data(matrix_train)
+        valid_data, train, test, t_u, t_i = split_data(matrix_train, num_items_per_user, num_users_per_item,
+                                                       min_num_ratings)
+        dump_pickle_data(train, "train")
+        dump_pickle_data(test, "test")
+        dump_pickle_data(t_u, "t_u")
+        dump_pickle_data(t_i, "t_i")
 
     return train, test, t_u, t_i
 
@@ -138,7 +138,7 @@ def create_submission(w, z, train, trans_user, trans_item):
 
     x = np.transpose(w).dot(z)
 
-    #ids = ["r{}_c{}".format(c[0] + 1, c[1] + 1) for c in cells]
+    # ids = ["r{}_c{}".format(c[0] + 1, c[1] + 1) for c in cells]
     # preds = [round(x[c[0], c[1]]) for c in cells]
 
     g_mean = global_mean(train)
@@ -149,12 +149,11 @@ def create_submission(w, z, train, trans_user, trans_item):
         if trans_item[c[0]] == -1 and trans_user[c[1]] == -1:
             preds.append(g_mean)
         elif trans_item[c[0]] == -1 and trans_user[c[1]] != -1:
-            preds.append(user_mean(train,c[1]))
+            preds.append(user_mean(train, c[1]))
         elif trans_item[c[0]] != -1 and trans_user[c[1]] == -1:
-            preds.append(item_mean(train,c[0]))
+            preds.append(item_mean(train, c[0]))
         else:
-            preds.append(round(x[trans_item[c[0]],trans_user[c[1]]]))
-
+            preds.append(round(x[trans_item[c[0]], trans_user[c[1]]]))
 
     with open("{}/submission.csv".format(DATA_DIR), 'w') as csvfile:
         fieldnames = ['Id', 'Prediction']

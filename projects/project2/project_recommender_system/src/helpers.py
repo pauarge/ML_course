@@ -13,7 +13,8 @@ def split_data(ratings, num_items_per_user, num_users_per_item, min_num_ratings,
     # set seed
     np.random.seed(1)
 
-    valid_ratings, transformation_user, transformation_item = transformation(ratings, num_items_per_user, num_users_per_item, min_num_ratings)
+    valid_ratings, transformation_user, transformation_item = transformation(ratings, num_items_per_user,
+                                                                             num_users_per_item, min_num_ratings)
 
     # init
     num_rows, num_cols = valid_ratings.shape
@@ -43,13 +44,14 @@ def split_data(ratings, num_items_per_user, num_users_per_item, min_num_ratings,
     print("Total number of nonzero elements in test data:{v}".format(v=test.nnz))
     return valid_ratings, train, test, transformation_user, transformation_item
 
+
 def transformation(ratings, num_items_per_user, num_users_per_item, min_num_ratings):
     # select user and item based on the condition.
     valid_users = np.where(num_items_per_user >= min_num_ratings)[0]
     valid_items = np.where(num_users_per_item >= min_num_ratings)[0]
     valid_ratings = ratings[valid_items, :][:, valid_users]
 
-    #generate transformation vectors
+    # generate transformation vectors
 
     transformation_user = np.array(list(range(ratings.shape[1])))
     transformation_item = np.array(list(range(ratings.shape[0])))
@@ -70,7 +72,7 @@ def transformation(ratings, num_items_per_user, num_users_per_item, min_num_rati
     k_item = 0
     for i in range(len(transformation_item)):
         if transformation_item[i] == -1:
-           k_item += 1
+            k_item += 1
         else:
             transformation_item[i] -= k_item
 
@@ -110,5 +112,3 @@ def group_by(data, index):
     sorted_data = sorted(data, key=lambda x: x[index])
     groupby_data = groupby(sorted_data, lambda x: x[index])
     return groupby_data
-
-
