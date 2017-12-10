@@ -2,10 +2,10 @@ from run import run
 
 def main():
 
-    L_user = [0.01]
-    L_item = [0.001]
-    N_features = range(15,25,5)
-    min_num_data = [10]
+    L_user = [0]
+    L_item = [0]
+    N_features = [2]
+    min_num_data = [5,10]
     error = {}
     minim = 9999
     for i in L_user:
