@@ -45,6 +45,20 @@ def split_data(ratings, num_items_per_user, num_users_per_item, min_num_ratings,
     return valid_ratings, train, test, transformation_user, transformation_item
 
 
+def split_data_2(elems, ratings, ratio, seed=1):
+    """split the dataset based on the split ratio."""
+    # set seed
+    np.random.seed(seed)
+    # generate random indices
+    num_row = len(ratings)
+    indices = np.random.permutation(num_row)
+    index_split = int(np.floor(ratio * num_row))
+    index_tr = indices[: index_split]
+    index_te = indices[index_split:]
+    # create split
+    return elems[index_tr], ratings[index_tr], elems[index_te], ratings[index_te]
+
+
 def transformation(ratings, num_items_per_user, num_users_per_item, min_num_ratings):
     # select user and item based on the condition.
     valid_users = np.where(num_items_per_user >= min_num_ratings)[0]

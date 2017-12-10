@@ -4,7 +4,7 @@ import pickle
 import os
 import csv
 
-from helpers import plot_raw_data, split_data
+from helpers import plot_raw_data, split_data, split_data_2
 from methods import global_mean, user_mean, item_mean
 
 DATA_DIR = "../data"
@@ -36,6 +36,23 @@ def load_data(min_num_ratings):
         dump_pickle_data(t_i, "t_i")
 
     return train, test, t_u, t_i
+
+
+def load_data_2():
+    """
+    Loads datasets into the program. If they exist, it loads the cached .pckl files, it loads the .csv otherwise
+
+    :return: Numpy arrays containing train ys, x, ids and test x, ids
+    """
+    print("PARSING TRAIN")
+    elems = load_pickle_data("elems")
+    ratings = load_pickle_data("ratings")
+    if elems is None or ratings is None:
+        elems, ratings = load_csv_data_2("{}/data_train.csv".format(DATA_DIR))
+        dump_pickle_data(elems, "elems")
+        dump_pickle_data(ratings, "ratings")
+
+    return split_data_2(elems, ratings, 0.2)
 
 
 def load_pickle_data(filename):
@@ -95,6 +112,12 @@ def load_csv_data(path_dataset):
     return preprocess_data(data)
 
 
+def load_csv_data_2(path_dataset):
+    """Load data in text format, one rating per line, as in the kaggle competition."""
+    data = read_txt(path_dataset)[1:]
+    return preprocess_data_2(data)
+
+
 def preprocess_data(data):
     """preprocessing the text data, conversion to numerical array format."""
 
@@ -117,12 +140,32 @@ def preprocess_data(data):
     min_row, max_row, min_col, max_col = statistics(data)
     print("number of items: {}, number of users: {}".format(max_row, max_col))
 
-    print("build rating matrix.")
     ratings = sp.lil_matrix((max_row, max_col))
-    print("after lil")
     for row, col, rating in data:
         ratings[row - 1, col - 1] = rating
     return ratings
+
+
+def preprocess_data_2(data):
+    """preprocessing the text data, conversion to numerical array format."""
+
+    def deal_line(line):
+        pos, rating = line.split(',')
+        row, col = pos.split("_")
+        row = row.replace("r", "")
+        col = col.replace("c", "")
+        return int(row), int(col), float(rating)
+
+    # parse each line
+    data = [deal_line(line) for line in data]
+
+    elems = np.empty([len(data), 2], dtype=np.float32)
+    ratings = np.empty([len(data), 1], dtype=np.float32)
+    for i, data in enumerate(data):
+        elems[i][0] = data[0]
+        elems[i][1] = data[1]
+        ratings[i] = data[2]
+    return elems, ratings
 
 
 def create_submission(w, z, train, trans_user, trans_item):
