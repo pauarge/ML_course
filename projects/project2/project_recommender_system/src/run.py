@@ -3,7 +3,7 @@ from methods import matrix_factorization_SGD, ALS
 from parsers import load_data, create_submission
 
 
-def run(lambda_user = 0.1, lambda_item = 0.01, num_features = 30, min_num_data = 10, p_test=0.2):
+def run(lambda_user = 0.1, lambda_item = 0.01, num_features = 2, min_num_data = 1, p_test=0.2):
     print("LOADING DATA...")
     train, test, transformation_user, transformation_item = load_data(min_num_data)
     print("STARTING MATRIX FACTORIZATION SGD")

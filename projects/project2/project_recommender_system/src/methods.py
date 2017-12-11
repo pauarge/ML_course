@@ -3,6 +3,7 @@ import scipy as sp
 from helpers import build_index_groups
 
 
+
 def init_mf(train, num_features):
     """init the parameter for matrix factorization."""
 
@@ -44,17 +45,39 @@ def compute_error(data, user_features, item_features, nz):
     return np.sqrt(1.0 * mse / len(nz))
 
 
+def compute_error_SVD(data, user_features, item_features, nz, mean, std):
+    """compute the loss (MSE) of the prediction of nonzero elements."""
+    mse = 0
+    pred = item_features.T.dot(user_features)
+    i = 1
+    for row, col in nz:
+        #item_info = item_features[:,row]
+        #user_info = user_features[:,col]
+        #mse += (data[row, col] - item_info.dot(user_info.T)[0,0]) ** 2
+        mse += (data[row,col]-(pred[row,col])+mean)**2
+        if i%1000==0:
+            print(mse/i)
+        i += 1
+    return np.sqrt(1.0 * mse / len(nz))
+
+
 def matrix_factorization_SGD(train, test, lambda_user, lambda_item, num_features):
     """matrix factorization by SGD."""
     # define parameters
     gamma = 0.01
-    # num_features = 30  # K in the lecture notes
+    #num_features = 2  # K in the lecture notes
     # lambda_user = 0.1
     # lambda_item = 0.01
-    num_epochs = 45  # number of full passes through the train set
+    num_epochs = 25  # number of full passes through the train set
 
     # set seed
     np.random.seed(988)
+
+    mean = global_mean(train)
+    train = standarize(train,mean)
+    std = compute_std(train)
+    #train = div_std(train)
+
 
     # init matrix
     user_features, item_features = init_mf(train, num_features)
@@ -90,7 +113,7 @@ def matrix_factorization_SGD(train, test, lambda_user, lambda_item, num_features
         # errors.append(rmse)
 
     # evaluate the test error
-    rmse = compute_error(test, user_features, item_features, nz_test)
+    rmse = compute_error_SVD(test, user_features, item_features, nz_test, mean, std)
     print("RMSE on test data: {}.".format(rmse))
     return item_features, user_features, rmse
 
@@ -202,3 +225,24 @@ def user_mean(train, user):
 def item_mean(train, item):
     """compute item mean"""
     return train[item, :].mean()
+
+def compute_std(train):
+
+    nonzero_train = train[train.nonzero()].toarray()
+    return np.std(nonzero_train)
+
+
+def standarize(train,mean):
+
+    nz_row, nz_col = train.nonzero()
+    for i in range(len(nz_row)):
+        train[nz_row[i], nz_col[i]] -= mean
+    return train
+
+
+def div_std(train):
+    std = compute_std(train)
+    nz_row, nz_col = train.nonzero()
+    for i in range(len(nz_row)):
+        train[nz_row[i], nz_col[i]] /= std
+    return train

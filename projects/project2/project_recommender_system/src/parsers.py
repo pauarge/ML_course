@@ -5,7 +5,7 @@ import os
 import csv
 
 from helpers import plot_raw_data, split_data, split_data_2
-from methods import global_mean, user_mean, item_mean
+from methods import user_mean, global_mean
 
 DATA_DIR = "../data"
 
@@ -204,3 +204,5 @@ def create_submission(w, z, train, trans_user, trans_item):
         writer.writeheader()
         for r1, r2 in zip(ids, preds):
             writer.writerow({'Id': r1, 'Prediction': int(r2)})
+
+
