@@ -106,8 +106,8 @@ def matrix_factorization_SGD(train, test, lambda_user, lambda_item, num_features
             item_features[:, d] += gamma * (err * user_info - lambda_item * item_info)
             user_features[:, n] += gamma * (err * item_info - lambda_user * user_info)
 
-        rmse = compute_error(train, user_features, item_features, nz_train)
-        print("iter: {}, RMSE on training set: {}.".format(it, rmse))
+        #rmse = compute_error(train, user_features, item_features, nz_train)
+        #print("iter: {}, RMSE on training set: {}.".format(it, rmse))
         print("iter: {}".format(it))
 
         # errors.append(rmse)

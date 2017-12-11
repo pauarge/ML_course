@@ -168,7 +168,7 @@ def preprocess_data_2(data):
     return elems, ratings
 
 
-def create_submission(w, z, train, trans_user, trans_item):
+def create_submission(w, z, train, trans_user, trans_item, mean, std):
     def deal_line(line):
         pos, _ = line.split(',')
         row, col = pos.split("_")
@@ -179,7 +179,7 @@ def create_submission(w, z, train, trans_user, trans_item):
     data = read_txt("{}/sample_submission.csv".format(DATA_DIR))[1:]
     cells = [deal_line(line) for line in data]
 
-    x = np.transpose(w).dot(z)
+    x = std*np.transpose(w).dot(z)+mean
 
     # ids = ["r{}_c{}".format(c[0] + 1, c[1] + 1) for c in cells]
     # preds = [round(x[c[0], c[1]]) for c in cells]
