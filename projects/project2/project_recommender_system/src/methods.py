@@ -54,7 +54,7 @@ def compute_error_SVD(data, user_features, item_features, nz, mean, std):
         #item_info = item_features[:,row]
         #user_info = user_features[:,col]
         #mse += (data[row, col] - item_info.dot(user_info.T)[0,0]) ** 2
-        mse += (data[row,col]-(pred[row,col])+mean)**2
+        mse += (data[row,col]-(std*pred[row,col]+mean))**2
         if i%1000==0:
             print(mse/i)
         i += 1
@@ -68,7 +68,7 @@ def matrix_factorization_SGD(train, test, lambda_user, lambda_item, num_features
     #num_features = 2  # K in the lecture notes
     # lambda_user = 0.1
     # lambda_item = 0.01
-    num_epochs = 25  # number of full passes through the train set
+    num_epochs = 20 # number of full passes through the train set
 
     # set seed
     np.random.seed(988)
@@ -76,7 +76,7 @@ def matrix_factorization_SGD(train, test, lambda_user, lambda_item, num_features
     mean = global_mean(train)
     train = standarize(train,mean)
     std = compute_std(train)
-    #train = div_std(train)
+    train = div_std(train)
 
 
     # init matrix
@@ -106,8 +106,8 @@ def matrix_factorization_SGD(train, test, lambda_user, lambda_item, num_features
             item_features[:, d] += gamma * (err * user_info - lambda_item * item_info)
             user_features[:, n] += gamma * (err * item_info - lambda_user * user_info)
 
-        # rmse = compute_error(train, user_features, item_features, nz_train)
-        # print("iter: {}, RMSE on training set: {}.".format(it, rmse))
+        rmse = compute_error(train, user_features, item_features, nz_train)
+        print("iter: {}, RMSE on training set: {}.".format(it, rmse))
         print("iter: {}".format(it))
 
         # errors.append(rmse)
