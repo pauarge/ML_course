@@ -5,7 +5,7 @@ import os
 import csv
 
 from helpers import plot_raw_data, split_data, split_data_2
-from methods import user_mean, global_mean
+from methods import user_mean, global_mean, item_mean
 
 DATA_DIR = "../data"
 
@@ -169,6 +169,7 @@ def preprocess_data_2(data):
 
 
 def create_submission(w, z, train, trans_user, trans_item, mean, std):
+    print("CREATING SUBMISSION")
     def deal_line(line):
         pos, _ = line.split(',')
         row, col = pos.split("_")
