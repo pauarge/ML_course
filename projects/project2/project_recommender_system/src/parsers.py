@@ -168,7 +168,7 @@ def preprocess_data_2(data):
     return elems, ratings
 
 
-def create_submission(w, z, train, trans_user, trans_item, mean, std):
+def create_submission(w, z, train, trans_user, trans_item, mean, std, user_bias, item_bias):
     print("CREATING SUBMISSION")
     def deal_line(line):
         pos, _ = line.split(',')
@@ -180,7 +180,7 @@ def create_submission(w, z, train, trans_user, trans_item, mean, std):
     data = read_txt("{}/sample_submission.csv".format(DATA_DIR))[1:]
     cells = [deal_line(line) for line in data]
 
-    x = std*np.transpose(w).dot(z)+mean
+    x = std*np.transpose(np.transpose(w).dot(z))+mean
 
     # ids = ["r{}_c{}".format(c[0] + 1, c[1] + 1) for c in cells]
     # preds = [round(x[c[0], c[1]]) for c in cells]
@@ -197,7 +197,12 @@ def create_submission(w, z, train, trans_user, trans_item, mean, std):
         elif trans_item[c[0]] != -1 and trans_user[c[1]] == -1:
             preds.append(item_mean(train, c[0]))
         else:
-            preds.append(round(x[trans_item[c[0]], trans_user[c[1]]]))
+            rate = round(x[trans_item[c[0]], trans_user[c[1]]] + user_bias[c[1]] + item_bias[c[0]])
+            if rate < 1:
+                rate = 1
+            elif rate > 5:
+                rate = 5
+            preds.append(rate)
 
     with open("{}/submission.csv".format(DATA_DIR), 'w') as csvfile:
         fieldnames = ['Id', 'Prediction']

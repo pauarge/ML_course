@@ -3,7 +3,6 @@ import scipy as sp
 from helpers import build_index_groups
 
 
-
 def init_mf(train, num_features):
     """init the parameter for matrix factorization."""
 
@@ -25,8 +24,8 @@ def init_mf(train, num_features):
     print("GENERATING SPECIAL FEATURE")
     for ind in range(num_item):
         if item_nnz[ind] != 0:
-            #print("item sum{}".format(item_sum[ind,0]))
-            #print("item nnz{}".format(item_nnz[ind]))
+            # print("item sum{}".format(item_sum[ind,0]))
+            # print("item nnz{}".format(item_nnz[ind]))
             item_features[0, ind] = item_sum[ind, 0] / item_nnz[ind]
     # for ind in range(num_user):
     #     if user_nnz[ind] != 0:
@@ -49,35 +48,48 @@ def compute_error_SVD(data, user_features, item_features, nz, mean, std):
     """compute the loss (MSE) of the prediction of nonzero elements."""
     mse = 0
     pred = item_features.T.dot(user_features)
-    i = 1
+
+    error = []
     for row, col in nz:
-        #item_info = item_features[:,row]
-        #user_info = user_features[:,col]
-        #mse += (data[row, col] - item_info.dot(user_info.T)[0,0]) ** 2
-        mse += (data[row,col]-(std*pred[row,col]+mean))**2
-        if i%1000==0:
-            print(mse/i)
-        i += 1
-    return np.sqrt(1.0 * mse / len(nz))
+        # item_info = item_features[:,row]
+        # user_info = user_features[:,col]
+        # mse += (data[row, col] - item_info.dot(user_info.T)[0,0]) ** 2
+        error_pred = (data[row, col] - (std * pred[row, col] + mean)) ** 2
+        mse += error_pred
+        error.append(error_pred)
+
+    return pred, np.sqrt(1.0 * mse / len(nz))
 
 
-def matrix_factorization_SGD(train, test, lambda_user, lambda_item, num_features):
+def compute_error_bias(data, user_features, item_features, nz, mean, std, user_bias, item_bias):
+    mse = 0
+    mse_r = 0
+    mse_g = 0
+    prediction = np.transpose(item_features.T.dot(user_features))
+
+    for row, col in nz:
+        # item_info = item_features[:,row]
+        # user_info = user_features[:,col]
+        # mse += (data[row, col] - item_info.dot(user_info.T)[0,0]) ** 2
+        rate = std * prediction[row, col] + mean + user_bias[col] + item_bias[row]
+        mse += (data[row, col] - rate) ** 2
+        mse_r += (data[row,col] - round(rate))**2
+        mse_g += (data[row,col] - np.floor(rate))**2
+
+    return np.sqrt(1.0 * mse / len(nz)), np.sqrt(1.0 * mse_r / len(nz)), np.sqrt(1.0 * mse_g / len(nz))
+
+
+def matrix_factorization_SGD(train, test, lambda_user, lambda_item, num_features, mean, std):
     """matrix factorization by SGD."""
     # define parameters
     gamma = 0.01
-    #num_features = 2  # K in the lecture notes
+    # num_features = 2  # K in the lecture notes
     # lambda_user = 0.1
     # lambda_item = 0.01
-    num_epochs = 20 # number of full passes through the train set
+    num_epochs = 20  # number of full passes through the train set
 
     # set seed
     np.random.seed(988)
-
-    mean = global_mean(train)
-    train = standarize(train,mean)
-    std = compute_std(train)
-    train = div_std(train)
-
 
     # init matrix
     user_features, item_features = init_mf(train, num_features)
@@ -106,16 +118,67 @@ def matrix_factorization_SGD(train, test, lambda_user, lambda_item, num_features
             item_features[:, d] += gamma * (err * user_info - lambda_item * item_info)
             user_features[:, n] += gamma * (err * item_info - lambda_user * user_info)
 
-        #rmse = compute_error(train, user_features, item_features, nz_train)
-        #print("iter: {}, RMSE on training set: {}.".format(it, rmse))
+        # rmse = compute_error(train, user_features, item_features, nz_train)
+        # print("iter: {}, RMSE on training set: {}.".format(it, rmse))
         print("iter: {}".format(it))
 
         # errors.append(rmse)
 
     # evaluate the test error
-    rmse = compute_error_SVD(test, user_features, item_features, nz_test, mean, std)
+    pred, rmse = compute_error_SVD(test, user_features, item_features, nz_test, mean, std)
     print("RMSE on test data: {}.".format(rmse))
     return item_features, user_features, rmse
+
+
+def matrix_factorization_sgd_std(train, lambda_user, lambda_item, num_features, u_bias, i_bias):
+    """matrix factorization by SGD. WITH STANDARDIZED DATA. DOES NOT COMPUTE ERROR ON TEST SET"""
+    # define parameters
+    gamma = 0.01
+    # num_features = 2  # K in the lecture notes
+    # lambda_user = 0.1
+    # lambda_item = 0.01
+    num_epochs = 20  # number of full passes through the train set
+
+
+    # set seed
+    np.random.seed(988)
+
+    # init matrix
+    user_features, item_features = init_mf(train, num_features)
+
+    # find the non-zero ratings indices
+    nz_row, nz_col = train.nonzero()
+    nz_train = list(zip(nz_row, nz_col))
+
+    print("learn the matrix factorization using SGD...")
+    for it in range(num_epochs):
+        # shuffle the training rating indices
+        np.random.shuffle(nz_train)
+
+        # decrease step size
+        gamma /= 1.2
+        i = 0
+        for d, n in nz_train:
+            # update W_d (item_features[:, d]) and Z_n (user_features[:, n])
+            item_info = item_features[:, d]
+            user_info = user_features[:, n]
+            err = train[d, n] - (user_info.T.dot(item_info) + u_bias[n] + i_bias[d])
+            if i%100000==0:
+                print(err)
+
+
+            # calculate the gradient and update
+            item_features[:, d] += gamma * (err * user_info - lambda_item * item_info)
+            user_features[:, n] += gamma * (err * item_info - lambda_user * user_info)
+
+            i += 1
+
+        # rmse = compute_error(train, user_features, item_features, nz_train)
+        # print("iter: {}, RMSE on training set: {}.".format(it, rmse))
+        print("iter: {}".format(it))
+
+        # errors.append(rmse)
+    return user_features, item_features
 
 
 # ALTERNATING LEAST SQUARES
@@ -222,18 +285,31 @@ def user_mean(train, user):
     return train[:, user].mean()
 
 
+def users_mean(train):
+    user_means = []
+    for user in range(train.shape[1]):
+        user_means.append(train[train[:, user].nonzero()[0], user].mean())
+    return user_means
+
+
+def items_mean(train):
+    item_means = []
+    for item in range(train.shape[0]):
+        item_means.append(train[item, train[item, :].nonzero()[1]].mean())
+    return item_means
+
+
 def item_mean(train, item):
     """compute item mean"""
     return train[item, :].mean()
 
-def compute_std(train):
 
+def compute_std(train):
     nonzero_train = train[train.nonzero()].toarray()
     return np.std(nonzero_train)
 
 
-def standarize(train,mean):
-
+def standarize(train, mean):
     nz_row, nz_col = train.nonzero()
     for i in range(len(nz_row)):
         train[nz_row[i], nz_col[i]] -= mean
