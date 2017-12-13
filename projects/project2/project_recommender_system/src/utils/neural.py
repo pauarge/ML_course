@@ -1,14 +1,9 @@
 import torch
-import torchvision
-import torchvision.transforms as transforms
 from torch.autograd import Variable
 import torch.nn as nn
 import torch.nn.functional as F
 import numpy as np
-from torch.utils.data import TensorDataset, DataLoader
-from parsers import load_data, load_data_2
-import matplotlib.pyplot as plt
-import torch.optim as optim
+from utils.parsers import load_data_2
 
 
 class NNLinearRegression(nn.Module):

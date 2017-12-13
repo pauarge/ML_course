@@ -1,8 +1,5 @@
 from SVD import SGD
-import numpy as np
-from helpers import calculate_mse
-from methods import matrix_factorization_SGD, ALS
-from parsers import load_data, create_submission
+from utils.parsers import load_data
 
 
 def run(lambda_user=0.1, lambda_item=0.01, num_features=30, min_num_data=1, p_test=0.2):

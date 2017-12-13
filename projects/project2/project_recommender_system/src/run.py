@@ -1,9 +1,8 @@
-from helpers import calculate_mse
-from methods import matrix_factorization_SGD, ALS, global_mean, compute_std, standarize, div_std
-from parsers import load_data, create_submission
+from methods import matrix_factorization_SGD, global_mean, compute_std, standarize, div_std
+from utils.parsers import load_data, create_submission
 
 
-def run(lambda_user = 0.1, lambda_item = 0.01, num_features = 2, min_num_data = 1, p_test=0.2):
+def run(lambda_user=0.1, lambda_item=0.01, num_features=2, min_num_data=1, p_test=0.2):
     print("LOADING DATA...")
     train, test, transformation_user, transformation_item = load_data(min_num_data)
     print("STARTING MATRIX FACTORIZATION SGD")
@@ -14,7 +13,7 @@ def run(lambda_user = 0.1, lambda_item = 0.01, num_features = 2, min_num_data = 
 
     user_mean = train.mean(axis=1)
 
-    #calcul bias standaritzat
+    # calcul bias standaritzat
     bias_users = 1
 
     item_features, user_features, rmse = matrix_factorization_SGD(train, test, lambda_user, lambda_item, num_features,
@@ -24,6 +23,7 @@ def run(lambda_user = 0.1, lambda_item = 0.01, num_features = 2, min_num_data = 
     # Z = model.components_
     create_submission(item_features, user_features, train, transformation_user, transformation_item, mean, std)
     return rmse
+
 
 if __name__ == '__main__':
     run()

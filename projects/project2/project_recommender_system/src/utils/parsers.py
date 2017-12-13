@@ -184,9 +184,6 @@ def create_submission(w, z, train, trans_user, trans_item, mean, std, user_bias,
 
     x = std * np.transpose(np.transpose(w).dot(z)) + mean
 
-    # ids = ["r{}_c{}".format(c[0] + 1, c[1] + 1) for c in cells]
-    # preds = [round(x[c[0], c[1]]) for c in cells]
-
     g_mean = global_mean(train)
     ids = []
     preds = []
