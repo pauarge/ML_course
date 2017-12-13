@@ -1,3 +1,4 @@
+from datetime import datetime
 import scipy.sparse as sp
 import numpy as np
 import pickle
@@ -205,7 +206,7 @@ def create_submission(w, z, train, trans_user, trans_item, mean, std, user_bias,
                 rate = 5
             preds.append(rate)
 
-    with open("{}/submission.csv".format(DATA_DIR), 'w') as csvfile:
+    with open("{}/submission-{}.csv".format(DATA_DIR, datetime.now()), 'w') as csvfile:
         fieldnames = ['Id', 'Prediction']
         writer = csv.DictWriter(csvfile, delimiter=",", fieldnames=fieldnames)
         writer.writeheader()
