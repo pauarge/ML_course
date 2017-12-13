@@ -7,8 +7,8 @@ from utils.parsers import load_data, create_submission
 
 def run():
     # define parameters for simulation
-    lambda_user = 0.01
-    lambda_item = 0.001
+    lambda_user = 0
+    lambda_item = 0
     num_features = 2
     min_num_data = 150
 

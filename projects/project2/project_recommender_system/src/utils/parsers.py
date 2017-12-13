@@ -5,8 +5,8 @@ import pickle
 import os
 import csv
 
-from helpers import plot_raw_data, split_data, split_data_2
-from methods import user_mean, global_mean, item_mean
+from utils.helpers import plot_raw_data, split_data, split_data_2
+from utils.methods import user_mean, global_mean, item_mean
 
 DATA_DIR = "../data"
 

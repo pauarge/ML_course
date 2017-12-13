@@ -1,6 +1,7 @@
 import numpy as np
 import scipy as sp
-from helpers import build_index_groups
+
+from utils.helpers import build_index_groups
 
 
 def init_mf(train, num_features):
