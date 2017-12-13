@@ -59,7 +59,7 @@ def split_data_2(elems, ratings, ratio, seed=1):
     return elems[index_tr], ratings[index_tr], elems[index_te], ratings[index_te]
 
 
-def split_data_3(ratings, num_items_per_user, num_users_per_item, min_num_ratings, p_test=0.5):
+def split_data_3(ratings, k, min_num_ratings=1):
     """
     split the ratings to training data and test data.
     Args:
@@ -69,38 +69,21 @@ def split_data_3(ratings, num_items_per_user, num_users_per_item, min_num_rating
     # set seed
     np.random.seed(1)
 
+    num_items_per_user, num_users_per_item = plot_raw_data(ratings)
     valid_ratings, transformation_user, transformation_item = transformation(ratings, num_items_per_user,
                                                                              num_users_per_item, min_num_ratings)
 
     # init
     num_rows, num_cols = valid_ratings.shape
-    train = sp.lil_matrix((num_rows, num_cols))
-    test = sp.lil_matrix((num_rows, num_cols))
 
     print("the shape of original ratings. (# of row, # of col): {}".format(ratings.shape))
     print("the shape of valid ratings. (# of row, # of col): {}".format((num_rows, num_cols)))
 
     nz_items, nz_users = valid_ratings.nonzero()
-    indexes = np.transpose(np.stack(nz_items, nz_users))
+    indexes = np.transpose(np.vstack((nz_items, nz_users)))
     np.random.shuffle(indexes)
 
-    # split the data
-    for user in set(nz_users):
-        # randomly select a subset of ratings
-        row, col = valid_ratings[:, user].nonzero()
-        selects = np.random.choice(row, size=int(len(row) * p_test))
-        residual = list(set(row) - set(selects))
-
-        # add to train set
-        train[residual, user] = valid_ratings[residual, user]
-
-        # add to test set
-        test[selects, user] = valid_ratings[selects, user]
-
-    print("Total number of nonzero elements in origial data:{v}".format(v=ratings.nnz))
-    print("Total number of nonzero elements in train data:{v}".format(v=train.nnz))
-    print("Total number of nonzero elements in test data:{v}".format(v=test.nnz))
-    return valid_ratings, train, test, transformation_user, transformation_item
+    return np.array_split(indexes, k)
 
 
 def transformation(ratings, num_items_per_user, num_users_per_item, min_num_ratings):

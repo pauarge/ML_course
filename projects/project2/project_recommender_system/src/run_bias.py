@@ -1,21 +1,11 @@
 import numpy as np
 
 from utils.methods import global_mean, standarize, compute_std, div_std, users_mean, items_mean, \
-    matrix_factorization_SGD, matrix_factorization_sgd_std, compute_error_bias, decomposition_error
+    matrix_factorization_sgd_std, decomposition_error
 from utils.parsers import load_data, create_submission
 
 
-def run():
-    # define parameters for simulation
-    lambda_user = 0
-    lambda_item = 0
-    num_features = 2
-    min_num_data = 150
-
-    # load data train csv
-    print("LOADING DATA...")
-    train, test, transformation_user, transformation_item = load_data(min_num_data)
-
+def run(train, test, lambda_user, lambda_item, num_features):
     # define data parameters
     print("STARTING MATRIX FACTORIZATION SGD")
     mean = global_mean(train)
@@ -53,9 +43,26 @@ def run():
     print("TOTAL RMSE {}".format(total))
     print("PERCENTAGE: {}".format(percentage))
 
+    return item_features, user_features, mean, std, users_bias, items_bias, total
+
+
+def main():
+    # define parameters for simulation
+    lambda_user = 0
+    lambda_item = 0
+    num_features = 2
+    min_num_data = 150
+
+    # load data train csv
+    print("LOADING DATA...")
+    train, test, transformation_user, transformation_item = load_data(min_num_data)
+
+    item_features, user_features, mean, std, users_bias, items_bias, _ = run(train, test, lambda_user, lambda_item,
+                                                                             num_features)
+
     create_submission(item_features, user_features, train, transformation_user, transformation_item, mean, std,
                       users_bias, items_bias)
 
 
 if __name__ == '__main__':
-    run()
+    main()

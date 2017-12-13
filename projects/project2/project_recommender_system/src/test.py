@@ -1,26 +1,32 @@
-from utils.helpers import build_k_indices
-from utils.parsers import load_data
-from utils.validation import cross_validation
+import numpy as np
+
+from utils.helpers import build_k_indices, split_data_3
+from utils.parsers import load_data_3
+
+from run_bias import run as run_bias
 
 
 def main():
-    ys_train, x_train, ids_train, x_test, ids_test = load_data()
-
+    lambda_user = 0
+    lambda_item = 0
+    num_features = 2
+    min_num_data = 150
     seed = 3
     k_fold = 4
 
-    # split data in k fold
-    k_indices = build_k_indices(ys_train, k_fold, seed)
+    ratings = load_data_3().toarray()
+    indexes = split_data_3(ratings, k_fold)
 
     tr, te = 0, 0
 
     for j in range(k_fold):
-        tmp_tr, tmp_te = cross_validation(ys_train, x_train, k_indices, j, lambda_=0.01)
-        tr += tmp_tr
-        te += tmp_te
+        test = ratings[indexes[j]]
+        new_indices = indexes
+        del new_indices[j]
+        flat_list = [item for sublist in new_indices for item in sublist]
+        train = ratings[flat_list]
 
-    print("TEST ERROR {} FOR {} METHOD".format(te / k_fold, method))
-    print("TRAIN ERROR {} FOR {} METHOD".format(tr / k_fold, method))
+        run_bias(train, test, lambda_user, lambda_item, num_features)
 
 
 if __name__ == '__main__':

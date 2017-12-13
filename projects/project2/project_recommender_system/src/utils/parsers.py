@@ -56,15 +56,12 @@ def load_data_2():
     return split_data_2(elems, ratings, 0.2)
 
 
-def load_data_3(min_num_ratings=1):
+def load_data_3():
     matrix_train = load_pickle_data("matrix_train")
     if matrix_train is None:
         matrix_train = load_csv_data("{}/data_train.csv".format(DATA_DIR))
         dump_pickle_data(matrix_train, "matrix_train")
-
-    num_items_per_user, num_users_per_item = plot_raw_data(matrix_train)
-    valid_data, train, test, t_u, t_i = split_data(matrix_train, num_items_per_user, num_users_per_item,
-                                                   min_num_ratings)
+    return matrix_train
 
 
 def load_pickle_data(filename):
