@@ -59,6 +59,50 @@ def split_data_2(elems, ratings, ratio, seed=1):
     return elems[index_tr], ratings[index_tr], elems[index_te], ratings[index_te]
 
 
+def split_data_3(ratings, num_items_per_user, num_users_per_item, min_num_ratings, p_test=0.5):
+    """
+    split the ratings to training data and test data.
+    Args:
+        min_num_ratings:
+            all users and items we keep must have at least min_num_ratings per user and per item.
+    """
+    # set seed
+    np.random.seed(1)
+
+    valid_ratings, transformation_user, transformation_item = transformation(ratings, num_items_per_user,
+                                                                             num_users_per_item, min_num_ratings)
+
+    # init
+    num_rows, num_cols = valid_ratings.shape
+    train = sp.lil_matrix((num_rows, num_cols))
+    test = sp.lil_matrix((num_rows, num_cols))
+
+    print("the shape of original ratings. (# of row, # of col): {}".format(ratings.shape))
+    print("the shape of valid ratings. (# of row, # of col): {}".format((num_rows, num_cols)))
+
+    nz_items, nz_users = valid_ratings.nonzero()
+    indexes = np.transpose(np.stack(nz_items, nz_users))
+    np.random.shuffle(indexes)
+
+    # split the data
+    for user in set(nz_users):
+        # randomly select a subset of ratings
+        row, col = valid_ratings[:, user].nonzero()
+        selects = np.random.choice(row, size=int(len(row) * p_test))
+        residual = list(set(row) - set(selects))
+
+        # add to train set
+        train[residual, user] = valid_ratings[residual, user]
+
+        # add to test set
+        test[selects, user] = valid_ratings[selects, user]
+
+    print("Total number of nonzero elements in origial data:{v}".format(v=ratings.nnz))
+    print("Total number of nonzero elements in train data:{v}".format(v=train.nnz))
+    print("Total number of nonzero elements in test data:{v}".format(v=test.nnz))
+    return valid_ratings, train, test, transformation_user, transformation_item
+
+
 def transformation(ratings, num_items_per_user, num_users_per_item, min_num_ratings):
     # select user and item based on the condition.
     valid_users = np.where(num_items_per_user >= min_num_ratings)[0]
@@ -126,3 +170,22 @@ def group_by(data, index):
     sorted_data = sorted(data, key=lambda x: x[index])
     groupby_data = groupby(sorted_data, lambda x: x[index])
     return groupby_data
+
+
+def build_k_indices(y, k_fold, seed):
+    """
+    Build k indices for k-fold
+    N = #data points
+    D = #number of variables in input data
+
+    :param y: Vector of labels of size 1xN
+    :param k_fold: Number of folds in which data is split
+    :param seed: Number used to initialize a pseudorandom number generator.
+    :return: k_fold vectors of size (1xN/k_fold) in which indices of input data are saved
+    """
+    num_row = y.shape[0]
+    interval = int(num_row / k_fold)
+    np.random.seed(seed)
+    indices = np.random.permutation(num_row)
+    k_indices = [indices[k * interval: (k + 1) * interval] for k in range(k_fold)]
+    return np.array(k_indices)

@@ -11,7 +11,7 @@ from utils.methods import user_mean, global_mean, item_mean
 DATA_DIR = "../data"
 
 
-def load_data(min_num_ratings):
+def load_data(min_num_ratings=1):
     """
     Loads datasets into the program. If they exist, it loads the cached .pckl files, it loads the .csv otherwise
 
@@ -54,6 +54,17 @@ def load_data_2():
         dump_pickle_data(ratings, "ratings")
 
     return split_data_2(elems, ratings, 0.2)
+
+
+def load_data_3(min_num_ratings=1):
+    matrix_train = load_pickle_data("matrix_train")
+    if matrix_train is None:
+        matrix_train = load_csv_data("{}/data_train.csv".format(DATA_DIR))
+        dump_pickle_data(matrix_train, "matrix_train")
+
+    num_items_per_user, num_users_per_item = plot_raw_data(matrix_train)
+    valid_data, train, test, t_u, t_i = split_data(matrix_train, num_items_per_user, num_users_per_item,
+                                                   min_num_ratings)
 
 
 def load_pickle_data(filename):
