@@ -1,4 +1,4 @@
-from methods import matrix_factorization_SGD, global_mean, compute_std, standarize, div_std
+from utils.methods import matrix_factorization_SGD, global_mean, compute_std, standarize, div_std
 from utils.parsers import load_data, create_submission
 
 

@@ -1,4 +1,4 @@
-from SVD import SGD
+from utils.SVD import SGD
 from utils.parsers import load_data
 
 

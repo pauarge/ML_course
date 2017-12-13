@@ -1,6 +1,6 @@
 import numpy as np
 
-from methods import global_mean, standarize, compute_std, div_std, users_mean, items_mean, \
+from utils.methods import global_mean, standarize, compute_std, div_std, users_mean, items_mean, \
     matrix_factorization_SGD, matrix_factorization_sgd_std, compute_error_bias, decomposition_error
 from utils.parsers import load_data, create_submission
 
