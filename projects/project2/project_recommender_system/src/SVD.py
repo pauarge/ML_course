@@ -3,10 +3,8 @@ import math as mt
 import numpy as np
 import scipy.sparse as sp
 from scipy.sparse import linalg
-import sklearn.preprocessing as pre
 
-from methods import compute_error, compute_error_SVD, global_mean, compute_std
-from parsers import standarize, div_std
+from methods import compute_error_SVD, global_mean, compute_std, standarize, div_std
 
 
 def computesvd(train, K):
@@ -14,7 +12,6 @@ def computesvd(train, K):
     train = standarize(train)
     std = compute_std(train)
     train = div_std(train)
-
 
     U, s, Vt = sp.linalg.svds(train, k=K)
 
@@ -55,35 +52,6 @@ def SGD(train, test, lambda_user, lambda_item, num_features):
     # nz_train = list(zip(nz_row, nz_col))
     nz_row, nz_col = test.nonzero()
     nz_test = list(zip(nz_row, nz_col))
-    #
-    # print("learn the matrix factorization using SGD...")
-    # for it in range(num_epochs):
-    #     # shuffle the training rating indices
-    #     np.random.shuffle(nz_train)
-    #
-    #     # decrease step size
-    #     gamma /= 1.2
-    #
-    #     i = 0
-    #     for d, n in nz_train:
-    #         while i < 10000:
-    #             # update W_d (item_features[:, d]) and Z_n (user_features[:, n])
-    #             item_info = item_features[:, d]
-    #             user_info = user_features[:, n]
-    #             pred = user_info.T.dot(item_info)
-    #             err = train[d, n] - pred[0,0]
-    #
-    #             # calculate the gradient and update
-    #             item_features[:, d] += gamma * (err * user_info - lambda_item * item_info)
-    #             user_features[:, n] += gamma * (err * item_info - lambda_user * user_info)
-    #
-    #             i += 1
-    #
-    #     # rmse = compute_error(train, user_features, item_features, nz_train)
-    #     # print("iter: {}, RMSE on training set: {}.".format(it, rmse))
-    #     print("iter: {}".format(it))
-
-    # errors.append(rmse)
 
     # evaluate the test error
     rmse = compute_error_SVD(test, user_features, item_features, nz_test, mean, std)
