@@ -1,16 +1,16 @@
 import numpy as np
 
 from methods import global_mean, standarize, compute_std, div_std, users_mean, items_mean, \
-    matrix_factorization_SGD, matrix_factorization_sgd_std, compute_error_bias
+    matrix_factorization_SGD, matrix_factorization_sgd_std, compute_error_bias, decomposition_error
 from parsers import load_data, create_submission
 
 
 def run():
     # define parameters for simulation
-    lambda_user = 0.1
-    lambda_item = 0.01
+    lambda_user = 0.01
+    lambda_item = 0.001
     num_features = 2
-    min_num_data = 1
+    min_num_data = 150
 
     # load data train csv
     print("LOADING DATA...")
@@ -33,23 +33,28 @@ def run():
     std = compute_std(train)
     train = div_std(train)
 
-    u_bias = users_bias/std
-    i_bias = items_bias/std
+    u_bias = users_bias / std
+    i_bias = items_bias / std
 
-    item_features, user_features = matrix_factorization_sgd_std(train, lambda_user, lambda_item, num_features, u_bias, i_bias)
+    item_features, user_features = matrix_factorization_sgd_std(train, lambda_user, lambda_item, num_features, u_bias,
+                                                                i_bias)
 
     # evaluate the test error
     nz_row, nz_col = test.nonzero()
     nz_test = list(zip(nz_row, nz_col))
 
-    rmse, rmse_r, rmse_g = compute_error_bias(test, user_features, item_features, nz_test, mean, std, users_bias, items_bias)
-    print("RMSE on test data: {}.".format(rmse))
-    print("RMSE_ROUND on test data: {}.".format(rmse_r))
-    print("RMSE_GROUND on test data: {}.".format(rmse_g))
+    mse1, mse2, mse3, mse4, percentage, total \
+        = decomposition_error(train, test, user_features, item_features, nz_test, mean, std, users_bias, items_bias, 50)
+
+    print("RMSE on normal test data: {}.".format(mse1))
+    print("RMSE on bad user data: {}.".format(mse2))
+    print("RMSE on bad item data: {}.".format(mse3))
+    print("RMSE on isolated data: {}.".format(mse4))
+    print("TOTAL RMSE {}".format(total))
+    print("PERCENTAGE: {}".format(percentage))
 
     create_submission(item_features, user_features, train, transformation_user, transformation_item, mean, std,
                       users_bias, items_bias)
-    return rmse
 
 
 if __name__ == '__main__':

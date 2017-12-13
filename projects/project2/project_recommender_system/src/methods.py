@@ -73,10 +73,57 @@ def compute_error_bias(data, user_features, item_features, nz, mean, std, user_b
         # mse += (data[row, col] - item_info.dot(user_info.T)[0,0]) ** 2
         rate = std * prediction[row, col] + mean + user_bias[col] + item_bias[row]
         mse += (data[row, col] - rate) ** 2
-        mse_r += (data[row,col] - round(rate))**2
-        mse_g += (data[row,col] - np.floor(rate))**2
+        mse_r += (data[row, col] - round(rate)) ** 2
+        mse_g += (data[row, col] - np.floor(rate)) ** 2
 
     return np.sqrt(1.0 * mse / len(nz)), np.sqrt(1.0 * mse_r / len(nz)), np.sqrt(1.0 * mse_g / len(nz))
+
+
+def decomposition_error(ratings, data, user_features, item_features, nz, mean, std, user_bias, item_bias, min_num):
+    num_items_per_user = np.array((ratings != 0).sum(axis=0)).flatten()
+    num_users_per_item = np.array((ratings != 0).sum(axis=1).T).flatten()
+    bad_users = num_items_per_user < min_num
+    bad_items = num_users_per_item < min_num
+
+    mse_1 = 0
+    i1 = 0
+    mse_2 = 0
+    i2 = 0
+    mse_3 = 0
+    i3 = 0
+    mse_4 = 0
+    i4 = 0
+
+    prediction = np.transpose(item_features.T.dot(user_features))
+
+    for row, col in nz:
+        rate = std * prediction[row, col] + mean + user_bias[col] + item_bias[row]
+        if bad_users[col]:
+            if bad_items[row]:
+                mse_4 += (data[row, col] - rate) ** 2
+                i4 += 1
+            else:
+                mse_2 += (data[row, col] - rate) ** 2
+                i2 += 1
+        elif bad_items[row]:
+            mse_3 += (data[row, col] - rate) ** 2
+            i3 += 1
+        else:
+            mse_1 += (data[row, col] - rate) ** 2
+            i1 += 1
+            if i1 % 10000 == 0:
+                print(mse_1, mse_2, mse_3, mse_4)
+
+    mse = [mse_1, mse_2, mse_3, mse_4]
+    percentage = mse / sum(mse)
+    ii = [i1, i2, i3, i4]
+    for i in range(4):
+        if ii[i] != 0:
+            mse[i] = np.math.sqrt(mse[i] / ii[i])
+        else:
+            mse[i] = 0
+
+    return mse[0], mse[1], mse[2], mse[3], percentage, np.math.sqrt(sum(mse) / len(nz))
 
 
 def matrix_factorization_SGD(train, test, lambda_user, lambda_item, num_features, mean, std):
@@ -139,7 +186,6 @@ def matrix_factorization_sgd_std(train, lambda_user, lambda_item, num_features, 
     # lambda_item = 0.01
     num_epochs = 20  # number of full passes through the train set
 
-
     # set seed
     np.random.seed(988)
 
@@ -163,9 +209,8 @@ def matrix_factorization_sgd_std(train, lambda_user, lambda_item, num_features, 
             item_info = item_features[:, d]
             user_info = user_features[:, n]
             err = train[d, n] - (user_info.T.dot(item_info) + u_bias[n] + i_bias[d])
-            if i%100000==0:
+            if i % 100000 == 0:
                 print(err)
-
 
             # calculate the gradient and update
             item_features[:, d] += gamma * (err * user_info - lambda_item * item_info)
