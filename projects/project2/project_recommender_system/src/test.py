@@ -1,9 +1,6 @@
-import numpy as np
-
-from utils.helpers import build_k_indices, split_data_3
-from utils.parsers import load_data_3
-
 from run_bias import run as run_bias
+from utils.helpers import split_data_3
+from utils.parsers import load_data_3
 
 
 def main():

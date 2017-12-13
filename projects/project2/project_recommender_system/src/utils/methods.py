@@ -44,6 +44,14 @@ def compute_error(data, user_features, item_features, nz):
         mse += (data[row, col] - user_info.T.dot(item_info)) ** 2
     return np.sqrt(1.0 * mse / len(nz))
 
+def compute_error_MF(data, user_features, item_features, nz):
+    """compute the loss (MSE) of the prediction of nonzero elements."""
+    mse = 0
+    for row, col in nz:
+        item_info = item_features[row,:]
+        user_info = user_features[:, col]
+        mse += (data[row, col] - item_info.dot(user_info)) ** 2
+    return np.sqrt(1.0 * mse / len(nz))
 
 def compute_error_SVD(data, user_features, item_features, nz, mean, std):
     """compute the loss (MSE) of the prediction of nonzero elements."""
