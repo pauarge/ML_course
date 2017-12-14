@@ -60,8 +60,7 @@ def main():
     item_features, user_features, mean, std, users_bias, items_bias, _ = run(train, test, lambda_user, lambda_item,
                                                                              num_features)
 
-    create_submission(item_features, user_features, train, transformation_user, transformation_item, mean, std,
-                      users_bias, items_bias)
+    create_submission(item_features, user_features, train, transformation_user, transformation_item, mean, std, users_bias, items_bias)
 
 
 if __name__ == '__main__':
