@@ -22,15 +22,16 @@ def rmse(prediction, ground_truth):
 
 def main():
     train, test, transformation_user, transformation_item = load_data(min_num_data)
-    user_similarity = pairwise_distances(train, metric='cosine')  ######ALERTA POTSER ES AL REVES EL TRASPOSAT
-    item_similarity = pairwise_distances(train.T, metric='cosine')
+    item_similarity = pairwise_distances(train, metric='cosine')
+    user_similarity = pairwise_distances(train.T, metric='cosine')  ######ALERTA POTSER ES AL REVES EL TRASPOSAT
 
-    item_prediction = predict(train_data_matrix, item_similarity, type='item')
-    user_prediction = predict(train_data_matrix, user_similarity, type='user')
+
+    item_prediction = predict(train, item_similarity, type='item')
+    user_prediction = predict(train, user_similarity, type='user')
     print
     'User-based CF RMSE: ' + str(rmse(user_prediction, test))
     print
     'Item-based CF RMSE: ' + str(rmse(item_prediction, test))
 
 if __name__ == '__main__':
-        run()
+        main()
