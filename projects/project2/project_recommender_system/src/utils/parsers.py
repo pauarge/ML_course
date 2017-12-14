@@ -149,7 +149,7 @@ def preprocess_data(data):
     min_row, max_row, min_col, max_col = statistics(data)
     print("number of items: {}, number of users: {}".format(max_row, max_col))
 
-    ratings = sp.lil_matrix((max_row, max_col))
+    ratings = sp.lil_matrix((max_row, max_col), dtype=np.float64)
     for row, col, rating in data:
         ratings[row - 1, col - 1] = rating
     return ratings

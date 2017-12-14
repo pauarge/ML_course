@@ -23,7 +23,11 @@ def main():
         flat_list = [item for sublist in new_indices for item in sublist]
         train = ratings[flat_list]
 
-        run_bias(train, test, lambda_user, lambda_item, num_features)
+        item_features, user_features, mean, std, users_bias, items_bias, total=\
+            run_bias(train, test, lambda_user, lambda_item, num_features)
+        te += total
+    print("total error test {}".format(te/k_fold))
+
 
 
 if __name__ == '__main__':

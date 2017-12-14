@@ -81,6 +81,7 @@ def compute_error_bias(data, user_features, item_features, nz, mean, std, user_b
         # user_info = user_features[:,col]
         # mse += (data[row, col] - item_info.dot(user_info.T)[0,0]) ** 2
         rate = std * prediction[row, col] + mean + user_bias[col] + item_bias[row]
+
         mse += (data[row, col] - rate) ** 2
         mse_r += (data[row, col] - round(rate)) ** 2
         mse_g += (data[row, col] - np.floor(rate)) ** 2
@@ -227,7 +228,7 @@ def matrix_factorization_sgd_std(train, lambda_user, lambda_item, num_features, 
 
             i += 1
 
-        # rmse = compute_error(train, user_features, item_features, nz_train)
+        #rmse = compute_error(train, user_features, item_features, nz_train)
         # print("iter: {}, RMSE on training set: {}.".format(it, rmse))
         print("iter: {}".format(it))
 

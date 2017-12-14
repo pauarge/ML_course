@@ -3,12 +3,12 @@ import numpy as np
 import scipy.sparse as sp
 from scipy.sparse import linalg
 
-from methods import compute_error_SVD, global_mean, compute_std, standarize, div_std
+from utils.methods import compute_error_SVD, global_mean, compute_std, standarize, div_std
 
 
 def computesvd(train, K):
     mean = global_mean(train)
-    train = standarize(train)
+    train = standarize(train,mean)
     std = compute_std(train)
     train = div_std(train)
 
@@ -44,6 +44,7 @@ def SGD(train, test, lambda_user, lambda_item, num_features):
     # init matrix
     print("COMPUTE SVD")
     user_features, item_features, mean, std = computesvd(train, num_features)
+    pred = user_features.dot(item_features)*std + mean
     print("GENERATE USER AND ITEM FEATURES")
 
     # # find the non-zero ratings indices

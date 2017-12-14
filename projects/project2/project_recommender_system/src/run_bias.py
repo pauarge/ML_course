@@ -48,10 +48,10 @@ def run(train, test, lambda_user, lambda_item, num_features):
 
 def main():
     # define parameters for simulation
-    lambda_user = 0
-    lambda_item = 0
-    num_features = 2
-    min_num_data = 150
+    lambda_user = 0.01
+    lambda_item = 0.001
+    num_features = 3
+    min_num_data = 1
 
     # load data train csv
     print("LOADING DATA...")
