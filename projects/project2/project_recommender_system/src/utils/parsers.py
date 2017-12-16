@@ -177,7 +177,7 @@ def preprocess_data_2(data):
     return elems, ratings
 
 
-def create_submission(w, z, train, trans_user, trans_item, mean, std, user_bias, item_bias):
+def create_submission(w, z, train, trans_user, trans_item, mean, std, user_bias=None, item_bias=None):
     print("CREATING SUBMISSION")
 
     def deal_line(line):

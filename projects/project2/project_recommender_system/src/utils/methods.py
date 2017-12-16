@@ -146,7 +146,7 @@ def matrix_factorization_SGD(train, test, lambda_user, lambda_item, num_features
     num_epochs = 20  # number of full passes through the train set
 
     # set seed
-    np.random.seed(988)
+    np.random.seed(1)
 
     # init matrix
     user_features, item_features = init_mf(train, num_features)

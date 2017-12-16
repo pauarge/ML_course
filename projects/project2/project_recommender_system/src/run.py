@@ -13,7 +13,6 @@ def run(lambda_user=0.1, lambda_item=0.01, num_features=2, min_num_data=1, p_tes
 
     user_mean = train.mean(axis=1)
 
-
     # calcul bias standaritzat
     bias_users = 1
 
