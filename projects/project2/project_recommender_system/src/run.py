@@ -4,7 +4,7 @@ from parsers import create_submission, load_data
 
 
 def main():
-    print("CREATING DATAFRAME")
+    print("LOADING DATAFRAME")
     data = load_data("data_train.csv")
 
     print("TRAINING MODEL")
