@@ -17,17 +17,34 @@ The project has the following folder (and file) structure:
 	* TODO
 * `tmp/`. Folder containing cached data files.
 * `clear.sh`. Clear all execution-derived data files in `out/` and `tmp/`.
+* `requirements.txt`. Standard Python-PIP requirements file with required packages and versions.
 
 ## Environment
 
-The required environment for running the code and reproducing the results is a computer with a valid installation of Python 3. More specifically, [Python 3.6](https://docs.python.org/3.6/) is used.
+The required environment for running the code and reproducing the results is a computer with a valid installation of Python 3. More specifically, [Python 3.6.3](https://docs.python.org/3.6/) is used.
 
 Besides that (and the built-in Python libraries), the following packages are used and have to be installed:
 
-* [NumPy 1.13.3](http://www.numpy.org). `pip3 install --user numpy==1.13.3`
-* [Matplotlib 2.0.2](https://matplotlib.org). `pip3 install --user matplotlib==2.0.2`
+* [NumPy 1.13.3](http://www.numpy.org).
+* [Pandas 0.21.1](https://pandas.pydata.org)
+* [Suprise (scikit-surprise) 1.0.4](http://surpriselib.com)
+
+The best way to reproduce the complete environment would be creating a [virtualenv](https://virtualenv.pypa.io/en/stable/) using [virtualenvwrapper](https://virtualenvwrapper.readthedocs.io/en/latest/) with the following commands:
+
+```
+mkvirtualenv ml -p python3
+workon ml
+```
+
+And then, inside the root folder, install the packages specified on `requirements.txt`:
+
+```
+pip install -r requirements.txt
+```
 
 ## Running
+
+All the following commands assume that the user is working inside the environment created in the previous step.
 
 ### Main program
 
@@ -35,7 +52,7 @@ To run the main program, the `run.py` has to be executed from the scripts folder
 
 ```
 cd scripts/
-python3 run.py
+python run.py
 ```
 
 There are no command line arguments. It will look for a `train.csv` file located on `../data/` for training data and the same for `test.csv` and testing. Outputs will be generated in the `../out/` folder.
