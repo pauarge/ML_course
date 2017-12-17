@@ -7,6 +7,7 @@ import pickle
 from surprise import Reader, Dataset
 
 DATA_DIR = "../data"
+OUT_DIR = "../out"
 TMP_DIR = "../tmp"
 
 
@@ -31,10 +32,10 @@ def load_pickle_data(filename):
     """
     Loads data from .pckl file
 
-    :param filename: Filename ({filename}.pckl) of the file located in the ../tmp directory
+    :param filename: Filename ({filename}.pckl) of the file located in the TMP_DIR directory
     :return: The object if the file existed, None otherwise
     """
-    path = "../tmp/{}.pckl".format(filename)
+    path = "{}/{}.pckl".format(TMP_DIR, filename)
     if os.path.exists(path):
         print("LOADING PCKL FILE FROM {}".format(path))
         f = open(path, 'rb')
@@ -48,10 +49,10 @@ def dump_pickle_data(obj, filename):
     Dumps the given object into a .pckl file
 
     :param obj: Valid Python object to dump
-    :param filename: Filename of the object (will be save as ../tmp/{filename}.pckl)
+    :param filename: Filename of the object (will be save as {TMP_DIR}/{filename}.pckl)
     :return: None
     """
-    path = "../tmp/{}.pckl".format(filename)
+    path = "{}/{}.pckl".format(TMP_DIR, filename)
     f = open(path, 'wb')
     pickle.dump(obj, f)
     f.close()
@@ -59,6 +60,7 @@ def dump_pickle_data(obj, filename):
 
 def preprocess_data(data):
     """preprocessing the text data, conversion to numerical array format."""
+
     def deal_line(line):
         pos, rating = line.split(',')
         row, col = pos.split("_")
@@ -66,7 +68,6 @@ def preprocess_data(data):
         col = col.replace("c", "")
         return int(row), int(col), int(rating)
 
-    # parse each line
     data = [deal_line(line) for line in data]
 
     ratings_dict = {
@@ -93,7 +94,7 @@ def create_submission(algo):
     data = load_csv_data("{}/sample_submission.csv".format(DATA_DIR))[1:]
     cells = [deal_line(line) for line in data]
 
-    with open("{}/submission-{}.csv".format(DATA_DIR, datetime.now()), 'w') as csvfile:
+    with open("{}/submission-{}.csv".format(OUT_DIR, datetime.now()), 'w') as csvfile:
         fieldnames = ['Id', 'Prediction']
         writer = csv.DictWriter(csvfile, delimiter=",", fieldnames=fieldnames)
         writer.writeheader()
