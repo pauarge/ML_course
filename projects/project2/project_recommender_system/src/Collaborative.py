@@ -63,8 +63,7 @@ def main():
             item_info = similarity[d,:]
             user_info = train[:, n]
             contributors = item_info[user_info.nonzero()[0]].sum()
-            user_info = user_info.toarray()
-            err += (train[d, n] - (item_info.dot(user_info))/contributors)**2
+            err += (train[d, n] - (item_info.dot(user_info.toarray()))/contributors)**2
             i +=1
             if i%100 ==0:
                 print(i)
