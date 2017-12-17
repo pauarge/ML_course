@@ -9,7 +9,7 @@ def main():
 
     print("TRAINING MODEL")
     trainset = data.build_full_trainset()
-    algo = NMF(n_factors=25, n_epochs=350, verbose=True)
+    algo = NMF(n_factors=25, n_epochs=350, biased=True, verbose=True)
     algo.train(trainset)
 
     print("CREATING SUBMISSION")
