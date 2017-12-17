@@ -1,30 +1,26 @@
-from utils.methods import matrix_factorization_SGD, global_mean, compute_std, standarize, div_std
-from utils.parsers import load_data, create_submission
+from surprise import NMF
+from datetime import datetime
+
+from surprise.dump import dump
+
+from parsers import create_submission, load_data, TMP_DIR
 
 
-def run(lambda_user=0.1, lambda_item=0.01, num_features=2, min_num_data=1, p_test=0.2):
-    print("LOADING DATA...")
-    train, test, transformation_user, transformation_item = load_data(min_num_data)
-    print("STARTING MATRIX FACTORIZATION SGD")
-    mean = global_mean(train)
-    train = standarize(train, mean)
-    std = compute_std(train)
-    train = div_std(train)
+def main():
+    print("LOADING DATAFRAME")
+    data = load_data("data_train.csv")
 
-    user_mean = train.mean(axis=1)
+    print("TRAINING MODEL")
+    trainset = data.build_full_trainset()
+    algo = NMF(n_factors=15, n_epochs=250, biased=True, verbose=True)
+    algo.train(trainset)
 
+    print("CREATING SUBMISSION")
+    create_submission(algo)
 
-    # calcul bias standaritzat
-    bias_users = 1
-
-    item_features, user_features, rmse = matrix_factorization_SGD(train, test, lambda_user, lambda_item, num_features,
-                                                                  mean, std)
-    # model = NMF(n_components=10, init='random', random_state=0)
-    # W = model.fit_transform(train)
-    # Z = model.components_
-    create_submission(item_features, user_features, train, transformation_user, transformation_item, mean, std)
-    return rmse
+    print("SAVING MODEL")
+    dump("{}/suprise-{}.pckl".format(TMP_DIR, datetime.now()), algo=algo)
 
 
 if __name__ == '__main__':
-    run()
+    main()

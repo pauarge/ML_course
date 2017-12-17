@@ -1,0 +1,7 @@
+numpy==1.13.3
+pandas==0.21.1
+python-dateutil==2.6.1
+pytz==2017.3
+scikit-surprise==1.0.4
+six==1.11.0
+surprise==0.1
