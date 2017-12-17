@@ -2,13 +2,16 @@ from datetime import datetime
 import pandas as pd
 import csv
 
+from surprise import Reader, Dataset
+
 DATA_DIR = "../data"
 
 
-def load_csv_data(path_dataset):
-    """Load data in text format, one rating per line, as in the kaggle competition."""
-    data = read_txt(path_dataset)[1:]
-    return preprocess_data(data)
+def load_data(filename):
+    data = read_txt("{}/{}".format(DATA_DIR, filename))[1:]
+    df = preprocess_data(data)
+    reader = Reader(rating_scale=(1, 5))
+    return Dataset.load_from_df(df[['userID', 'itemID', 'rating']], reader)
 
 
 def read_txt(path):
@@ -27,17 +30,8 @@ def preprocess_data(data):
         col = col.replace("c", "")
         return int(row), int(col), int(rating)
 
-    def statistics(data):
-        row = set([line[0] for line in data])
-        col = set([line[1] for line in data])
-        return min(row), max(row), min(col), max(col)
-
     # parse each line
     data = [deal_line(line) for line in data]
-
-    # do statistics on the dataset.
-    min_row, max_row, min_col, max_col = statistics(data)
-    print("number of items: {}, number of users: {}".format(max_row, max_col))
 
     ratings_dict = {
         'userID': [],
