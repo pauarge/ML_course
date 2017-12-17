@@ -1,29 +1,42 @@
-from utils.methods import matrix_factorization_SGD, global_mean, compute_std, standarize, div_std
-from utils.parsers import load_data, create_submission
+from surprise import NMF, Reader, GridSearch
+from surprise import Dataset
+import pandas as pd
+
+from parsers import load_csv_data, create_submission
 
 
-def run(lambda_user=0.1, lambda_item=0.01, num_features=2, min_num_data=1, p_test=0.2):
-    print("LOADING DATA...")
-    train, test, transformation_user, transformation_item = load_data(min_num_data)
-    print("STARTING MATRIX FACTORIZATION SGD")
-    mean = global_mean(train)
-    train = standarize(train, mean)
-    std = compute_std(train)
-    train = div_std(train)
+def cross_validation():
+    df = load_csv_data("../data/data_train.csv")
+    reader = Reader(rating_scale=(1, 5))
+    data = Dataset.load_from_df(df[['userID', 'itemID', 'rating']], reader)
+    data.split(5)
 
-    user_mean = train.mean(axis=1)
+    param_grid = {'n_factors': [15, 25], 'n_epochs': [50, 100]}
+    grid_search = GridSearch(NMF, param_grid, measures=['RMSE'])
 
-    # calcul bias standaritzat
-    bias_users = 1
+    # Evaluate performances of our algorithm on the dataset.
+    grid_search.evaluate(data)
 
-    item_features, user_features, rmse = matrix_factorization_SGD(train, test, lambda_user, lambda_item, num_features,
-                                                                  mean, std)
-    # model = NMF(n_components=10, init='random', random_state=0)
-    # W = model.fit_transform(train)
-    # Z = model.components_
-    create_submission(item_features, user_features, train, transformation_user, transformation_item, mean, std)
-    return rmse
+    results_df = pd.DataFrame.from_dict(grid_search.cv_results)
+    print(results_df)
+
+
+def main():
+    print("LOADING DATASET")
+    df = load_csv_data("../data/data_train.csv")
+
+    print("CREATING DATAFRAME")
+    reader = Reader(rating_scale=(1, 5))
+    data = Dataset.load_from_df(df[['userID', 'itemID', 'rating']], reader)
+
+    print("TRAINING MODEL")
+    trainset = data.build_full_trainset()
+    algo = NMF(n_factors=25, n_epochs=350, verbose=True)
+    algo.train(trainset)
+
+    print("CREATING SUBMISSION")
+    create_submission(algo)
 
 
 if __name__ == '__main__':
-    run()
+    main()
