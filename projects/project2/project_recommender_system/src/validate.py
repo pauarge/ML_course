@@ -1,4 +1,4 @@
-from surprise import GridSearch
+from surprise import GridSearch, KNNBaseline
 from surprise.prediction_algorithms.matrix_factorization import NMF, SVD
 import pandas as pd
 import argparse
@@ -7,8 +7,9 @@ from parsers import load_data
 
 
 def main():
+    print("PARSING CMD ARGS")
     parser = argparse.ArgumentParser(description='Cross validation for movie ratings.')
-    parser.add_argument('algorithm', type=str, help="Algorithm to use. Options: SVD, NMF")
+    parser.add_argument('algorithm', type=str, help="Algorithm to use. Options: SVD, NMF, KNNB")
     parser.add_argument('--epochs', '-e', default=100, type=int, help="Number of epochs to test.")
     args = parser.parse_args()
 
@@ -23,6 +24,9 @@ def main():
     elif args.algorithm == "SVD":
         algo = SVD
         param_grid = {'n_factors': [50, 75, 100, 125, 150], 'n_epochs': [args.epochs], 'biased': [True, False]}
+    elif args.algorithm == "KNNB":
+        algo = KNNBaseline
+        param_grid = {'k': [20, 30, 40, 50, 60], 'min_k': [0, 1, 2, 3]}
     else:
         parser.print_usage()
         return

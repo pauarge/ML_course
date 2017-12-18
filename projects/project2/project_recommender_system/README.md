@@ -51,107 +51,39 @@ All the following commands assume that the user is working inside the environmen
 To run the main program, the `run.py` has to be executed from the scripts folder:
 
 ```
-cd scripts/
+cd src/
 python run.py
 ```
 
-There are no command line arguments. It will look for a `train.csv` file located on `../data/` for training data and the same for `test.csv` and testing. Outputs will be generated in the `../out/` folder.
+There are no command line arguments. It will look for a `data_train.csv` file located on `../data/` for training and a `sample_submission.csv` for creating the submission. Outputs will be generated in the `../out/` folder.
 
 The program will output the following progress updates through the standard output:
 
 ```
-PARSING TRAIN
-LOADING PCKL FILE FROM ../tmp/ys_train.pckl
-LOADING PCKL FILE FROM ../tmp/x_train.pckl
-LOADING PCKL FILE FROM ../tmp/ids_train.pckl
-PARSING TEST
-LOADING PCKL FILE FROM ../tmp/x_test.pckl
-LOADING PCKL FILE FROM ../tmp/ids_test.pckl
-FILTERING DATA
-BUILDING POLYNOMIALS
-LEARNING MODEL BY LEAST SQUARES
-PREDICTING VALUES
-EXPORTING CSV
+TODO
 ```
 
 ### Test
 
-To run different validations, the `test.py` has to be executed from the scrips folder:
+The `run.py` script has alredy the algorithm and the hyperparameters that give best result (smaller RMSE). In order to find out those variables, cross-validation has been applied.
+
+To run cross-validation, the `validate.py` script has been used:
 
 ```
-cd scripts/
-python3 run.py
+cd src/
+python validate.py
 ```
-There are three command line arguments: 
+It has the following command line options:
 
 ```
-usage: test.py [-h] [--filter FILTER] [--method METHOD] [--X X]
-
-optional arguments:
-  -h, --help       show this help message and exit
-  --filter FILTER  choose the pre-processing data way 0: raw data 1:
-                   standardize 2: standardize + discard outliers 3: remove
-                   features with -999 values 4: remove data points with -999
-                   values
-  --method METHOD  choose between Least Squares ('LS') or Regularized Logistic
-                   Regression ('RLR')
-  --X X            choose between X-validation among different degrees ('BD')
-                   or lambdas ('BL'). For simple X-validation with the default
-                   hyperparameterssetting, choose 'XV'
+TODO
 ```
 
 
-Outputs will be generated in the `../out/` folder. The program will output the following progress updates through the standard output:
-
-```
-PARSING TRAIN
-PARSING TEST
-...
-LOSS_TEST X DEGREE N
-LOSS_TEST X DEGREE N
-LOSS_TEST X DEGREE N
-...
-MIN TEST ERROR: Y FOR M DEGREE
-```
-
-### Check
-
-To run the main program, the `check.py` has to be executed from the scripts folder:
-
-```
-cd scripts/
-python3 check.py
-```
-
-There are no command line arguments. It will look for a `train.csv` file located on `../data/` for training data. No file outputs will be generated.
-
-The program will output the following progress updates through the standard output:
-
-```
-PARSING TRAIN
-PARSING TEST
-FILTERING DATA
-BUILDING POLYNOMIALS
-LEARNING MODEL BY LEAST SQUARES
-X
-LEARNING MODEL BY GRADIENT DESCENT
-X
-LEARNING MODEL BY STOCHASTIC GRADIENT DESCENT
-X
-LEAST SQUARES
-W : [...]
-MSE: X
-GRADIENT DESCENT
-W : [...]
-MSE: X
-STOCHASTIC GRADIENT DESCENT
-W : [...]
-MSE: X
-
-```
+TODO outputs
 
 ### Data caching
 
-Loading big datasets from `.csv` files is a slow task (roughly 15-20 seconds in a modern laptop), especially when developing. To solve this problem, a caching mechanism has been implemented: instead of loading raw `.csv`, the program loads `pickle`-encoded Python objects.
+Loading and pre-processing big datasets from `.csv` files is a slow task (roughly 15-20 seconds in a modern laptop), especially when developing. To solve this problem, a caching mechanism has been implemented: instead of loading raw `.csv`, the program loads `pickle`-encoded Python objects.
 
 To do so, the main program detects if the required `.pckl` files are available in the `tmp/` folder. If so, it imports the objects into the variables used by the rest of the script. Otherwise it imports them from the `.csv` files and then dumps those objects to the `.pckl` files.
