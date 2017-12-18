@@ -12,6 +12,11 @@ TMP_DIR = "../tmp"
 
 
 def load_data(filename):
+    """
+
+    :param filename:
+    :return:
+    """
     ds = load_pickle_data("ds")
     if ds is None:
         data = load_csv_data("{}/{}".format(DATA_DIR, filename))[1:]
@@ -23,7 +28,12 @@ def load_data(filename):
 
 
 def load_csv_data(path):
-    """read text file from path."""
+    """
+    Read text file from path.
+
+    :param path:
+    :return:
+    """
     with open(path, "r") as f:
         return f.read().splitlines()
 
@@ -59,7 +69,12 @@ def dump_pickle_data(obj, filename):
 
 
 def preprocess_data(data):
-    """preprocessing the text data, conversion to numerical array format."""
+    """
+    Preprocessing the text data, conversion to numerical array format.
+
+    :param data:
+    :return:
+    """
 
     def deal_line(line):
         pos, rating = line.split(',')
@@ -84,6 +99,12 @@ def preprocess_data(data):
 
 
 def create_submission(algo):
+    """
+
+    :param algo:
+    :return:
+    """
+
     def deal_line(line):
         pos, _ = line.split(',')
         row, col = pos.split("_")

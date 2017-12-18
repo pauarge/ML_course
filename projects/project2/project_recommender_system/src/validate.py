@@ -6,12 +6,20 @@ import argparse
 from parsers import load_data
 
 
-def main():
-    print("PARSING CMD ARGS")
+def parse_args():
+    """
+    Sets up a parser for CLI options.
+
+    :return:
+    """
     parser = argparse.ArgumentParser(description='Cross validation for movie ratings.')
     parser.add_argument('algorithm', type=str, help="Algorithm to use. Options: SVD, NMF, KNNB")
     parser.add_argument('--epochs', '-e', default=100, type=int, help="Number of epochs to test.")
-    args = parser.parse_args()
+    return parser.parse_args(), parser
+
+
+def main():
+    args, parser = parse_args()
 
     print("LOADING DATAFRAME")
     data = load_data("data_train.csv")
