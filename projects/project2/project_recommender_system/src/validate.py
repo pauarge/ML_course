@@ -33,8 +33,7 @@ def main():
 
     grid_search = GridSearch(algo, param_grid, measures=['MAE', 'RMSE'], verbose=2)
 
-    print("EVALUATING GRID SEARCH")
-    # Evaluate performances of our algorithm on the dataset.
+    print("EVALUATING PERFORMANCE OF THE ALGORITHM")
     grid_search.evaluate(data)
 
     print("BUILDING RESULTS")
