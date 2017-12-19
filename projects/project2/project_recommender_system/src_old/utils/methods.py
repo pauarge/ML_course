@@ -1,5 +1,6 @@
 import numpy as np
 import scipy as sp
+from sklearn.decomposition import NMF
 
 from utils.helpers import build_index_groups
 
@@ -44,14 +45,6 @@ def compute_error(data, user_features, item_features, nz):
         mse += (data[row, col] - user_info.T.dot(item_info)) ** 2
     return np.sqrt(1.0 * mse / len(nz))
 
-def compute_error_MF(data, user_features, item_features, nz):
-    """compute the loss (MSE) of the prediction of nonzero elements."""
-    mse = 0
-    for row, col in nz:
-        item_info = item_features[row,:]
-        user_info = user_features[:, col]
-        mse += (data[row, col] - item_info.dot(user_info)) ** 2
-    return np.sqrt(1.0 * mse / len(nz))
 
 def compute_error_SVD(data, user_features, item_features, nz, mean, std):
     """compute the loss (MSE) of the prediction of nonzero elements."""
@@ -60,9 +53,6 @@ def compute_error_SVD(data, user_features, item_features, nz, mean, std):
 
     error = []
     for row, col in nz:
-        # item_info = item_features[:,row]
-        # user_info = user_features[:,col]
-        # mse += (data[row, col] - item_info.dot(user_info.T)[0,0]) ** 2
         error_pred = (data[row, col] - (std * pred[row, col] + mean)) ** 2
         mse += error_pred
         error.append(error_pred)
@@ -136,19 +126,17 @@ def decomposition_error(ratings, data, user_features, item_features, nz, mean, s
     return mse[0], mse[1], mse[2], mse[3], percentage, np.math.sqrt(sum(mse) / len(nz))
 
 
-def matrix_factorization_SGD(train, test, lambda_user, lambda_item, num_features, mean, std):
+def matrix_factorization_SGD(train, test, lambda_user, lambda_item, num_features):
     """matrix factorization by SGD."""
     # define parameters
     gamma = 0.01
-    # num_features = 2  # K in the lecture notes
-    # lambda_user = 0.1
-    # lambda_item = 0.01
-    num_epochs = 20  # number of full passes through the train set
+    num_epochs = 50  # number of full passes through the train set
 
     # set seed
     np.random.seed(1)
 
     # init matrix
+    print("INITIALIZE MATRICES...")
     user_features, item_features = init_mf(train, num_features)
 
     # find the non-zero ratings indices
@@ -157,7 +145,7 @@ def matrix_factorization_SGD(train, test, lambda_user, lambda_item, num_features
     nz_row, nz_col = test.nonzero()
     nz_test = list(zip(nz_row, nz_col))
 
-    print("learn the matrix factorization using SGD...")
+    print("LEARN MATRIX FACTORIZATION USING SGD...")
     for it in range(num_epochs):
         # shuffle the training rating indices
         np.random.shuffle(nz_train)
@@ -175,65 +163,82 @@ def matrix_factorization_SGD(train, test, lambda_user, lambda_item, num_features
             item_features[:, d] += gamma * (err * user_info - lambda_item * item_info)
             user_features[:, n] += gamma * (err * item_info - lambda_user * user_info)
 
-        # rmse = compute_error(train, user_features, item_features, nz_train)
-        # print("iter: {}, RMSE on training set: {}.".format(it, rmse))
-        print("iter: {}".format(it))
-
-        # errors.append(rmse)
+        if it%5 == 0:
+            rmse = compute_error(train, user_features, item_features, nz_train)
+            print("iter: {}, RMSE on training set: {}.".format(it, rmse))
 
     # evaluate the test error
-    pred, rmse = compute_error_SVD(test, user_features, item_features, nz_test, mean, std)
-    print("RMSE on test data: {}.".format(rmse))
-    return item_features, user_features, rmse
+    rmse_te = compute_error(test, user_features, item_features, nz_test)
+    print("RMSE on test data: {}.".format(rmse_te))
+    return item_features, user_features, rmse_te
 
 
-def matrix_factorization_sgd_std(train, lambda_user, lambda_item, num_features, u_bias, i_bias):
+def matrix_factorization_sgd_std(train, test, lambda_user, lambda_item, num_features, u_bias, i_bias):
     """matrix factorization by SGD. WITH STANDARDIZED DATA. DOES NOT COMPUTE ERROR ON TEST SET"""
     # define parameters
     gamma = 0.01
-    # num_features = 2  # K in the lecture notes
-    # lambda_user = 0.1
-    # lambda_item = 0.01
-    num_epochs = 20  # number of full passes through the train set
+    num_epochs = 50  # number of full passes through the train set
 
     # set seed
     np.random.seed(988)
 
     # init matrix
+    print("INITIALIZE MATRICES...")
     user_features, item_features = init_mf(train, num_features)
 
     # find the non-zero ratings indices
     nz_row, nz_col = train.nonzero()
     nz_train = list(zip(nz_row, nz_col))
+    nz_row, nz_col = test.nonzero()
+    nz_test = list(zip(nz_row, nz_col))
 
-    print("learn the matrix factorization using SGD...")
+    print("LEARN MATRIX FACTORIZATION USING SGD...")
     for it in range(num_epochs):
         # shuffle the training rating indices
         np.random.shuffle(nz_train)
 
         # decrease step size
         gamma /= 1.2
-        i = 0
+
         for d, n in nz_train:
             # update W_d (item_features[:, d]) and Z_n (user_features[:, n])
             item_info = item_features[:, d]
             user_info = user_features[:, n]
             err = train[d, n] - (user_info.T.dot(item_info) + u_bias[n] + i_bias[d])
-            if i % 100000 == 0:
-                print(err)
 
             # calculate the gradient and update
             item_features[:, d] += gamma * (err * user_info - lambda_item * item_info)
             user_features[:, n] += gamma * (err * item_info - lambda_user * user_info)
 
-            i += 1
+        if it%5==0:
+            rmse_te = compute_error(train, user_features, item_features, nz_train)
+            print("iter: {}, RMSE on training set: {}.".format(it, rmse_te))
 
-        #rmse = compute_error(train, user_features, item_features, nz_train)
-        # print("iter: {}, RMSE on training set: {}.".format(it, rmse))
-        print("iter: {}".format(it))
+    # evaluate the test error
+    rmse_te = compute_error(test, user_features, item_features, nz_test)
+    print("RMSE on test data: {}.".format(rmse_te))
+    return item_features, user_features, rmse_te
 
-        # errors.append(rmse)
-    return user_features, item_features
+
+def matrix_factorization_sk(train, test, num_feat=2, alp=0.01):
+
+    model = NMF(n_components=num_feat, init='nndsvda', solver='mu', random_state=0, max_iter=10000000, alpha=alp,
+                verbose=1)
+    W = model.fit_transform(train)
+    H = model.components_
+
+    nz_row, nz_col = train.nonzero()
+    nz_train = list(zip(nz_row, nz_col))
+    nz_row, nz_col = test.nonzero()
+    nz_test = list(zip(nz_row, nz_col))
+
+    rmse_train = compute_error(train, H, W, nz_train)
+    rmse_test = compute_error(test, H, W, nz_test)
+
+    print("RMSE on train data: {}.".format(rmse_train))
+    print("RMSE on test data: {}.".format(rmse_test))
+
+    return W, H, rmse_test
 
 
 # ALTERNATING LEAST SQUARES
@@ -281,9 +286,6 @@ def update_item_feature(
 def ALS(train, test, lambda_user, lambda_item, num_features):
     """Alternating Least Squares (ALS) algorithm."""
     # define parameters
-    # num_features = 20  # K in the lecture notes
-    # lambda_user = 0.1
-    # lambda_item = 0.7
     stop_criterion = 1e-4
     change = 1
     error_list = [0, 0]
@@ -292,6 +294,7 @@ def ALS(train, test, lambda_user, lambda_item, num_features):
     np.random.seed(988)
 
     # init ALS
+    print("INITIALIZE MATRICES...")
     user_features, item_features = init_mf(train, num_features)
 
     # get the number of non-zero ratings for each user and item
@@ -301,7 +304,7 @@ def ALS(train, test, lambda_user, lambda_item, num_features):
     nz_train, nz_item_userindices, nz_user_itemindices = build_index_groups(train)
 
     # run ALS
-    print("start the ALS algorithm...")
+    print("LEARN MATRIX FACTORIZATION USING ALS...")
     while change > stop_criterion:
         # update user feature & item feature
         user_features = update_user_feature(

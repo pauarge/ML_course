@@ -29,7 +29,7 @@ def computesvd(train, K):
     return user_features, item_features, mean, std
 
 
-def SGD(train, test, lambda_user, lambda_item, num_features):
+def SVD_SGD(train, test, lambda_user, lambda_item, num_features):
     """matrix factorization by SGD."""
     # define parameters
     gamma = 0.01
