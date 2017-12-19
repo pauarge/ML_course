@@ -13,9 +13,10 @@ TMP_DIR = "../tmp"
 
 def load_data(filename):
     """
+    Load data from given .csv file into suprise-compliant dataset.
 
-    :param filename:
-    :return:
+    :param filename: Name of the file located in DATA_DIR
+    :return: Suprise dataset
     """
     ds = load_pickle_data("ds")
     if ds is None:
@@ -31,8 +32,8 @@ def load_csv_data(path):
     """
     Read text file from path.
 
-    :param path:
-    :return:
+    :param path: Path of the file to load.
+    :return: Array with the lines of the file.
     """
     with open(path, "r") as f:
         return f.read().splitlines()
@@ -72,8 +73,8 @@ def preprocess_data(data):
     """
     Preprocessing the text data, conversion to numerical array format.
 
-    :param data:
-    :return:
+    :param data: Array of lines to process.
+    :return: Pandas dataframe with data.
     """
 
     def deal_line(line):
@@ -100,9 +101,10 @@ def preprocess_data(data):
 
 def create_submission(algo):
     """
+    Given a trained suprise algorithm, reads required fields and creates a submission.
 
-    :param algo:
-    :return:
+    :param algo: Trained surprise algorithm.
+    :return: void. Writes a kaggle-compliant .csv ready for submission.
     """
 
     def deal_line(line):
