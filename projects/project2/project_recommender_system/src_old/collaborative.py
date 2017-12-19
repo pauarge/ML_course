@@ -3,8 +3,6 @@ from sklearn.metrics.pairwise import pairwise_distances
 from sklearn.metrics import mean_squared_error
 from math import sqrt
 
-from utils.parsers import load_data
-
 
 def predict(ratings, similarity, pred_type='user'):
     if pred_type == 'user':
@@ -27,7 +25,6 @@ def rmse(prediction, ground_truth):
 
 
 def collaborative(train):
-
     item_similarity = pairwise_distances(train, metric='cosine')
 
     # compute real similarity
@@ -63,4 +60,3 @@ def collaborative(train):
     rmse = np.sqrt(err / i)
     print(rmse)
     return similarity, train, rmse
-

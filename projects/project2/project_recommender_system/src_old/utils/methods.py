@@ -163,7 +163,7 @@ def matrix_factorization_SGD(train, test, lambda_user, lambda_item, num_features
             item_features[:, d] += gamma * (err * user_info - lambda_item * item_info)
             user_features[:, n] += gamma * (err * item_info - lambda_user * user_info)
 
-        if it%5 == 0:
+        if it % 5 == 0:
             rmse = compute_error(train, user_features, item_features, nz_train)
             print("iter: {}, RMSE on training set: {}.".format(it, rmse))
 
@@ -210,7 +210,7 @@ def matrix_factorization_sgd_std(train, test, lambda_user, lambda_item, num_feat
             item_features[:, d] += gamma * (err * user_info - lambda_item * item_info)
             user_features[:, n] += gamma * (err * item_info - lambda_user * user_info)
 
-        if it%5==0:
+        if it % 5 == 0:
             rmse_te = compute_error(train, user_features, item_features, nz_train)
             print("iter: {}, RMSE on training set: {}.".format(it, rmse_te))
 
@@ -221,7 +221,6 @@ def matrix_factorization_sgd_std(train, test, lambda_user, lambda_item, num_feat
 
 
 def matrix_factorization_sk(train, test, num_feat=2, alp=0.01):
-
     model = NMF(n_components=num_feat, init='nndsvda', solver='mu', random_state=0, max_iter=10000000, alpha=alp,
                 verbose=1)
     W = model.fit_transform(train)

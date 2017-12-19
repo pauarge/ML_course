@@ -32,7 +32,6 @@ def parse_args():
     return parser.parse_args()
 
 
-
 def main():
     args = parse_args()
 
@@ -40,7 +39,7 @@ def main():
     num_features = args.factors
     min_num_data = args.min_data
 
-    #default arguments for non-standardized data
+    # default arguments for non-standardized data
     mean = 0
     std = 1
     users_bias = 0
@@ -95,7 +94,6 @@ def main():
             create_submission(item_features, user_features, train, transformation_user, transformation_item, mean, std)
 
     if args.error:
-
         nz_row, nz_col = test.nonzero()
         nz_test = list(zip(nz_row, nz_col))
 
