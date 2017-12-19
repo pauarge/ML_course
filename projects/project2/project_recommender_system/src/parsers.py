@@ -11,20 +11,22 @@ OUT_DIR = "../out"
 TMP_DIR = "../tmp"
 
 
-def load_data(filename):
+def load_data(filename, min_ratings_user=1):
     """
     Load data from given .csv file into suprise-compliant dataset.
 
     :param filename: Name of the file located in DATA_DIR
+    :param min_ratings_user: Minimum ratings for a user to be valid
     :return: Suprise dataset
     """
     ds = load_pickle_data("ds")
     if ds is None:
         data = load_csv_data("{}/{}".format(DATA_DIR, filename))[1:]
-        df = preprocess_data(data)
+        df = preprocess_data(data, min_ratings_user)
         reader = Reader(rating_scale=(1, 5))
         ds = Dataset.load_from_df(df[['userID', 'itemID', 'rating']], reader)
         dump_pickle_data(ds, "ds")
+        print("Loaded dataset with {} valid items".format(len(df)))
     return ds
 
 
@@ -69,11 +71,12 @@ def dump_pickle_data(obj, filename):
     f.close()
 
 
-def preprocess_data(data):
+def preprocess_data(data, min_ratings_user):
     """
     Preprocessing the text data, conversion to numerical array format.
 
     :param data: Array of lines to process.
+    :param min_ratings_user: Minimum ratings for a user to be valid
     :return: Pandas dataframe with data.
     """
 
@@ -96,7 +99,8 @@ def preprocess_data(data):
         ratings_dict['itemID'].append(col)
         ratings_dict['rating'].append(rating)
 
-    return pd.DataFrame(ratings_dict)
+    df = pd.DataFrame(ratings_dict)
+    return df.groupby('userID').filter(lambda x: len(x) >= min_ratings_user)
 
 
 def create_submission(algo):
