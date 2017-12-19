@@ -66,25 +66,27 @@ The script will look for a `data_train.csv` file located on `../data/` for train
 Some of the parameters can be tuned via command line. This are the options:
 
 ```
-usage: run.py [-h] [-e EPOCHS] [-v VERBOSE] [-b BIASED] [-f FACTORS]
-              [-pu REG_PU] [-qi REG_QI]
+usage: run.py [-h] [-b BIASED] [-e EPOCHS] [-f FACTORS] [-pu REG_PU]
+              [-qi REG_QI] [-v VERBOSE] [-m MODEL]
 
 Main program for getting rating predictions of the given dataset.
 
 optional arguments:
   -h, --help            show this help message and exit
-  -e EPOCHS, --epochs EPOCHS
-                        Number of epochs to run.
-  -v VERBOSE, --verbose VERBOSE
-                        Enable verbosity of training.
   -b BIASED, --biased BIASED
                         Run bias on the method.
+  -e EPOCHS, --epochs EPOCHS
+                        Number of epochs to run.
   -f FACTORS, --factors FACTORS
                         Number of factors of the method.
   -pu REG_PU, --reg_pu REG_PU
                         Regularization factor for users.
   -qi REG_QI, --reg_qi REG_QI
                         Regularization factor for items.
+  -v VERBOSE, --verbose VERBOSE
+                        Enable verbosity of training.
+  -m MODEL, --model MODEL
+                        Load previously calculated model
 ```
 
 The program will output the following progress updates through the standard output:
@@ -93,8 +95,14 @@ The program will output the following progress updates through the standard outp
 LOADING DATAFRAME
 LOADING PCKL FILE FROM ../tmp/ds.pckl
 TRAINING MODEL
-CREATING SUBMISSION
 SAVING MODEL
+CREATING SUBMISSION
+```
+
+Since training the full model may take quite some time, it is possible to load a previously calculated model using the `-m` option, which will load the filename passed (file should be located in the `tmp/` directory) and then create the submission as usual.
+
+```
+python run.py -m model.pckl
 ```
 
 ### Test
@@ -110,11 +118,25 @@ python validate.py
 It has the following command line options:
 
 ```
-TODO
+usage: validate.py [-h] [--epochs EPOCHS] algorithm
+
+Cross validation for movie ratings.
+
+positional arguments:
+  algorithm             Algorithm to use. Options: SVD, NMF, KNNB
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --epochs EPOCHS, -e EPOCHS
+                        Number of epochs to test.
 ```
 
 
 TODO outputs
+
+### Graphics
+
+
 
 ### Data caching
 
