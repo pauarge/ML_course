@@ -15,7 +15,7 @@ def main():
     te_error = []
     tr_error = []
     n_epochs = [150]
-    n_facts = [30, 40, 50, 60]
+    n_facts = [70,80,90]
     for j in n_facts:
         algo = NMF(n_factors=j, n_epochs=150, reg_pu=0.1, reg_qi=0.1, biased=False, verbose=True)
 
