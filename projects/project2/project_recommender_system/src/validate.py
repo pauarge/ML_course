@@ -10,7 +10,7 @@ def parse_args():
     """
     Sets up a parser for CLI options.
 
-    :return:
+    :return: arguments list
     """
     parser = argparse.ArgumentParser(description='Cross validation for movie ratings.')
     parser.add_argument('algorithm', type=str, help="Algorithm to use. Options: SVD, NMF, KNNB")
