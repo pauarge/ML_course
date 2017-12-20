@@ -3,7 +3,7 @@ import numpy as np
 
 from collaborative import collaborative
 from utils.SVD import SVD_SGD
-from utils.methods import matrix_factorization_SGD, ALS, global_mean, standarize, compute_std, div_std, \
+from utils.methods import matrix_factorization_SGD, ALS, global_mean, standardize, compute_std, div_std, \
     users_mean, items_mean, matrix_factorization_sgd_std, matrix_factorization_sk, decomposition_error
 from utils.parsers import load_data, create_submission
 
@@ -71,7 +71,7 @@ def main():
         items_bias = items_bias.flatten()
 
         # standardization
-        train = standarize(train, mean)
+        train = standardize(train, mean)
         std = compute_std(train)
         train = div_std(train)
 

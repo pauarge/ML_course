@@ -3,12 +3,12 @@ import numpy as np
 import scipy.sparse as sp
 from scipy.sparse import linalg
 
-from utils.methods import compute_error_SVD, global_mean, compute_std, standarize, div_std
+from utils.methods import compute_error_SVD, global_mean, compute_std, standardize, div_std
 
 
 def computesvd(train, K):
     mean = global_mean(train)
-    train = standarize(train, mean)
+    train = standardize(train, mean)
     std = compute_std(train)
     train = div_std(train)
 

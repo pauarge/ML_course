@@ -134,7 +134,15 @@ def decomposition_error(ratings, data, user_features, item_features, nz, mean, s
 
 
 def matrix_factorization_SGD(train, test, lambda_user, lambda_item, num_features):
-    """matrix factorization by SGD."""
+    """
+    Matrix factorization by SGD.
+    :param train: Matrix of ratings for train set
+    :param test: Matrix of ratings for test set
+    :param lambda_user: Regularization parameter for user's matrix
+    :param lambda_item: Regularization parameter for item's matrix
+    :param num_features: Number of features
+    :return: Item and user's matrices and RMSE on test set.
+    """
     # define parameters
     gamma = 0.01
     num_epochs = 50  # number of full passes through the train set
@@ -181,7 +189,17 @@ def matrix_factorization_SGD(train, test, lambda_user, lambda_item, num_features
 
 
 def matrix_factorization_sgd_std(train, test, lambda_user, lambda_item, num_features, u_bias, i_bias):
-    """matrix factorization by SGD. WITH STANDARDIZED DATA. DOES NOT COMPUTE ERROR ON TEST SET"""
+    """
+    Matrix factorization by SGD.
+    :param train: Matrix of ratings for train set
+    :param test: Matrix of ratings for test set
+    :param lambda_user: Float value for regularization parameter for user's matrix
+    :param lambda_item: Float value for regularization parameter for item's matrix
+    :param num_features: Number of features
+    :param u_bias: List of users bias
+    :param i_bias: List of items bias
+    :return: Item and user's matrices and RMSE on test set.
+    """
     # define parameters
     gamma = 0.01
     num_epochs = 50  # number of full passes through the train set
@@ -228,6 +246,14 @@ def matrix_factorization_sgd_std(train, test, lambda_user, lambda_item, num_feat
 
 
 def matrix_factorization_sk(train, test, num_feat=2, alp=0.01):
+    """
+    Matrix factorization implementation with SKlearn library
+    :param train: Matrix of ratings for train set
+    :param test: Matrix of ratings for test set
+    :param num_feat: Number of features
+    :param alp: Learning rate
+    :return: User and item matrices, RMSE on test set.
+    """
     model = NMF(n_components=num_feat, init='nndsvda', solver='mu', random_state=0, max_iter=10000000, alpha=alp,
                 verbose=1)
     W = model.fit_transform(train)
@@ -252,7 +278,15 @@ def matrix_factorization_sk(train, test, num_feat=2, alp=0.01):
 def update_user_feature(
         train, item_features, lambda_user,
         nnz_items_per_user, nz_user_itemindices):
-    """update user feature matrix."""
+    """
+    Update user feature matrix.
+    :param train: Matrix of ratings from train set
+    :param item_features: Matrix of item features
+    :param lambda_user: Float value of regularization parameter for user's matrix
+    :param nnz_items_per_user: List of non-zero elements per user
+    :param nz_user_itemindices: List of non-zero elements per item
+    :return: User features matrix.
+    """
     num_user = nnz_items_per_user.shape[0]
     num_feature = item_features.shape[0]
     lambda_I = lambda_user * sp.eye(num_feature)
@@ -273,7 +307,16 @@ def update_user_feature(
 def update_item_feature(
         train, user_features, lambda_item,
         nnz_users_per_item, nz_item_userindices):
-    """update item feature matrix."""
+    """
+    Update item feature matrix.
+    :param train: Matrix of ratings from train set
+    :return: User features' matrix.
+    :param user_features: Matrix of user features
+    :param lambda_item: Float value of regularization parameter for item's matrix
+    :param nnz_users_per_item: List of non-zero elements per item
+    :param nz_item_userindices: List of non-zero elements per user
+    :return: Item features matrix
+    """
     num_item = nnz_users_per_item.shape[0]
     num_feature = user_features.shape[0]
     lambda_I = lambda_item * sp.eye(num_feature)
@@ -290,7 +333,15 @@ def update_item_feature(
 
 
 def ALS(train, test, lambda_user, lambda_item, num_features):
-    """Alternating Least Squares (ALS) algorithm."""
+    """
+    Alternating Least Squares (ALS) algorithm.
+    :param train: Matrix of ratings from train set
+    :param test: Matrix of ratings from test set
+    :param lambda_user: Float value of regularization parameter for user's matrix
+    :param lambda_item: Float value of regularization parameter for item's matrix
+    :param num_features: Number of features
+    :return: Item and users features matrices. RMSE on test set
+    """
     # define parameters
     stop_criterion = 1e-4
     change = 1
@@ -334,7 +385,11 @@ def ALS(train, test, lambda_user, lambda_item, num_features):
 
 
 def global_mean(train):
-    """baseline method: use the global mean."""
+    """
+    Baseline method: use the global mean.
+    :param train: Matrix of ratings from train set
+    :return: Mean of all non-zero elements
+    """
     # find the non zero ratings in the train
     nonzero_train = train[train.nonzero()]
 
@@ -345,6 +400,11 @@ def global_mean(train):
 
 
 def users_mean(train):
+    """
+    Computes the mean of the ratings per user
+    :param train: Matrix of ratings from train set
+    :return: Mean of all non-zero elements of each user
+    """
     user_means = []
     for user in range(train.shape[1]):
         user_means.append(train[train[:, user].nonzero()[0], user].mean())
@@ -352,6 +412,11 @@ def users_mean(train):
 
 
 def items_mean(train):
+    """
+    Computes the mean of the ratings per item
+    :param train: Matrix of ratings from train set
+    :return: Mean of all non-zero elements of each item
+    """
     item_means = []
     for item in range(train.shape[0]):
         item_means.append(train[item, train[item, :].nonzero()[1]].mean())
@@ -359,11 +424,22 @@ def items_mean(train):
 
 
 def compute_std(train):
+    """
+    Computes the std of the ratings per item
+    :param train: Matrix of ratings from train set
+    :return: Standard deviation of all non-zero elements of the train matrix
+    """
     nonzero_train = train[train.nonzero()].toarray()
     return np.std(nonzero_train)
 
 
-def standarize(train, mean):
+def standardize(train, mean):
+    """
+    Subtracts the global mean to all the non-zero elements of the matrix
+    :param train: Matrix of ratings from train set
+    :param mean: Global mean of all non-zero elements
+    :return: Standardized train matrix
+    """
     nz_row, nz_col = train.nonzero()
     for i in range(len(nz_row)):
         train[nz_row[i], nz_col[i]] -= mean
@@ -371,6 +447,11 @@ def standarize(train, mean):
 
 
 def div_std(train):
+    """
+    Divides by the standard deviation to all the non-zero elements of the matrix
+    :param train: Matrix of ratings from train set
+    :return: Standardized train matrix
+    """
     std = compute_std(train)
     nz_row, nz_col = train.nonzero()
     for i in range(len(nz_row)):
