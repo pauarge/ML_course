@@ -6,38 +6,40 @@ from utils.helpers import build_index_groups
 
 
 def init_mf(train, num_features):
-    """init the parameter for matrix factorization."""
+    """
+    Initialize the parameters for matrix factorization.
+    :param train: Matrix of ratings from train set
+    :param num_features: Integer of number of features to generate the matrices
+    :return: User and Item matrices of features
+    """
 
     num_item, num_user = train.get_shape()
 
-    # U, S, V  = np.linalg.svd(train)
-
-    # user_features = U
-    # item_features = S.dot(V.T)
     user_features = np.random.rand(num_features, num_user)
     item_features = np.random.rand(num_features, num_item)
 
     # start by item features.
     item_nnz = train.getnnz(axis=1)
     item_sum = np.array(train.sum(axis=1))
-    # user_sum = train.sum(axis=0)
-    # user_nnz = train.getnnz(axis=0)
-    #
+
     print("GENERATING SPECIAL FEATURE")
     for ind in range(num_item):
         if item_nnz[ind] != 0:
-            # print("item sum{}".format(item_sum[ind,0]))
-            # print("item nnz{}".format(item_nnz[ind]))
             item_features[0, ind] = item_sum[ind, 0] / item_nnz[ind]
-    # for ind in range(num_user):
-    #     if user_nnz[ind] != 0:
-    #         user_features[0, ind] = user_sum[0, ind] / user_nnz[ind]
+
     print(user_features.shape, item_features.shape)
     return user_features, item_features
 
 
 def compute_error(data, user_features, item_features, nz):
-    """compute the loss (MSE) of the prediction of nonzero elements."""
+    """
+    Compute the loss (RMSE) of the prediction of nonzero elements.
+    :param data: Matrix of ratings
+    :param user_features: Matrix of user features
+    :param item_features: Matrix of item features
+    :param nz: List of indexes of non-zero elements of the data
+    :return: RMSE loss
+    """
     mse = 0
     for row, col in nz:
         item_info = item_features[:, row]
@@ -47,7 +49,16 @@ def compute_error(data, user_features, item_features, nz):
 
 
 def compute_error_SVD(data, user_features, item_features, nz, mean, std):
-    """compute the loss (MSE) of the prediction of nonzero elements."""
+    """
+    Compute the loss (RMSE) of the prediction of nonzero elements when using SVD method.
+    :param data: Matrix of ratings
+    :param user_features: Matrix of user features
+    :param item_features: Matrix of item features
+    :param nz: List of indexes of non-zero elements of the data
+    :param mean: Global mean of the non-zero ratings in the train set
+    :param std: Global std of the non-zero ratings in the train set
+    :return: Matrix of predictions and RMSE
+    """
     mse = 0
     pred = item_features.T.dot(user_features)
 
@@ -60,26 +71,22 @@ def compute_error_SVD(data, user_features, item_features, nz, mean, std):
     return pred, np.sqrt(1.0 * mse / len(nz))
 
 
-def compute_error_bias(data, user_features, item_features, nz, mean, std, user_bias, item_bias):
-    mse = 0
-    mse_r = 0
-    mse_g = 0
-    prediction = np.transpose(item_features.T.dot(user_features))
-
-    for row, col in nz:
-        # item_info = item_features[:,row]
-        # user_info = user_features[:,col]
-        # mse += (data[row, col] - item_info.dot(user_info.T)[0,0]) ** 2
-        rate = std * prediction[row, col] + mean + user_bias[col] + item_bias[row]
-
-        mse += (data[row, col] - rate) ** 2
-        mse_r += (data[row, col] - round(rate)) ** 2
-        mse_g += (data[row, col] - np.floor(rate)) ** 2
-
-    return np.sqrt(1.0 * mse / len(nz)), np.sqrt(1.0 * mse_r / len(nz)), np.sqrt(1.0 * mse_g / len(nz))
-
-
 def decomposition_error(ratings, data, user_features, item_features, nz, mean, std, user_bias, item_bias, min_num):
+    """
+    Generates the decomposition of the error to study the accurancy of the predictions in
+    different type of users and items.
+    :param ratings:
+    :param data:
+    :param user_features:
+    :param item_features:
+    :param nz:
+    :param mean:
+    :param std:
+    :param user_bias:
+    :param item_bias:
+    :param min_num:
+    :return:
+    """
     num_items_per_user = np.array((ratings != 0).sum(axis=0)).flatten()
     num_users_per_item = np.array((ratings != 0).sum(axis=1).T).flatten()
     bad_users = num_items_per_user < min_num
