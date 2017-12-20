@@ -6,7 +6,7 @@ import os
 import csv
 
 from utils.helpers import plot_raw_data, split_data, split_data_2
-from utils.methods import user_mean, global_mean, item_mean
+from utils.methods import global_mean
 
 DATA_DIR = "../data"
 
@@ -192,9 +192,9 @@ def create_submission(w, z, train, trans_user, trans_item, mean, std, user_bias=
         if trans_item[c[0]] == -1 and trans_user[c[1]] == -1:
             preds.append(g_mean)
         elif trans_item[c[0]] == -1 and trans_user[c[1]] != -1:
-            preds.append(user_mean(train, c[1]))
+            preds.append(train[:, c[1]].mean())
         elif trans_item[c[0]] != -1 and trans_user[c[1]] == -1:
-            preds.append(item_mean(train, c[0]))
+            preds.append(train[c[0], :].mean())
         else:
             rate = round(x[trans_item[c[0]], trans_user[c[1]]] + user_bias[c[1]] + item_bias[c[0]])
             if rate < 1:

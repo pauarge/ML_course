@@ -344,11 +344,6 @@ def global_mean(train):
     return global_mean_train
 
 
-def user_mean(train, user):
-    """compute user mean"""
-    return train[:, user].mean()
-
-
 def users_mean(train):
     user_means = []
     for user in range(train.shape[1]):
@@ -361,11 +356,6 @@ def items_mean(train):
     for item in range(train.shape[0]):
         item_means.append(train[item, train[item, :].nonzero()[1]].mean())
     return item_means
-
-
-def item_mean(train, item):
-    """compute item mean"""
-    return train[item, :].mean()
 
 
 def compute_std(train):
