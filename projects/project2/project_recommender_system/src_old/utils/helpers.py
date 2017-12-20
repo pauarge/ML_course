@@ -53,11 +53,11 @@ def split_data(ratings, num_items_per_user, num_users_per_item, min_num_ratings,
 def split_data_2(elems, ratings, ratio, seed=1):
     """
     split the dataset based on the split ratio.
-    :param elems:
-    :param ratings:
-    :param ratio:
+    :param elems: Numpy array with all the non-zero combinations of user-item from the original data
+    :param ratings: Numpy array with all the non-zero ratings from the original data
+    :param ratio: Float representing the ratio of data used for the test set
     :param seed:
-    :return:
+    :return: Both elems and ratings split for train and test
     """
     # set seed
     np.random.seed(seed)
@@ -71,34 +71,16 @@ def split_data_2(elems, ratings, ratio, seed=1):
     return elems[index_tr], ratings[index_tr], elems[index_te], ratings[index_te]
 
 
-def split_data_3(ratings, k, min_num_ratings=1):
-    """
-    split the ratings to training data and test data.
-    Args:
-        min_num_ratings:
-            all users and items we keep must have at least min_num_ratings per user and per item.
-    """
-    # set seed
-    np.random.seed(1)
-
-    num_items_per_user, num_users_per_item = plot_raw_data(ratings)
-    valid_ratings, transformation_user, transformation_item = transformation(ratings, num_items_per_user,
-                                                                             num_users_per_item, min_num_ratings)
-
-    # init
-    num_rows, num_cols = valid_ratings.shape
-
-    print("the shape of original ratings. (# of row, # of col): {}".format(ratings.shape))
-    print("the shape of valid ratings. (# of row, # of col): {}".format((num_rows, num_cols)))
-
-    nz_items, nz_users = valid_ratings.nonzero()
-    indexes = np.transpose(np.vstack((nz_items, nz_users)))
-    np.random.shuffle(indexes)
-
-    return np.array_split(indexes, k)
-
-
 def transformation(ratings, num_items_per_user, num_users_per_item, min_num_ratings):
+    """
+    Generates transformation vector to correct the test matrix if users or items have been
+    previously discarded from the data.
+    :param ratings: Matrix of ratings
+    :param num_items_per_user: Total number of items rated per user
+    :param num_users_per_item: Total number of users who have rated an item
+    :param min_num_ratings: Minimum number of ratings for an user or item to be included in the dataset
+    :return: List of valid_ratings, transformation user and transformation item.
+    """
     # select user and item based on the condition.
     valid_users = np.where(num_items_per_user >= min_num_ratings)[0]
     valid_items = np.where(num_users_per_item >= min_num_ratings)[0]
@@ -133,6 +115,11 @@ def transformation(ratings, num_items_per_user, num_users_per_item, min_num_rati
 
 
 def plot_raw_data(ratings):
+    """
+    Plot the statistics result on a raw rating data
+    :param ratings: Matrix of ratings
+    :return: generates plot and returns two numpy arrays
+    """
     """plot the statistics result on raw rating data."""
     num_items_per_user = np.array((ratings != 0).sum(axis=0)).flatten()
     num_users_per_item = np.array((ratings != 0).sum(axis=1).T).flatten()
@@ -140,13 +127,22 @@ def plot_raw_data(ratings):
 
 
 def calculate_mse(real_label, prediction):
-    """calculate MSE."""
+    """
+    Calculate MSE.
+    :param real_label: Real rating from the data
+    :param prediction: Predicted rating
+    :return: MSE
+    """
     t = real_label - prediction
     return 1.0 * t.dot(t.T)
 
 
 def build_index_groups(train):
-    """build groups for nnz rows and cols."""
+    """
+    Build groups for nnz rows and cols.
+    :param train: Matrix of ratings from the train set
+    :return: List of non-zero elements' indexes, list of non-zero rows and list of non-zero columns.
+    """
     nz_row, nz_col = train.nonzero()
     nz_train = list(zip(nz_row, nz_col))
 
@@ -161,7 +157,12 @@ def build_index_groups(train):
 
 
 def group_by(data, index):
-    """group list of list by a specific index."""
+    """
+    Group list of list by a specific index.
+    :param data: List to group
+    :param index: Indexes of the list
+    :return: groups of lists
+    """
     sorted_data = sorted(data, key=lambda x: x[index])
     groupby_data = groupby(sorted_data, lambda x: x[index])
     return groupby_data
