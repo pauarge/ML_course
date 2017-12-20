@@ -56,14 +56,6 @@ def load_data_2():
     return split_data_2(elems, ratings, 0.2)
 
 
-def load_data_3():
-    matrix_train = load_pickle_data("matrix_train")
-    if matrix_train is None:
-        matrix_train = load_csv_data("{}/data_train.csv".format(DATA_DIR))
-        dump_pickle_data(matrix_train, "matrix_train")
-    return matrix_train
-
-
 def load_pickle_data(filename):
     """
     Loads data from .pckl file

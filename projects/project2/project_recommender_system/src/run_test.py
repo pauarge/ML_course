@@ -14,10 +14,11 @@ def main():
     # data.split(5)
     te_error = []
     tr_error = []
-    n_epochs = [150]
-    n_facts = [70,80,90]
-    for j in n_facts:
-        algo = NMF(n_factors=j, n_epochs=150, reg_pu=0.1, reg_qi=0.1, biased=False, verbose=True)
+    n_epochs = [250,500]
+    n_facts = [150]
+    reg = [0.1]
+    for j in n_epochs:
+        algo = NMF(n_factors=95, n_epochs=250, reg_=0.1, biased=False, verbose=True)
 
         # grid_search = GridSearch(algo, param_grid, measures=['MAE', 'RMSE'], verbose=2)
 
@@ -25,6 +26,7 @@ def main():
         rmse_train = []
         rmse_test = []
         for i, (trainset_cv, testset_cv) in enumerate(data.folds()):
+
             print('fold number', i + 1)
             algo.train(trainset_cv)
 
