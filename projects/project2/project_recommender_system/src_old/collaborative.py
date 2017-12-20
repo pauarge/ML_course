@@ -5,6 +5,13 @@ from math import sqrt
 
 
 def predict(ratings, similarity, pred_type='user'):
+    """
+    Generates prediction based on similarities from user or items
+    :param ratings: Matrix of ratings
+    :param similarity: Matrix of similarities between items where 1 shows high similarity and 0 no similarity
+    :param pred_type: Boolean to decide whether to base the prediction on users or items similarities
+    :return: Prediction of the rating
+    """
     if pred_type == 'user':
         mean_user_rating = ratings.mean(axis=1)
         # You use np.newaxis so that mean_user_rating has same format as ratings
@@ -18,13 +25,12 @@ def predict(ratings, similarity, pred_type='user'):
     return pred
 
 
-def rmse(prediction, ground_truth):
-    prediction = prediction[ground_truth.nonzero()].flatten()
-    ground_truth = ground_truth[ground_truth.nonzero()].flatten()
-    return sqrt(mean_squared_error(prediction, ground_truth))
-
-
 def collaborative(train):
+    """
+    Compute matrix of similarities between items based based on the minimum cosine distance
+    :param train: Matrix of ratings from the train dataset
+    :return: Matrix of similarities, train set and RMSE on the train set
+    """
     item_similarity = pairwise_distances(train, metric='cosine')
 
     # compute real similarity

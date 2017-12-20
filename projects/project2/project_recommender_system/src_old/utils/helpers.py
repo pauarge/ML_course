@@ -6,10 +6,15 @@ from itertools import groupby
 def split_data(ratings, num_items_per_user, num_users_per_item, min_num_ratings, p_test=0.5):
     """
     split the ratings to training data and test data.
-    Args:
-        min_num_ratings:
-            all users and items we keep must have at least min_num_ratings per user and per item.
+
+    :param ratings: Matrix of ratings
+    :param num_items_per_user: Total number of items rated per user
+    :param num_users_per_item: Total number of users who have rated an item
+    :param min_num_ratings: Minimum number of ratings for an user or item to be included in the dataset
+    :param p_test: Percentage of the data to set aside for the test set
+    :return: List of valid_ratings, train and test datasets, transformation user and transformation item.
     """
+
     # set seed
     np.random.seed(1)
 
@@ -46,7 +51,14 @@ def split_data(ratings, num_items_per_user, num_users_per_item, min_num_ratings,
 
 
 def split_data_2(elems, ratings, ratio, seed=1):
-    """split the dataset based on the split ratio."""
+    """
+    split the dataset based on the split ratio.
+    :param elems:
+    :param ratings:
+    :param ratio:
+    :param seed:
+    :return:
+    """
     # set seed
     np.random.seed(seed)
     # generate random indices
