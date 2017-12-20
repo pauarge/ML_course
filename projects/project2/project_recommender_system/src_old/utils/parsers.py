@@ -89,9 +89,10 @@ def dump_pickle_data(obj, filename):
 def create_csv_submission(ids, y_pred, name):
     """
     Creates an output file in csv format for submission to kaggle
-    Arguments: ids (event ids associated with each prediction)
-               y_pred (predicted class labels)
-               name (string name of .csv output file to be created)
+    :param ids: Event ids associated with each prediction
+    :param y_pred: Predicted class labels
+    :param name: String name of .csv output file to be created
+    :return: Writes a kaggle - compliant.csv read for submission.
     """
     with open(name, 'w') as csvfile:
         fieldnames = ['Id', 'Prediction']
@@ -108,19 +109,31 @@ def read_txt(path):
 
 
 def load_csv_data(path_dataset):
-    """Load data in text format, one rating per line, as in the kaggle competition."""
+    """
+    Load data in text format, one rating per line, as in the kaggle competition.
+    :param path_dataset: Name of the path to access the dataset
+    :return: Numpy array of ratings
+    """
     data = read_txt(path_dataset)[1:]
     return preprocess_data(data)
 
 
 def load_csv_data_2(path_dataset):
-    """Load data in text format, one rating per line, as in the kaggle competition."""
+    """
+    Load data in text format, one rating per line, as in the kaggle competition.
+    :param path_dataset: Name of the path to access the dataset
+    :return: Numpy array of ratings
+    """
     data = read_txt(path_dataset)[1:]
     return preprocess_data_2(data)
 
 
 def preprocess_data(data):
-    """preprocessing the text data, conversion to numerical array format."""
+    """
+    preprocessing the text data, conversion to numerical array format.
+    :param data: .csv file of ratings
+    :return: Two numpy arrays: one of pairs of item and user and another one of ratings
+    """
 
     def deal_line(line):
         pos, rating = line.split(',')
@@ -148,7 +161,11 @@ def preprocess_data(data):
 
 
 def preprocess_data_2(data):
-    """preprocessing the text data, conversion to numerical array format."""
+    """
+    preprocessing the text data, conversion to numerical array format.
+    :param data: .csv file of ratings
+    :return: Two numpy arrays: one of pairs of item and user and another one of ratings
+    """
 
     def deal_line(line):
         pos, rating = line.split(',')
@@ -170,6 +187,20 @@ def preprocess_data_2(data):
 
 
 def create_submission(w, z, train, trans_user, trans_item, mean, std, user_bias=None, item_bias=None):
+    """
+    Creates a .csv file with the ratings for the kaggle submission
+    :param w: Users matrix
+    :param z: Item matrix
+    :param train: Matrix of ratings from train set
+    :param trans_user: List of transformations to apply to user's indexes if some data has been omitted
+    :param trans_item: List of transformations to apply to item's indexes if some data has been omitted
+    :param mean: Global mean of all non-zero elements
+    :param std: Standard deviation of all non-zero elements
+    :param user_bias: List of bias per each user
+    :param item_bias: List of bias per each item
+    :return: Writes a kaggle - compliant.csv read for submission.
+    """
+
     print("CREATING SUBMISSION")
 
     def deal_line(line):
