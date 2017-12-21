@@ -2,11 +2,11 @@ import torch
 from torch.autograd import Variable
 import torch.nn as nn
 import torch.nn.functional as F
-import numpy as np
 from utils.parsers import load_data_2
 
 
 class NNLinearRegression(nn.Module):
+    """Class for Neural Net with linear regression"""
     def __init__(self):
         super(NNLinearRegression, self).__init__()
         self.linear = nn.Linear(2, 1)
@@ -16,6 +16,7 @@ class NNLinearRegression(nn.Module):
 
 
 class Net(nn.Module):
+    """ Net Class """
     def __init__(self, i, j):
         super(Net, self).__init__()
         self.fc1 = nn.Linear(2, i)
@@ -24,7 +25,6 @@ class Net(nn.Module):
         self.relu = nn.Sigmoid()
 
     def forward(self, x):
-
         x = F.relu(self.fc1(x))
         x = F.relu(self.fc2(x))
         x = self.fc3(x)
@@ -32,6 +32,15 @@ class Net(nn.Module):
 
 
 def train(features, labels, model, lossfunc, optimizer, num_epoch):
+    """
+    Iterative training process of the net
+    :param features: Numpy array with combinations of user and item of the train set
+    :param labels: Numpy array containing the ratings of the train set
+    :param model: Net class instance
+    :param lossfunc: Selection of loss function
+    :param optimizer: Iterative optimization way
+    :param num_epoch: Number of full passes through the net
+    """
     for epoch in range(num_epoch):
         # create torch variables corresponding to features and labels
         inputs = Variable(torch.from_numpy(features))
