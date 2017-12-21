@@ -275,9 +275,7 @@ def matrix_factorization_sk(train, test, num_feat=2, alp=0.01):
 
 # ALTERNATING LEAST SQUARES
 
-def update_user_feature(
-        train, item_features, lambda_user,
-        nnz_items_per_user, nz_user_itemindices):
+def update_user_feature(train, item_features, lambda_user, nnz_items_per_user, nz_user_itemindices):
     """
     Update user feature matrix.
     :param train: Matrix of ratings from train set
@@ -304,9 +302,7 @@ def update_user_feature(
     return updated_user_features
 
 
-def update_item_feature(
-        train, user_features, lambda_item,
-        nnz_users_per_item, nz_item_userindices):
+def update_item_feature(train, user_features, lambda_item, nnz_users_per_item, nz_item_userindices):
     """
     Update item feature matrix.
     :param train: Matrix of ratings from train set
