@@ -75,17 +75,17 @@ def decomposition_error(ratings, data, user_features, item_features, nz, mean, s
     """
     Generates the decomposition of the error to study the accurancy of the predictions in
     different type of users and items.
-    :param ratings:
-    :param data:
-    :param user_features:
-    :param item_features:
-    :param nz:
-    :param mean:
-    :param std:
-    :param user_bias:
-    :param item_bias:
-    :param min_num:
-    :return:
+    :param ratings: Matrix of original data
+    :param data: Test data
+    :param user_features: Matrix of user features
+    :param item_features: Matrix of item features
+    :param nz: List of indexes of non-zero elements of the data
+    :param mean: Global mean of the non-zero ratings in the train set
+    :param std: Global std of the non-zero ratings in the train set
+    :param user_bias: Bias for users
+    :param item_bias: Bias for items
+    :param min_num: Minimum number of ratings for each user
+    :return: RMSE on normal test data, on bad user data, on bad item data and on isolated data
     """
     num_items_per_user = np.array((ratings != 0).sum(axis=0)).flatten()
     num_users_per_item = np.array((ratings != 0).sum(axis=1).T).flatten()

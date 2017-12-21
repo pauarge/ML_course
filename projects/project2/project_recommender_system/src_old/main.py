@@ -36,7 +36,7 @@ def main():
     args = parse_args()
 
     # get global parameters
-    num_features = args.factors
+    num_features = args.features
     min_num_data = args.min_data
 
     # default arguments for non-standardized data
