@@ -15,7 +15,7 @@ def parse_args():
     """
     parser = argparse.ArgumentParser(description='Main program for getting rating predictions of the given dataset.')
     parser.add_argument('-b', '--biased', default=False, type=bool, help="Run bias on the method.")
-    parser.add_argument('-e', '--epochs', default=500, type=int, help="Number of epochs to run.")
+    parser.add_argument('-e', '--epochs', default=750, type=int, help="Number of epochs to run.")
     parser.add_argument('-f', '--factors', default=60, type=int, help="Number of factors of the method.")
     parser.add_argument('-pu', '--reg_pu', default=0.1, type=float, help="Regularization factor for users.")
     parser.add_argument('-qi', '--reg_qi', default=0.1, type=float, help="Regularization factor for items.")
